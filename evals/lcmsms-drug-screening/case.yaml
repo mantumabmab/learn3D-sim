@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: lcmsms-drug-screening
+expected_outcome: |
+  Undergraduate-level (level 3) notes on LC-MS/MS drug screening (ionisation, quadrupole selection, collision-induced fragmentation, MRM transitions, internal standards, cut-offs vs confirmation) with cited sources, a Colorfigures 3D instrument figure whose buttons follow the real sample path and whose see-through shows the stages, recall questions, and a study page plus doc export.

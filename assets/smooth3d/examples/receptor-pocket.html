@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agonist in the β2 receptor</title></head><body>
+<script src="three.min.js"></script><script src="OrbitControls.js"></script><script src="smooth3d.js"></script>
+<script>
+/*
+FIGURE 01: An agonist opens the β2 receptor                 engine: smooth3d        level: 4
+TEACHES: binding in the pocket outside the cell is what swings TM6 out on the inside; an antagonist fills the
+  same pocket without the swing, so nothing downstream can dock.
+STEPS: 1. Bind drug -> the chosen drug drifts from the outside into the pocket between the helices
+       2. Activate -> (agonist only) the inner end of TM6 swings ~14 Å outward, opening the G-protein site
+PARTS: membrane slab (outside up); TM1-TM7 helix rods around the bundle; drug as ball-and-stick
+FACTS: TM6 cytoplasmic end moves ~14 Å outward on Gs coupling [Rasmussen et al. 2011, Nature 477:549];
+       membrane hydrophobic core ~30 Å, ~40 Å with head groups (illustrative values for the slab)
+SCHEMATIC: helices are straight rods in a ring; the drug is a generic ball-and-stick, not a real pose
+SEE-THROUGH shows: the drug in the pocket behind the helices      LABELS: TM1..TM7, POCKET, DRUG
+STATS: TM6 OUTWARD (Å, from the source above)
+COLOUR KEY: receptor teal, TM6 red, membrane sand, drug mustard carbons + CPK hetero atoms
+OUT-OF-ORDER presses: Activate before Bind -> notice "Bind a drug first"
+URL PARAMS: ?xr=1&labels=1&press=Bind%20drug@300,Activate@2000
+*/
+const DRUGS = ['Agonist (adrenaline-like)', 'Antagonist (propranolol-like)'];
+mountSmooth3D({
+  fig: '01', title: 'An agonist opens the β2 receptor',
+  note: 'Outside of the cell is up. Shapes simplified; sizes roughly to scale (1 unit = 1 Å).',
+  camera: { yaw: 105, pitch: 12, dist: 175, target: [0, 2, 0] },
+  state: { drug: 0, bound: false, open: 0 },
+  build(K, st){
+    K.membrane({ w: 110, d: 80, thick: 40 });
+    K.label(K.sphere(.1, 'ink', [10, 22, -42]), 'OUTSIDE'); K.label(K.sphere(.1, 'ink', [10, -26, -42]), 'CYTOPLASM');
+    const parts = { tm: [] }, R = 12;
+    for (let i = 0; i < 7; i++){
+      const a = (i - 5) / 7 * Math.PI * 2 + 1.25, x = R * Math.cos(a), z = R * Math.sin(a), tilt = (i % 2 ? 1 : -1) * 3;
+      const g = K.group(); g.position.set(x, 24, z);                 // pivot at the outside end
+      K.helix([0, 0, 0], [tilt, -50, 0], 4.2, i === 5 ? 'red' : 'teal', { parent: g });
+      if (i === 5) K.label(g, 'TM6', { dy: 4 }); parts.tm.push(g);
+    }
+    parts.pocketMark = K.sphere(.1, 'ink', [0, 12, 0]); K.label(parts.pocketMark, 'POCKET', { when: s => !s.bound });
+    const atoms = [{ el: 'C', p: [0, 0, 0] }, { el: 'C', p: [1.4, 0, 0] }, { el: 'C', p: [2.1, 1.2, 0] }, { el: 'C', p: [1.4, 2.4, 0] }, { el: 'C', p: [0, 2.4, 0] },
+      { el: 'C', p: [-.7, 1.2, 0] }, { el: 'O', p: [2.1, 3.6, 0] }, { el: 'O', p: [3.5, 1.2, 0] }, { el: 'C', p: [-2.1, 1.2, 0] }, { el: 'O', p: [-2.8, 0, 0] },
+      { el: 'C', p: [-2.8, 2.4, 0] }, { el: 'N', p: [-4.2, 2.4, 0] }];
+    const bonds = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0], [3, 6], [2, 7], [5, 8], [8, 9], [8, 10], [10, 11]];
+    atoms.forEach(a => { if (a.el === 'C') a.color = '#e0a526'; });   // drug carbons in the set's drug colour, so it reads through the membrane
+    parts.drug = K.molecule(atoms, bonds, { scale: 1.3, label: 'DRUG' }); parts.drug.position.set(28, 36, 12); parts.drug.renderOrder = 3;
+    return parts;
+  },
+  pickers: [{ label: 'Drug', options: DRUGS, value: 0, onChange(i, K, parts, st){ st.drug = i; if (st.bound) K.flash('Reset to try the other drug'); } }],
+  steps: [
+    { label: 'Bind drug', main: true, async run(K, p, st){
+        if (st.bound) return K.flash('Already bound');
+        await K.move(p.drug, [-2, 10, 0], 1800); st.bound = true;
+        K.flash(st.drug === 0 ? 'Agonist in the pocket: now press Activate' : 'Antagonist in the pocket: try Activate'); } },
+    { label: 'Activate', async run(K, p, st){
+        if (!st.bound) return K.flash('Bind a drug first');
+        if (st.drug === 1) return K.flash('Antagonist: the pocket is filled but TM6 stays shut');
+        if (st.open) return K.flash('TM6 is already open');
+        const g = p.tm[5], a = g.position.clone().setY(0).normalize(), ang = Math.atan(14 / 50);
+        await K.tween(1600, t => { g.rotation.set(-a.z * ang * t, 0, a.x * ang * t); st.open = 14 * t; });
+        K.flash('TM6 swung out ~14 Å: Gs can now dock below'); } }
+  ],
+  stats: st => [{ label: 'TM6 outward', value: st.open.toFixed(0) + ' Å' }]
+});
+</script></body></html>

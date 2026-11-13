@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The β2 receptor and the Gs switch</title>
+<!-- Example of a molecular scene built with biokit.js: a receptor in a membrane, a G protein, nucleotides, layered depth
+     sorting, step animations, pickers and see-through labels. Facts are keyed to the notes it was made for (Gs pathway,
+     level 4); the spec block below is the model for a figure spec. --></head><body>
+<script src="core.js"></script>
+<script src="biokit.js"></script>
+<script>
+/* =====================================================================================================
+FIGURE receptor-gs: The β2 receptor and the Gs switch            engine: colorfigure      level: 4
+TEACHES: predict what each step needs and what it changes: agonist -> TM6 opens -> Gs docks -> GDP out ->
+  GTP in -> Gαs-GTP leaves; and which off-switch (GTPase, GRK + arrestin) stops which step.
+STEPS (buttons, in order):
+  1 Agonist binds  -> agonist drops from outside into the pocket in the outer half of the helix bundle; the inner
+                      end of TM6 flickers (agonist alone does not hold it open) [manglik2015; nygaard2013]
+  2 Gs docks       -> heterotrimer slides along the inner face under the receptor; α5 rises 6 Å into the core;
+                      TM6 inner end locks 14 Å out; TM5 extends 7 residues (~10 Å); helical domain swings away
+                      (~127° in the crystal); GDP leaves -> empty pocket; agonist affinity x100
+                      [rasmussen2011b; westfield2011; rasmussen2011a]
+  3 GTP enters     -> GTP (3 phosphates) enters, helical domain closes, Gαs-GTP leaves receptor and Gβγ and moves
+                      along the inner face (toward adenylyl cyclase, next figure) [rasmussen2011b]
+  4 Switch off > Hydrolyse GTP  -> Pi leaves; Gαs-GDP returns to Gβγ; heterotrimer drifts back [brandt1985]
+    Switch off > GRK + arrestin -> GRK2 (recruited by free Gβγ) puts phosphates on the C-tail; β-arrestin binds
+                      the tail and puts its finger loop into the cavity Gs used [pitcher1992; shukla2014; lee2020]
+  Cholera toxin On -> ADP-ribose tag on Gαs; Hydrolyse GTP then fails [cassel1977; freissmuth1989]
+PARTS (each held by): membrane slab 40 Å (head bands + core, lipid heads on the edges); receptor: TM1-TM7 rods
+  (r 4.5 Å) in a ring, counterclockwise TM1->TM7 seen from outside, held in the membrane; ECL1-3 + N-terminus
+  above, ICL1-3, ICL2 helix, H8 and C-tail below; agonist (3 beads); Gαs Ras-like domain (ellipsoid) with α5
+  (rod, into the receptor) and αN (rod, palmitate into the inner leaflet); helical domain hinged on the Ras
+  domain; GDP/GTP beads in the cleft between them; Gβ 7-blade propeller (drum) + Gγ helix with prenyl anchor
+  into the membrane; GRK2 (indigo), β-arrestin N and C domains + finger loop (gold); ADP-ribose tag (dark).
+FACTS: TM6 14 Å (Gs) [rasmussen2011b]; α5 6 Å toward receptor [rasmussen2011b]; helical domain ~127° [rasmussen2011b];
+  TM5 +7 residues [rasmussen2011b]; ternary-complex agonist affinity ~100x [rasmussen2011a]; no receptor-Gβγ
+  contact [rasmussen2011b]; membrane slab 40 Å (schematic standard bilayer thickness).
+SCHEMATIC: shapes simplified, sizes roughly to scale (1 unit = 1 Å); the flicker, travel paths and speeds are
+  illustrative; the helical-domain swing direction is drawn toward the viewer so the cleft can be seen.
+SEE-THROUGH: membrane ghosted -> helices inside the membrane and the agonist in its pocket; the nucleotide inside Gαs.
+STATS: Nucleotide (GDP / none / GTP), TM6 inner end (in / flickers / 14 Å out / partly out), Agonist affinity (x1 / x100)
+COLOUR KEY (whole set): membrane tan; receptor blue; agonist orange; Gαs green; Gβγ purple; GDP cream + 2 pale
+  phosphates; GTP cream + 3 red phosphates; GRK indigo; β-arrestin gold; AC teal; cAMP yellow; AMP grey; PKA R
+  brown; PKA C magenta; PDE slate; added phosphate red.
+OUT-OF-ORDER: Gs docks without agonist / after arrestin / while Gαs carries GTP -> notice; GTP enters before
+  docking -> notice; Hydrolyse with cholera toxin -> notice; GRK before any Gs activation -> notice.
+URL PARAMS: ?stage=0..5 (0 rest, 1 agonist, 2 docked + empty, 3 GTP + released, 4 hydrolysed, 5 arrestin), ?ctx=1
+===================================================================================================== */
+
+/* ---------- units: 1 = 1 Å; x = depth (front face at MX1), y = width (+y = viewer-left), z = up = outside ---------- */
+const MZ0 = 60, MZ1 = 100;                          // inner (cytoplasmic) and outer faces of the membrane
+const MX0 = 8, MX1 = 54, MY0 = 0, MY1 = 175;        // membrane patch
+const RX = 36, RY = 95;                            // receptor axis
+const HR = 4.5;                                     // α-helix radius
+const { add: vadd, mul: vmul, lerp: vlerp } = BIO.V, { lerp1, clamp01, rad, boxAround } = BIO;
+function rotAbout(p, c, u, th){ const v = sub(p, c), cs = Math.cos(th), sn = Math.sin(th), dd = dot(u, v), cr = cross(u, v);
+  return vadd(c, [0, 1, 2].map(i => v[i]*cs + cr[i]*sn + u[i]*dd*(1 - cs))); }
+
+/* ---------- colours ---------- */
+const RC_COL = { rec:'#7aa7e8', ag:'#f28c28', gas:'#69bf73', gas2:'#4e9f5b', ah:'#93d59d', gb:'#a58ad9', gg:'#c6b3f2', grk:'#5d63c9',
+  arr:'#e3b23c', gua:'#f6eedb', rib:'#e7d6aa', pGDP:'#f3b0a6', pGTP:'#e2483d', adpr:'#4a4458', lip:'#6b5a3e' };
+const RM = {}; for (const k in RC_COL) RM[k] = matOf(RC_COL[k]);
+
+/* ---------- drawing helpers and membrane: the cell-and-molecule kit (biokit.js) ---------- */
+BIO.setMembrane({ z0: MZ0, z1: MZ1, x0: MX0, x1: MX1, y0: MY0, y1: MY1 });
+const { bead, ellip, ellipBox, tube, qcurve, membrane, splitByLayer } = BIO, smoothLine = BIO.smooth;
+const lipid = (a, b) => BIO.squiggle(a, b, RC_COL.lip);   // lipid anchor (palmitate on Gαs, prenyl on Gγ)
+
+/* ---------- receptor geometry ---------- */
+const TMS = [ { n:1, th:210, r:11, zb:MZ0-4,  zt:MZ1+6 },  { n:2, th:260, r:11, zb:MZ0-3, zt:MZ1+7 },
+              { n:3, th:305, r:6,  zb:MZ0-10, zt:MZ1+10 }, { n:4, th:345, r:11, zb:MZ0-2, zt:MZ1+5 },
+              { n:5, th:40,  r:11, zb:MZ0-6,  zt:MZ1+8 },  { n:6, th:95,  r:11, zb:MZ0-7, zt:MZ1+7 },
+              { n:7, th:150, r:11, zb:MZ0-3,  zt:MZ1+6 } ];
+const tmXY = t => [RX + t.r*Math.cos(rad(t.th)), RY + t.r*Math.sin(rad(t.th))];
+const radial = t => [Math.cos(rad(t.th)), Math.sin(rad(t.th)), 0];
+const TM6_KINK = MZ0 + 18;
+function receptorGeo(st){
+  const g = {};
+  for (const t of TMS){ const [x, y] = tmXY(t); let bot = [x, y, t.zb], top = [x, y, t.zt];
+    if (t.n === 5) bot = vadd([x, y, t.zb - st.e5], vmul(radial(t), .3*st.d6));
+    g[t.n] = { top, bot, segs: t.n === 6 ? [[[x, y, TM6_KINK], top], [vadd([x, y, t.zb], vmul(radial(t), st.d6)), [x, y, TM6_KINK]]] : [[bot, top]] };
+    if (t.n === 6) g[6].bot = g[6].segs[1][0];
+  }
+  g.e8 = [RX + 4, RY + 22, MZ0 - 3];
+  g.tail = smoothLine([g.e8, [RX + 14, RY + 24, MZ0 - 8], [RX + 22, RY + 20, MZ0 - 13], [RX + 27, RY + 12, MZ0 - 18], [RX + 29, RY + 4, MZ0 - 22]], 2);
+  g.phosAt = [[RX + 14, RY + 23.6, MZ0 - 8], [RX + 21.6, RY + 20, MZ0 - 12.6], [RX + 26.5, RY + 12.6, MZ0 - 17.6], [RX + 28.8, RY + 5, MZ0 - 21.4]];
+  return g;
+}
+/* ---------- G protein geometry ---------- */
+const GA_DOCK = [RX + 2, RY + 4, MZ0 - 24], GB_DOCK = [RX - 4, RY - 30, MZ0 - 30];
+const RAS_R = [18, 20, 14];
+const AH_L = [24, 4, 2], AH_R = [9, 13, 13], AH_HINGE = [20, 4, -11];
+const NUC_L = [17, 4, 2];
+const NUC_BEADS = { GDP: [['gua', [0, 5, 2], 3.2], ['rib', [0, 1.5, .5], 2.4], ['pGDP', [0, -1.6, -.8], 2], ['pGDP', [0, -4.4, -2], 2]],
+                    GTP: [['gua', [0, 5, 2], 3.2], ['rib', [0, 1.5, .5], 2.4], ['pGTP', [0, -1.6, -.8], 2], ['pGTP', [0, -4.4, -2], 2], ['pGTP', [0, -7.2, -3.2], 2]] };
+const NUC_OUT = [46, 16, -24], NUC_IN_FROM = [46, -12, -24];
+function gGeo(st){
+  const ga = vadd(GA_DOCK, [0, st.oA, 0]), gb = vadd(GB_DOCK, [0, st.oB, 0]);
+  const th = rad(127*st.ah), u = [0, 1, 0];
+  const ahC = vadd(ga, rotAbout(AH_L, AH_HINGE, u, th));
+  const ahA = rotAbout([AH_R[0], 0, 0], [0, 0, 0], u, th), ahB = [0, AH_R[1], 0], ahZ = rotAbout([0, 0, AH_R[2]], [0, 0, 0], u, th);
+  return { ga, gb, ahC, ahA, ahB, ahZ,
+    a5a: vadd(ga, [-2, -4, 12]), a5b: vadd(ga, [-2, -4, 17 + 6*st.a5]),
+    aNa: vadd(ga, [-4, -14, 9]), aNb: vadd(ga, [-8, -30, 21]),
+    gbU: norm([.9, .3, -.3]),
+    ggA: vadd(gb, [-10, -12, 17]), ggB: vadd(gb, [8, 10, 19]),
+    pocket: vadd(ga, NUC_L), tag: vadd(ga, [10, 14, 8]) };
+}
+
+/* ---------- other proteins ---------- */
+const GRK_FROM = [RX + 50, RY - 22, MZ0 - 62], GRK_AT = [RX + 30, RY - 14, MZ0 - 20], GRK_R = [12, 22, 11];
+const ARR_FROM = vadd([0, 0, -40], [RX + 26, RY, MZ0 - 22]);
+const ARR_N = [RX + 13, RY + 12, MZ0 - 22], ARR_C = [RX + 16, RY - 13, MZ0 - 25], ARR_R = [11, 13, 10];
+const ARR_F0 = [RX + 13, RY, MZ0 - 14], ARR_F1 = [RX + 2, RY + 1, MZ0 - 2];
+
+/* ---------- agonist ---------- */
+const AG0 = [RX + 10, RY + 30, MZ1 + 42], AG1 = [RX + 1, RY + 1, MZ1 + 20], AG2 = [RX + 1, RY + 1, MZ1 - 12];
+const agPos = t => t < .6 ? vlerp(AG0, AG1, ease(t/.6)) : vlerp(AG1, AG2, ease((t - .6)/.4));
+const AG_BEADS = [[[0, 0, 0], 3.4], [[0, 3.4, 2.8], 2.5], [[0, 5.2, 6.2], 2.2]];
+
+/* ---------- scene ---------- */
+function scene(st){
+  const k = ease(st.xr || 0), R = receptorGeo(st), G = gGeo(st);
+  const LY = [[], [], []];
+  const put = (layer, box, svg) => LY[layer].push({ box, svg });
+  const rodPart = (a, b, r, m, w = 1.1) => ({ box: boxAround([a, b], r), svg: rod(a, b, r, m, tone, w, r, 14) });
+
+  // receptor helices, split at the membrane faces
+  for (const t of TMS) for (const [a, b] of R[t.n].segs) for (const pc of splitByLayer(a, b)){ const rp = rodPart(pc.a, pc.b, HR, RM.rec); put(pc.layer, rp.box, rp.svg); }
+  // extracellular loops + N-terminus
+  const T = n => R[n].top, B = n => R[n].bot;
+  const loops2 = [ qcurve(T(2), vadd(vlerp(T(2), T(3), .5), [0, 0, 8]), T(3)),
+                   qcurve(T(4), vadd(vlerp(T(4), T(5), .5), [-3, 0, 12]), T(5)),
+                   qcurve(T(6), vadd(vlerp(T(6), T(7), .5), [3, 0, 7]), T(7)),
+                   qcurve(T(1), vadd(T(1), [-8, 4, 10]), vadd(T(1), [-6, 12, 18]), 8) ];
+  for (const lp of loops2) put(2, boxAround(lp, 2.2), tube(lp, 2.2, RC_COL.rec));
+  // intracellular loops, ICL2 helix, H8, C-tail
+  const icl1 = qcurve(B(1), vadd(vlerp(B(1), B(2), .5), [-4, 0, -6]), B(2));
+  const icl3 = qcurve(B(5), vadd(vlerp(B(5), B(6), .5), vadd(vmul([Math.cos(rad(67)), Math.sin(rad(67)), 0], 9), [0, 0, -6])), B(6));
+  put(0, boxAround(icl1, 2.2), tube(icl1, 2.2, RC_COL.rec));
+  put(0, boxAround(icl3, 2.2), tube(icl3, 2.2, RC_COL.rec));
+  const icl2a = [RX + 4, RY - 8, MZ0 - 8], icl2b = [RX + 14, RY - 13, MZ0 - 7];
+  { const rp = rodPart(icl2a, icl2b, 3.6, RM.rec); put(0, rp.box, rp.svg); }
+  { const c1 = [B(3), icl2a], c2 = [icl2b, B(4)]; put(0, boxAround(c1, 2), tube(c1, 2, RC_COL.rec)); put(0, boxAround(c2, 2), tube(c2, 2, RC_COL.rec)); }
+  { const rp = rodPart(B(7), R.e8, 3.6, RM.rec); put(0, rp.box, rp.svg); }
+  // the C-tail in short pieces, each sorted on its own
+  for (let i = 0; i < R.tail.length - 1; i += 2){ const pc = R.tail.slice(i, i + 3); put(0, boxAround(pc, 2), tube(pc, 2, RC_COL.rec)); }
+  for (let i = 0; i < st.phos; i++){ const p = R.phosAt[i]; put(0, boxAround([p], 2.4), bead(p, 2.3, RC_COL.pGTP, .7)); }
+
+  // Gαs: Ras-like domain, α5, αN + palmitate, helical domain, nucleotide, cholera tag
+  const rasA = [RAS_R[0], 0, 0], rasB = [0, RAS_R[1], 0], rasZ = [0, 0, RAS_R[2]];
+  put(0, ellipBox(G.ga, rasA, rasB, rasZ), act('gas', ellip(G.ga, rasA, rasB, rasZ, RM.gas, 2)));
+  { const rp = rodPart(G.a5a, G.a5b, 3.6, RM.gas2); put(0, rp.box, rp.svg); }
+  { const rp = rodPart(G.aNa, G.aNb, 3.4, RM.gas2); put(0, rp.box, rp.svg); }
+  { const la = vadd(G.aNb, [-1, -2, 1]), lb = [la[0], la[1], MZ0 + 7]; put(0, boxAround([la, [lb[0], lb[1], MZ0]], 1), lipid(la, [lb[0], lb[1], MZ0 + .5]));
+    put(1, boxAround([[la[0], la[1], MZ0], lb], 1), lipid([la[0], la[1], MZ0], lb)); }
+  put(0, ellipBox(G.ahC, G.ahA, G.ahB, G.ahZ), ellip(G.ahC, G.ahA, G.ahB, G.ahZ, RM.ah, 1.7));
+  for (const dy of [-7, 9]){ const a = vadd(G.ga, [16, dy, -6]), b = vadd(G.ahC, vadd(vmul(norm(sub(vadd(G.ga, [16, dy, -6]), G.ahC)), 8), [0, dy*.6, 0]));
+    const lk = qcurve(a, vadd(vlerp(a, b, .5), [4, 0, -2]), b, 6); put(0, boxAround(lk, 1.8), tube(lk, 1.7, RC_COL.gas2)); }
+  const nucSvg = nucleotide(st, G);
+  if (nucSvg) put(0, nucSvg.box, nucSvg.svg);
+  if (st.ctx){ const t1 = G.tag, t2 = vadd(G.tag, [2, 4, 3]);
+    put(0, boxAround([t1, t2], 3), line([vadd(G.ga, [8, 11, 6]), t1], 1) + bead(t1, 2.3, RC_COL.adpr) + bead(t2, 2.8, RC_COL.adpr)); }
+
+  // Gβγ: propeller drum with blade lines, Gγ helix + prenyl anchor
+  { const c = G.gb, u = G.gbU, a = vadd(c, vmul(u, -11)), b = vadd(c, vmul(u, 11));
+    let s = rod(a, b, 19, RM.gb, tone, 1.8, 19, 28);
+    const capC = vis(u) ? b : a, e1 = norm(cross(u, [0, 0, 1])), e2 = cross(u, e1);
+    let bl = ''; for (let i = 0; i < 7; i++){ const t = 2*Math.PI*i/7 + .3; bl += pd([vadd(capC, vadd(vmul(e1, 5*Math.cos(t)), vmul(e2, 5*Math.sin(t)))), vadd(capC, vadd(vmul(e1, 17*Math.cos(t)), vmul(e2, 17*Math.sin(t))))], false); }
+    s += `<path d="${bl}" fill="none" stroke="${INK}" stroke-width=".8" opacity=".7"/>` + `<circle cx="${f(P(...capC)[0])}" cy="${f(P(...capC)[1])}" r="${f(4*CAM_K)}" fill="${RM.gb.d}" stroke="${INK}" stroke-width=".7"/>`;
+    put(0, boxAround([a, b], 19), s); }
+  { const rp = rodPart(G.ggA, G.ggB, 3, RM.gg); put(0, rp.box, rp.svg);
+    const la = G.ggA, lb = [la[0], la[1], MZ0 + 7]; put(0, boxAround([la, [la[0], la[1], MZ0]], 1), lipid(la, [la[0], la[1], MZ0 + .5]));
+    put(1, boxAround([[la[0], la[1], MZ0], lb], 1), lipid([la[0], la[1], MZ0], lb)); }
+
+  // GRK2 and β-arrestin
+  if (st.grk > 0){ const c = vlerp(GRK_FROM, GRK_AT, ease(st.grk)), A = [GRK_R[0], 0, 0], Bv = [0, GRK_R[1], 0], Z = [0, 0, GRK_R[2]];
+    put(0, ellipBox(c, A, Bv, Z), `<g opacity="${f(clamp01(st.grk*2))}">${ellip(c, A, Bv, Z, RM.grk, 1.9)}</g>`); }
+  if (st.arr > 0){ const dv = vmul(sub(ARR_FROM, ARR_N), 1 - ease(st.arr)), o = clamp01(st.arr*2);
+    const A = [ARR_R[0], 0, 0], Bv = [0, ARR_R[1], 0], Z = [0, 0, ARR_R[2]];
+    for (const c0 of [ARR_N, ARR_C]){ const c = vadd(c0, dv); put(0, ellipBox(c, A, Bv, Z), `<g opacity="${f(o)}">${ellip(c, A, Bv, Z, RM.arr, 1.9)}</g>`); }
+    const f0 = vadd(ARR_F0, dv), f1 = vadd(ARR_F1, dv); put(0, boxAround([f0, f1], 2.6), `<g opacity="${f(o)}">${rod(f0, f1, 2.6, RM.arr, tone, 1, 2.2, 12)}</g>`); }
+
+  // agonist
+  { const c = agPos(st.ag), layer = c[2] > MZ1 + 4 ? 2 : 1;
+    const parts = AG_BEADS.map(([d, r]) => ({ box: boxAround([vadd(c, d)], r), svg: bead(vadd(c, d), r, RC_COL.ag) }));
+    for (const p of parts) LY[layer].push(p); }
+
+  // assemble: cytoplasm, membrane (ghosted in see-through), inside the membrane (see-through only), outside
+  let s = byDepth(LY[0]);
+  if (k > 0 && nucSvg) s += `<g opacity="${f(k)}">${nucSvg.svg}</g>`;          // the nucleotide shows through the helical domain
+  // the membrane is translucent even when closed, so the helices crossing it stay readable (the kit's S.svg() does this too)
+  s += byDepth(LY[1]);
+  s += `<g opacity="${f(.55*(1 - .8*k))}">${membrane()}</g>`;
+  if (k > 0) s += `<g opacity="${f(k)}">${byDepth(LY[1])}</g>`;
+  s += byDepth(LY[2]);
+  return s;
+}
+function nucleotide(st, G){
+  if (st.nuc === 'none' && !st.nucMove) return null;
+  const kind = st.nucMove ? st.nucMove.kind : st.nuc, t = st.nucMove ? st.nucMove.t : 0, entering = st.nucMove && st.nucMove.dir === 'in';
+  const from = entering ? NUC_IN_FROM : NUC_L, to = entering ? NUC_L : NUC_OUT;
+  const c = vadd(G.ga, vlerp(from, to, ease(t))), o = entering ? clamp01(t*3) : clamp01((1 - t)*2.2);
+  const beads = NUC_BEADS[kind].map(([col, d, r], i) => {
+    let p = vadd(c, d), oo = o;
+    if (kind === 'GTP' && i === 4 && st.piT > 0){ p = vadd(p, vmul([22, -12, -16], ease(st.piT))); oo = o*(1 - st.piT); }
+    return { p, r, col: RC_COL[col], oo }; });
+  if (st.piT >= 1) beads.pop();
+  const svg = beads.map(b => `<g opacity="${f(b.oo)}">${bead(b.p, b.r, b.col)}</g>`).join('')
+    + `<path d="${pd(beads.map(b => b.p), false)}" fill="none" stroke="${INK}" stroke-width=".6" opacity="${f(o*.6)}"/>`;
+  return { box: boxAround(beads.map(b => b.p), 3.2), svg };
+}
+
+/* ---------- states ---------- */
+const BASE = { stage:0, ag:0, d6:0, e5:0, oA:-40, oB:-40, a5:0, ah:0, nuc:'GDP', nucMove:null, piT:0, grk:0, phos:0, arr:0, ctx:false, busy:false, flick:0 };
+const STAGES = {
+  0: {},
+  1: { ag:1, d6:6 },
+  2: { ag:1, d6:14, e5:10, oA:0, oB:0, a5:1, ah:1, nuc:'none' },
+  3: { ag:1, d6:6, oA:50, oB:-22, nuc:'GTP' },
+  4: { ag:1, d6:6, nuc:'GDP' },
+  5: { ag:1, d6:9, oA:50, oB:-22, nuc:'GTP', phos:4, arr:1 } };
+function applyStage(st, n){ const ctx = st.ctx; Object.assign(st, BASE, STAGES[n] || {}, { stage: +n || 0, ctx }); }
+
+/* ---------- animation helpers ---------- */
+function run(ui, st, steps, done){
+  st.busy = true; st.runId = (st.runId || 0) + 1; st.flick = 0; const id = st.runId; let i = 0, t = 0, from = null;
+  const begin = () => { const s = steps[i]; from = {}; if (s.to) for (const key in s.to) from[key] = st[key]; if (s.start) s.start(st); };
+  begin();
+  ui.animate(dt => {
+    if (st.runId !== id) return false;
+    const s = steps[i]; t += dt; const e = s.dur ? Math.min(1, t/s.dur) : 1, ee = ease(e);
+    if (s.to) for (const key in s.to) st[key] = lerp1(from[key], s.to[key], ee);
+    if (s.fn) s.fn(st, e);
+    if (e >= 1){ if (s.end) s.end(st); i++; t = 0; if (i >= steps.length){ st.busy = false; if (done) done(st); return false; } begin(); }
+    return true; });
+}
+// TM6 flickers while only the agonist holds the receptor (illustrative timing)
+function flicker(ui, st, secs = 7){
+  st.flick = secs; let t = 0; const id = st.runId;
+  ui.animate(dt => { if (st.runId !== id || !st.flick) return false; t += dt;
+    const env = Math.min(1, (secs - t)/1.2), w = Math.sin(t*2*Math.PI/1.15)*(.55 + .45*Math.sin(t*1.9));
+    st.d6 = 6 + 6*w*Math.max(0, env);
+    if (t >= secs){ st.d6 = 6; st.flick = 0; return false; } return true; });
+}
+const agonistOn = st => st.ag > .99;
+const BUSY = 'Wait for this step to finish';
+
+function doAgonist(st, ui){
+  if (st.busy) return ui.flash(BUSY);
+  if (agonistOn(st)) return ui.flash('The agonist is already bound. Next: Gs docks');
+  run(ui, st, [{ dur: 1.6, to: { ag: 1 } }], s => { s.stage = 1; flicker(ui, s); });
+}
+function doDock(st, ui){
+  if (st.busy) return ui.flash(BUSY);
+  if (st.arr > 0) return ui.flash('Beta-arrestin is sitting in the cavity Gs needs: the receptor is desensitised. Press Reset to start again');
+  if (st.stage === 2) return ui.flash('Gs is already docked and its pocket is empty. Next: GTP enters');
+  if (st.stage === 3) return ui.flash('Gαs is still carrying GTP. Switch it off first (Switch off > Hydrolyse GTP)');
+  if (!agonistOn(st)) return ui.flash('No agonist yet: an empty receptor only rarely opens, so Gs hardly couples. Press Agonist binds first');
+  run(ui, st, [
+    { dur: 1.3, to: { oA: 0, oB: 0 } },
+    { dur: .9, to: { a5: 1, d6: 14, e5: 10 } },
+    { dur: .9, to: { ah: 1 } },
+    { dur: 1.0, start: s => { s.nucMove = { kind: 'GDP', dir: 'out', t: 0 }; }, fn: (s, e) => { s.nucMove.t = e; }, end: s => { s.nucMove = null; s.nuc = 'none'; } },
+  ], s => { s.stage = 2; });
+}
+function doGTP(st, ui){
+  if (st.busy) return ui.flash(BUSY);
+  if (st.stage === 3 || st.stage === 5) return ui.flash('Gαs already carries GTP');
+  if (st.stage !== 2) return ui.flash('GDP is still bound: GTP can only get in after the receptor has opened Gαs. Press Gs docks first');
+  run(ui, st, [
+    { dur: 1.0, start: s => { s.nucMove = { kind: 'GTP', dir: 'in', t: 0 }; }, fn: (s, e) => { s.nucMove.t = e; }, end: s => { s.nucMove = null; s.nuc = 'GTP'; } },
+    { dur: .7, to: { ah: 0 } },
+    { dur: 1.6, to: { a5: 0, oA: 50, oB: -22, d6: 6, e5: 0 } },
+  ], s => { s.stage = 3; flicker(ui, s); });
+}
+function doHydrolyse(st, ui){
+  if (st.busy) return ui.flash(BUSY);
+  if (st.stage !== 3 && st.stage !== 5) return ui.flash('Nothing to switch off yet: Gαs is not carrying GTP');
+  if (st.ctx) return ui.flash('Cholera toxin has ADP-ribosylated Gαs: it cannot split its GTP, so it stays switched on');
+  if (st.stage === 5) return ui.flash('Gαs has already left; the receptor is capped by arrestin. Press Reset to start again');
+  run(ui, st, [
+    { dur: .9, fn: (s, e) => { s.piT = e; }, end: s => { s.piT = 0; s.nuc = 'GDP'; } },
+    { dur: 1.4, to: { oA: -22 } },
+    { dur: 1.1, to: { oA: -40, oB: -40 } },
+  ], s => { s.stage = 4; flicker(ui, s, 4); });
+}
+function doArrestin(st, ui){
+  if (st.busy) return ui.flash(BUSY);
+  if (st.arr > 0) return ui.flash('Beta-arrestin is already bound');
+  if (!agonistOn(st)) return ui.flash('GRKs act on agonist-occupied receptors: press Agonist binds first');
+  if (st.stage === 1) return ui.flash('GRK2 is brought to the membrane by free Gβγ, which appears only after Gs is activated: run Gs docks and GTP enters first');
+  if (st.stage === 2) return ui.flash('Gs is docked in the cavity: let GTP in first');
+  if (st.stage === 4) return ui.flash('Gβγ has rejoined Gαs-GDP, and GRK2 needs free Gβγ: run Gs docks and GTP enters again first');
+  run(ui, st, [
+    { dur: 1.1, to: { grk: 1 } },
+    { dur: 1.2, fn: (s, e) => { s.phos = Math.min(4, Math.floor(e*4.999)); } },
+    { dur: .7, to: { grk: 0 } },
+    { dur: 1.4, to: { arr: 1, d6: 9 } },
+  ], s => { s.stage = 5; s.phos = 4; });
+}
+function doReset(st, ui){ st.runId = (st.runId || 0) + 1; st.ctx = false; applyStage(st, 0); ui.render(); }
+
+/* ---------- labels ---------- */
+const XR_B = [MX0, MX1 + 14, MY0, MY1, MZ0 - 50, MZ1 + 30];
+function insideLabels(st){
+  const R = receptorGeo(st), G = gGeo(st), out = [], s = st.stage;
+  out.push({ at: vlerp(R[6].segs[1][0], R[6].segs[1][1], .35), text: 'TM6', on: s === 1 || s === 2 });
+  out.push({ at: R[5].bot, text: 'TM5', on: s === 2 });
+  if (st.ag > 0) out.push({ at: agPos(st.ag), text: 'AGONIST', on: s === 1 });
+  if (st.a5 > .1) out.push({ at: G.a5b, text: 'ALPHA5 HELIX', on: s === 2 });
+  out.push({ at: vadd(G.ga, [-6, -8, -10]), text: 'RAS-LIKE DOMAIN', on: false });
+  out.push({ at: G.ahC, text: 'HELICAL DOMAIN', on: s === 2 });
+  if (st.nuc !== 'none') out.push({ at: G.pocket, text: st.nuc, on: s === 3 || s === 4 });
+  out.push({ at: vadd(G.gb, [0, -6, -12]), text: 'G-BETA', on: false });
+  out.push({ at: vlerp(G.ggA, G.ggB, .6), text: 'G-GAMMA', on: false });
+  out.push({ at: R.tail[Math.floor(R.tail.length/2)], text: st.phos ? 'PHOSPHO C-TAIL' : 'C-TAIL', on: s === 5 });
+  if (st.grk > .3) out.push({ at: vlerp(GRK_FROM, GRK_AT, ease(st.grk)), text: 'GRK2', on: true });
+  if (st.arr > .3) out.push({ at: ARR_C, text: 'BETA-ARRESTIN', on: true });
+  if (st.ctx) out.push({ at: G.tag, text: 'ADP-RIBOSE', on: true });
+  return out;
+}
+function surfaceLabels(st){
+  const G = gGeo(st), out = [ { at: [RX + 6, RY - 6, MZ1 + 9], text: 'RECEPTOR', on: false }, { at: [MX1, MY1 - 20, MZ0 + 20], text: 'MEMBRANE', on: false },
+    { at: vadd(G.ga, [8, -6, -8]), text: 'G-ALPHA-S', on: false }, { at: vadd(G.gb, [8, -4, -10]), text: 'G-BETA-GAMMA', on: false } ];
+  if (st.ag < .7) out.push({ at: agPos(st.ag), text: 'AGONIST', on: false });
+  if (st.arr > .3) out.push({ at: ARR_C, text: 'BETA-ARRESTIN', on: true });
+  if (st.grk > .3) out.push({ at: vlerp(GRK_FROM, GRK_AT, ease(st.grk)), text: 'GRK2', on: true });
+  return out;
+}
+const RG_ST0 = Object.assign({}, BASE);   // the first render runs before ui exists: label code reads this
+const XR_OPTS = { getSt: () => { try { return ui.st; } catch (e) { return RG_ST0; } }, B: XR_B, inline: true, mech: () => '', inside: insideLabels, surface: surfaceLabels };
+const sceneX = xrWrap(scene, XR_OPTS);
+
+/* ---------- stats ---------- */
+const tm6Text = st => st.stage === 0 ? 'in' : st.arr > .5 ? 'partly out' : st.d6 > 13 ? '14 Å out' : 'flickers';
+const affText = st => st.stage === 2 && !st.busy ? '×100' : st.arr > .5 ? 'below ×100' : '×1';
+
+const ui = mountFigure({
+  fig: '1', turn: 'full', title: 'The β2 receptor and the Gs switch',
+  size: [MX1 + 22, MY1, MZ1 + 46], center: [(MX0 + MX1 + 14)/2, (MY0 + MY1)/2],
+  palette: 'mustard',
+  state: RG_ST0,
+  scene: sceneX,
+  stats: st => [ { label: 'Nucleotide', value: st.nucMove ? (st.nucMove.dir === 'in' ? 'GTP…' : 'none') : st.piT > 0 ? 'GDP + Pi' : st.nuc, small: true },
+                 { label: 'TM6 inner end', value: tm6Text(st), small: true },
+                 { label: 'Agonist affinity', value: affText(st), small: true } ],
+  buttons: [
+    { label: 'Agonist binds', onClick: doAgonist },
+    { label: 'Gs docks', onClick: doDock },
+    { label: 'GTP enters', onClick: doGTP },
+    { label: 'Switch off', choices: st => [ { label: 'Hydrolyse GTP', onClick: doHydrolyse }, { label: 'GRK + arrestin', onClick: doArrestin } ] },
+    { label: 'Cholera toxin', choices: st => [ { label: 'Off', current: !st.ctx, onClick: (s, u) => { s.ctx = false; u.render(); } },
+                                               { label: 'On', current: !!st.ctx, onClick: (s, u) => { s.ctx = true; u.render(); u.flash('Cholera toxin has ADP-ribosylated Gαs (dark tag): its GTPase is blocked'); } } ] },
+    { label: 'Reset', onClick: doReset },
+  ],
+  acts: { gas: (st, el, u) => u.flash(st.nuc === 'GTP' ? 'Gαs-GTP: switched on' : st.nuc === 'none' ? 'Gαs with an empty pocket' : 'Gαs-GDP: switched off') },
+  params: (st, q) => { if (q.get('ctx') === '1') st.ctx = true; if (q.has('stage')) applyStage(st, +q.get('stage')); },
+});
+xrMount(() => ui, () => '');
+// a molecular scene reads better from a lower angle than the engine's default (the cytoplasmic face shows under the membrane)
+{ const q0 = new URLSearchParams(location.search); if (!q0.has('pitch') && !q0.has('yaw')) setCam(18, 20); else if (!q0.has('pitch')) setCam(YAW, 20);
+  // frame the drawing for the camera it opens with (the engine frames for its own default view)
+  const yaw = YAW, pitch = PITCH; setCam(18, 20); OX = OY = 0; const pts = [];
+  for (const x of [MX0, MX1 + 20]) for (const y of [MY0, MY1]) for (const z of [MZ0 - 52, MZ1 + 44]) pts.push(P(x, y, z));
+  const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]), bw = Math.max(...xs) - Math.min(...xs), bh = Math.max(...ys) - Math.min(...ys);
+  const PA = window.FIG_A ? FIG_A() : .75, A = PA === .75 ? .75 : Math.min(PA, Math.max(.75, bh/.88/(bw/.74)*1.08)), vbW = Math.max(bw/.74, bh/.88/A), vbH = vbW*A;
+  OX = (vbW - bw)/2 + (PA === .75 ? vbW*.06 : 0) - Math.min(...xs); OY = (PA === .75 ? (vbH - bh)*.55 : (vbH - bh)*.3) - Math.min(...ys);
+  const svgEl = document.getElementById('fig'); svgEl.setAttribute('viewBox', `0 0 ${f(vbW)} ${f(vbH)}`); INK_K = vbW/INK_REF_VB;
+  document.getElementById('fdefs').innerHTML = filterFor(INK_K); bakeNoise(svgEl); setCam(yaw, pitch); ui.render(); }
+window.__st = ui.st;
+</script></body></html>

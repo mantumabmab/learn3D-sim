@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: gs-pathway-pharmacologist
+expected_outcome: |
+  Postgraduate-level (level 4) notes on Gs signalling with deep, cited research (reviews and landmark papers such as receptor-Gs structures), short sections each opening with a big idea, simple and expert versions, recall questions, and at least two interactive Colorfigures 3D figures (e.g. receptor activation and the G-protein cycle / cAMP-PKA cascade) with Try-this prompts; delivered as a study page plus doc export, with sources graded.

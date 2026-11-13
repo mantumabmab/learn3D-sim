@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Two linked bell curves</title></head>
+<body>
+<script src="math3d.js"></script>
+<script>
+/* TEACHES: correlation rho tilts the joint density of two standard normals X and Y. Slicing the surface at X = x0
+   gives the conditional distribution of Y: a bell curve centred at rho*x0 with SD sqrt(1 - rho^2).
+   FACTS (standard bivariate normal, means 0, SDs 1):
+     f(x, y) = exp(-(x^2 - 2 rho x y + y^2) / (2 (1 - rho^2))) / (2 pi sqrt(1 - rho^2))
+     Y | X = x0 ~ Normal(rho x0, 1 - rho^2)
+   BUTTONS (in the order a learner uses them): Slice at X -> Draw 300 samples -> Clear.
+   PARAMS: rho in [-0.9, 0.9], x0 in [-2.5, 2.5]. URL: ?rho=0.8&x0=1.5&slice=1 */
+const bnPdf = (x, y, r) => Math.exp(-(x * x - 2 * r * x * y + y * y) / (2 * (1 - r * r))) / (2 * Math.PI * Math.sqrt(1 - r * r));
+const bnGauss = () => { let u = 0, v = 0; while (!u) u = Math.random(); while (!v) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+mountMath3D({
+  fig: '01', title: 'Two linked bell curves',
+  domain: { x: [-3, 3], y: [-3, 3], z: [0, 0.4] }, aspect: [1, 1, .72],
+  axes: { x: 'X', y: 'Y', z: 'density', ticks: { x: [-3, -2, -1, 0, 1, 2, 3], y: [-3, -2, -1, 0, 1, 2, 3], z: [0, .1, .2, .3, .4] }, fmt: { z: v => v.toFixed(1) } },
+  view: { yaw: -38, pitch: 28 },
+  state: { slice: false, pts: [] },
+  params: [
+    { key: 'rho', label: 'Correlation rho', min: -0.9, max: 0.9, step: 0.05, value: 0.6, fmt: v => v.toFixed(2), onChange: st => { st.pts = []; } },
+    { key: 'x0', label: 'Slice at X =', min: -2.5, max: 2.5, step: 0.1, value: 1, fmt: v => v.toFixed(1) },
+  ],
+  buttons: [
+    { label: 'Slice at X', onClick: st => { st.slice = !st.slice; } },
+    { label: 'Draw 300 samples', onClick: (st, ui) => { const r = st.rho, s = Math.sqrt(1 - r * r); st.pts = [];
+        let k = 0; ui.animate(() => { for (let i = 0; i < 12 && k < 300; i++, k++){ const a = bnGauss(), b = bnGauss(); const x = a, y = r * a + s * b; if (Math.abs(x) < 3 && Math.abs(y) < 3) st.pts.push([x, y]); } return k < 300; }); } },
+    { label: 'Clear', onClick: st => { st.pts = []; st.slice = false; } },
+  ],
+  stats: st => st.slice ? [{ label: 'Mean of Y given X', value: (st.rho * st.x0).toFixed(2) }, { label: 'SD of Y given X', value: Math.sqrt(1 - st.rho * st.rho).toFixed(2) }]
+                        : [{ label: 'Samples', value: st.pts.length }],
+  params_url: (st, q) => { if (q.get('slice') === '1') st.slice = true; },
+  scene(st, g){
+    g.surface((x, y) => bnPdf(x, y, st.rho), { n: 40, opacity: st.slice || st.pts.length ? .55 : 1 });
+    if (st.pts.length) g.points(st.pts.map(p => [p[0], p[1], 0]), { r: 2.3, color: PAL.teal, top: true });
+    if (st.slice){
+      g.plane({ x: st.x0 }, { color: PAL.blue, label: 'X = ' + st.x0.toFixed(1) });
+      g.curve(t => [st.x0, t, bnPdf(st.x0, t, st.rho)], { t: [-3, 3], n: 140, color: PAL.blue, width: 3.2, top: true });
+      g.line([st.x0, st.rho * st.x0, 0], [st.x0, st.rho * st.x0, bnPdf(st.x0, st.rho * st.x0, st.rho)], { color: PAL.accent, width: 2, dash: true });
+      g.label([st.x0, st.rho * st.x0, 0], 'mean ' + (st.rho * st.x0).toFixed(2), { color: PAL.accent, bold: true, dy: 14 });
+    }
+  },
+});
+</script>
+</body></html>

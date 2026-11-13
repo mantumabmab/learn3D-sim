@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: bayes-for-graduates
+expected_outcome: |
+  Graduate-level (level 4) notes on conditional probability and Bayes' theorem with correct maths, worked examples revealed step by step, at least one math3d figure (e.g. a joint distribution with a slicing plane for conditioning) and possibly a physical model, recall questions, cited textbook sources, and a study page plus doc export.

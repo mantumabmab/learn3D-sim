@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gs pathway simulator</title></head><body>
+<script src="sim.js"></script>
+<script>
+/*
+SIMULATOR 05: Gs pathway "what if"                               engine: sim (time chart)        level: 4
+TEACHES: predict how each drug changes cAMP before switching it on: a receptor blocker shifts the dose needed,
+  cholera toxin keeps Gαs on (GTPase blocked), forskolin bypasses the receptor, a PDE inhibitor slows cAMP removal.
+MODEL (illustrative, dimensionless; say so in the notes):
+  receptor occupancy  a = D / (D + EC50·(1 + B))          B = 9 with propranolol (competitive, Schild-like shift)
+  active Gαs          dg/dt = k_on·a·(1-g) − k_off·g        k_off → 0 with cholera toxin (ADP-ribosylated Gαs)
+  cyclase activity    AC = g + F                            F = 1 with forskolin (acts on AC directly)
+  cAMP                dc/dt = AC − k_pde·c                  k_pde × 0.2 with a PDE inhibitor
+  PKA active          c² / (c² + 1)
+SOURCES for the directions of each effect: the notes' own citations (receptor pharmacology, CTX on Gαs GTPase,
+  forskolin on AC, PDE). Rates are illustrative, not measured.
+*/
+mountSim({
+  fig: '05', title: 'Gs pathway simulator',
+  note: 'Illustrative model: the shapes and directions of the responses are right; the numbers are not real concentrations.',
+  chart: 'time',
+  params: [{ key: 'dose', label: 'Agonist dose (× EC50)', min: 0, max: 20, step: .5, value: 1, fmt: v => v.toFixed(1) }],
+  toggles: [
+    { key: 'prop', label: 'Propranolol', hint: 'receptor blocker' },
+    { key: 'ctx', label: 'Cholera toxin', hint: 'Gαs stuck on' },
+    { key: 'fsk', label: 'Forskolin', hint: 'turns on cyclase directly' },
+    { key: 'pdei', label: 'PDE inhibitor', hint: 'slows cAMP breakdown' }],
+  init: () => ({ g: 0, c: 0, pka: 0 }),
+  step(s, p, dt){
+    const a = p.dose / (p.dose + (p.prop ? 10 : 1) + 1e-9), kon = 1.2, koff = p.ctx ? .02 : 1;
+    s.g += (kon * a * (1 - s.g) - koff * s.g) * dt;
+    const ac = s.g + (p.fsk ? 1 : 0), kp = p.pdei ? .1 : .5;
+    s.c += (ac - kp * s.c) * dt;
+    s.pka = s.c * s.c / (s.c * s.c + 1);
+  },
+  time: { window: 40, speed: 4, dt: .02, unit: 'model s' },
+  series: [{ key: 'g', label: 'Active Gαs (0-1)', color: '#d9473d', max: 0 }, { key: 'c', label: 'cAMP', color: '#3d63b8' }, { key: 'pka', label: 'PKA active (0-1)', color: '#43a35c' }],
+  readouts: s => [{ label: 'Active Gαs', value: (s.g * 100).toFixed(0) + '%' }, { label: 'cAMP', value: s.c.toFixed(2) }, { label: 'PKA active', value: (s.pka * 100).toFixed(0) + '%' }],
+  explain(s, p){
+    if (p.ctx) return 'Cholera toxin: Gαs cannot switch itself off, so cAMP rises far higher than the same low dose gives without it.';
+    if (p.fsk && p.dose === 0) return 'Forskolin alone: no agonist, but cyclase is switched on directly, so cAMP still rises.';
+    if (p.prop) return 'Propranolol competes for the receptor: the same dose now gives much less active Gαs. Raise the dose to win it back.';
+    if (p.pdei) return 'PDE inhibitor: cAMP is broken down slowly, so the same signal builds up a higher cAMP level.';
+    return p.dose ? 'Agonist on: Gαs switches on, cyclase makes cAMP, cAMP switches on PKA. Try a drug.' : 'No agonist: nothing is switched on. Move the dose slider.';
+  }
+});
+</script></body></html>

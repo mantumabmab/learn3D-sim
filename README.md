@@ -8,6 +8,16 @@ nomenclature, equations and graded citations. Before writing, the skill confirms
 scenes, smooth3d/three.js for molecules and anatomy, math3d for maths), a "what if" simulator or game, focus aids
 for ADHD-like attention difficulties, and exports (editable doc, study page, PDF, one-page cheat sheet).
 
+## What it makes
+
+| Hand-inked 3D (Colorfigures): β2 receptor and Gs, see-through with labels | Smooth 3D (three.js): agonist in the receptor pocket, TM6 swings out |
+|---|---|
+| ![Receptor and Gs protein, see-through view](docs/receptor-gs-xr.jpg) | ![Receptor pocket in smooth 3D](docs/receptor-pocket.jpg) |
+| **"What if" simulator**: switch drugs on and off, watch Gαs, cAMP and PKA | **For children**: a pizza to cut into equal pieces |
+| ![Gs pathway simulator](docs/simulator.jpg) | ![Pizza fractions model](docs/pizza.jpg) |
+| **Game mode**: guess first, then see why, earn stars | **One-page cheat sheet**, made from the same notes |
+| ![Which is bigger game](docs/game.jpg) | ![Cheat sheet](docs/cheatsheet.jpg) |
+
 ## Install
 - **Claude app:** download this repo as a zip (Code → Download ZIP), then Settings → Capabilities → Skills →
   Upload skill. The `learn3d-sim` folder must contain `SKILL.md` at its top level.

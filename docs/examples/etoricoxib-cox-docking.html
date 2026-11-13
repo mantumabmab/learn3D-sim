@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comparative docking of etoricoxib against COX-1 and COX-2</title>
+<style>
+  :root{
+    --bg:#f5f6f8; --ink:#14171d; --soft:#596070; --rule:#dde1e7; --card:#fff;
+    --accent:#1b4b7a; --cox1:#a8543f; --cox2:#1f6f58; --lig:#7a4fa3; --warn:#8a5a14;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:16.5px;line-height:1.62;-webkit-text-size-adjust:100%}
+  .wrap{max-width:880px;margin:0 auto;padding:30px 20px 80px}
+  .kicker{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--soft);font-weight:700}
+  h1{font-size:1.9rem;line-height:1.16;margin:.25em 0 .2em;letter-spacing:-.4px}
+  h2{font-size:1.22rem;margin:2.4em 0 .4em;color:var(--accent);line-height:1.3}
+  h3{font-size:1rem;margin:1.5em 0 .3em}
+  p{margin:.7em 0}
+  .lede{font-size:1.05rem;color:#323a4a}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em;
+    background:#eceff3;border-radius:4px;padding:1px 5px}
+  pre{background:#161b22;color:#e6edf3;border-radius:9px;padding:14px 16px;overflow-x:auto;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.82rem;line-height:1.5}
+  pre .c{color:#8b949e}
+  .card{background:var(--card);border:1px solid var(--rule);border-radius:11px;padding:15px 19px;margin:20px 0}
+  .goals{background:#eef3f9;border-color:#ccdcea}
+  .goals ul{margin:.3em 0 0;padding-left:1.1em} .goals li{margin:.3em 0}
+  .warn{background:#fdf6e9;border-color:#ecd9b0}
+  .stop{background:#fbeeee;border-color:#e8c4c4}
+  .note{color:var(--soft);font-size:.9rem}
+  table{border-collapse:collapse;width:100%;font-size:.87rem;margin:14px 0}
+  th,td{text-align:left;padding:6px 9px;border-bottom:1px solid var(--rule);vertical-align:top}
+  th{background:#eceff3;font-weight:700;font-size:.76rem;text-transform:uppercase;letter-spacing:.05em;color:#424c60}
+  .fig{background:#fff;border:1px solid var(--rule);border-radius:11px;padding:15px;margin:24px 0}
+  .fig h4{margin:0 0 4px;font-size:.95rem}
+  .fig svg{display:block;width:100%;height:auto}
+  .controls{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}
+  button{font:inherit;font-size:.87rem;font-weight:600;min-height:38px;padding:0 13px;border-radius:8px;
+    border:1px solid #bcc6d2;background:#fff;color:#2a384c;cursor:pointer}
+  button:hover{background:#eef3f8}
+  button[aria-pressed="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}
+  button.c1[aria-pressed="true"]{background:var(--cox1);border-color:var(--cox1)}
+  button.c2[aria-pressed="true"]{background:var(--cox2);border-color:var(--cox2)}
+  button:focus-visible{outline:3px solid #ffb703;outline-offset:2px}
+  .readouts{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}
+  .ro{background:#f3f5f8;border:1px solid var(--rule);border-radius:8px;padding:8px 11px}
+  .ro .lab{font-size:.71rem;text-transform:uppercase;letter-spacing:.07em;color:var(--soft);font-weight:700}
+  .ro .val{font-weight:700;font-size:.97rem}
+  .cap{font-size:.85rem;color:var(--soft);margin-top:10px}
+  .molwrap{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+  .molwrap .mol{flex:1 1 330px;min-width:300px;background:#fbfbfc;border:1px solid var(--rule);border-radius:9px;padding:6px}
+  .molwrap .ann{flex:1 1 280px;min-width:260px}
+  .molwrap .ann h5{margin:.2em 0 .3em;font-size:.86rem;text-transform:uppercase;letter-spacing:.05em;color:var(--soft)}
+  .pill{display:inline-block;border-radius:20px;padding:2px 10px;font-size:.78rem;font-weight:700;margin:2px 3px 2px 0}
+  .p1{background:#ede4f7;color:#55307c} .p2{background:#e2eef0;color:#1d5560} .p3{background:#fbeada;color:#8a5a14}
+  details{background:#fff;border:1px solid var(--rule);border-radius:9px;padding:10px 14px;margin:9px 0}
+  summary{font-weight:600;cursor:pointer;color:var(--accent)}
+  .src{font-size:.89rem;padding-left:1.1em}
+  .src li{margin:.55em 0}
+  .grade{display:inline-block;font-size:.66rem;font-weight:700;border-radius:5px;padding:1px 6px;margin-right:5px;
+    background:#dcebe2;color:#13543a;border:1px solid #a8cdb8}
+  .grade.b{background:#e9ecf3;color:#2c3a5c;border-color:#c2cbe0}
+  .grade.c{background:#f6ece2;color:#73441a;border-color:#dfc2a6}
+  a{color:#174a86}
+  hr{border:none;border-top:1px solid var(--rule);margin:2.3em 0}
+  @media (max-width:560px){
+    body{font-size:15.5px} h1{font-size:1.45rem} h2{font-size:1.1rem}
+    .readouts{grid-template-columns:1fr} table{font-size:.8rem} th,td{padding:5px 6px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="kicker">Computational structural pharmacology &middot; research level</p>
+  <h1>Comparative docking of etoricoxib against COX-1 and COX-2</h1>
+  <p class="lede">The structural logic of coxib selectivity is unusually clean: three first-shell substitutions open a side pocket in COX-2 that does not exist in COX-1, and etoricoxib carries a methylsulfone built to occupy it. The computational experiment that seems to follow &mdash; dock the ligand into both isoforms and compare the scores &mdash; is, as designed, the single most common misuse of an empirical scoring function. These notes cover the structural basis, a protocol that is defensible, and what the comparison can legitimately support.</p>
+
+  <div class="card goals">
+    <strong>By the end you can</strong>
+    <ul>
+      <li>state the three first-shell substitutions that create the COX-2 side pocket, and what each contributes;</li>
+      <li>choose receptor structures and a redocking control for a ligand that has no co-crystal of its own;</li>
+      <li>run a reproducible Vina comparison and report it without over-claiming;</li>
+      <li>say precisely why a &Delta;score between two receptors is not a selectivity prediction, and what would be.</li>
+    </ul>
+  </div>
+
+  <h2>1. The target pair</h2>
+  <p>COX-1 and COX-2 (PTGS1/PTGS2) are sequence-homologous isoenzymes, around 60% identical, with highly conserved overall architecture. Each monomer has three domains: an N-terminal EGF-like domain, a membrane-binding domain of roughly 48 residues that anchors the enzyme to one leaflet of the bilayer, and a catalytic domain carrying both the peroxidase and cyclooxygenase active sites.</p>
+  <p>The cyclooxygenase site is a long hydrophobic channel running from the membrane-binding domain into the core of the catalytic domain. Arachidonate enters from the membrane. For docking purposes the relevant geography is: a constriction near the mouth, the main channel, and an apex where catalysis occurs.</p>
+
+  <h2>2. What makes COX-2 selectivity structurally possible</h2>
+  <p>The hallmark difference is a set of first-shell substitutions in the cyclooxygenase channel. COX-1 residues <strong>Ile434, His513 and Ile523</strong> are replaced in COX-2 by <strong>Val434, Arg513 and Val523</strong>. Together these increase the active-site volume by roughly 25% and create a <strong>side pocket off the main channel with Arg513 at its base</strong>.</p>
+  <p>Each substitution does something distinct. Val523 is the gate: losing one methyl group relative to Ile523 opens access to the side pocket, and this is the prerequisite for coxib selectivity. Ile434&rarr;Val434 lets the Phe518 side chain move back, adding further space. His513&rarr;Arg513 changes the chemistry at the base of the pocket from imidazole to guanidinium &mdash; a hydrogen-bond donor and cation that sulfones and sulfonamides can engage.</p>
+
+  <div class="fig">
+    <h4>Figure 1 &middot; The cyclooxygenase channel in both isoforms &mdash; switch isoform, then insert the ligand</h4>
+    <p class="note" style="margin-top:2px">Schematic cross-section. Geometry is idealised for legibility; residue identities, the side pocket and its contacts are as reported for the crystal structures cited below.</p>
+    <svg id="site" viewBox="0 0 760 540" role="img"
+      aria-label="Schematic cross-section of the cyclooxygenase channel, switchable between COX-1 and COX-2, showing the constriction, the apex, and the side pocket gated by residue 523, with etoricoxib able to enter the pocket only in COX-2."></svg>
+    <div class="controls">
+      <button id="bC1" class="c1" type="button" aria-pressed="false">COX-1</button>
+      <button id="bC2" class="c2" type="button" aria-pressed="true">COX-2</button>
+      <button id="bDock" type="button">Insert etoricoxib</button>
+      <button id="bOut" type="button">Remove ligand</button>
+      <button id="bRes" type="button" aria-pressed="true">Residue labels</button>
+    </div>
+    <div class="readouts">
+      <div class="ro"><div class="lab">Residue 523 (gate)</div><div class="val" id="r523">Val &mdash; pocket open</div></div>
+      <div class="ro"><div class="lab">Side pocket</div><div class="val" id="rPocket">present, Arg513 at base</div></div>
+      <div class="ro"><div class="lab">Methylsulfone placement</div><div class="val" id="rSulf">&mdash;</div></div>
+    </div>
+    <p class="cap">In COX-1 the bulkier Ile523 occludes the entrance, and the ligand's methylsulfone arm has nowhere to go: the clash is the structural statement of selectivity. Predict before you press: with the pocket blocked, does the rest of the molecule still fit in the main channel? It largely does &mdash; which is exactly why a docking program will still return a pose, and a score, for COX-1.</p>
+  </div>
+
+  <h2>3. The ligand</h2>
+  <p>Etoricoxib is 5-chloro-2-(6-methylpyridin-3-yl)-3-[4-(methylsulfonyl)phenyl]pyridine &mdash; a diaryl-heterocycle of the coxib class. Unlike celecoxib, valdecoxib and parecoxib, which carry a sulfonamide (SO<sub>2</sub>NH<sub>2</sub>), etoricoxib and rofecoxib carry a <strong>methylsulfone</strong> (SO<sub>2</sub>CH<sub>3</sub>); the oxidation state at sulfur matters for selectivity.</p>
+
+  <div class="fig">
+    <h4>Figure 2 &middot; Etoricoxib, with the pharmacophoric regions that matter for docking</h4>
+    <div class="molwrap">
+      <div class="mol"><svg version='1.1' baseProfile='full'
+              xmlns='http://www.w3.org/2000/svg'
+                      xmlns:rdkit='http://www.rdkit.org/xml'
+                      xmlns:xlink='http://www.w3.org/1999/xlink'
+                  xml:space='preserve'
+width='100%' height='330' viewBox='0 0 520 330'>
+<!-- END OF HEADER -->
+<rect style='opacity:1.0;fill:#FFFFFF;stroke:none' width='520.0' height='330.0' x='0.0' y='0.0'> </rect>
+<path class='bond-0 atom-0 atom-1' d='M 254.8,16.5 L 233.4,57.9' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-1 atom-1 atom-2' d='M 233.4,57.9 L 186.9,60.1' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-2 atom-2 atom-3' d='M 186.9,60.1 L 165.5,101.5' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-2 atom-2 atom-3' d='M 191.2,66.9 L 173.6,101.1' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-3 atom-3 atom-4' d='M 165.5,101.5 L 190.7,140.7' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-4 atom-4 atom-5' d='M 190.7,140.7 L 237.2,138.5' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-4 atom-4 atom-5' d='M 194.4,133.5 L 232.9,131.7' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-5 atom-5 atom-6' d='M 237.2,138.5 L 245.8,121.9' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-5 atom-5 atom-6' d='M 245.8,121.9 L 254.4,105.2' style='fill:none;fill-rule:evenodd;stroke:#0000FF;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-6 atom-4 atom-7' d='M 190.7,140.7 L 169.3,182.1' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-7 atom-7 atom-8' d='M 169.3,182.1 L 149.3,183.0' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-7 atom-7 atom-8' d='M 149.3,183.0 L 129.3,184.0' style='fill:none;fill-rule:evenodd;stroke:#0000FF;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-8 atom-8 atom-9' d='M 118.6,192.4 L 110.0,209.0' style='fill:none;fill-rule:evenodd;stroke:#0000FF;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-8 atom-8 atom-9' d='M 110.0,209.0 L 101.4,225.7' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-8 atom-8 atom-9' d='M 124.8,195.6 L 117.1,210.4' style='fill:none;fill-rule:evenodd;stroke:#0000FF;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-8 atom-8 atom-9' d='M 117.1,210.4 L 109.5,225.3' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-9 atom-9 atom-10' d='M 101.4,225.7 L 126.6,264.9' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-10 atom-10 atom-11' d='M 126.6,264.9 L 117.1,283.2' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-10 atom-10 atom-11' d='M 117.1,283.2 L 107.6,301.6' style='fill:none;fill-rule:evenodd;stroke:#00CC00;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-11 atom-10 atom-12' d='M 126.6,264.9 L 173.1,262.7' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-11 atom-10 atom-12' d='M 130.3,257.7 L 168.8,255.9' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-12 atom-12 atom-13' d='M 173.1,262.7 L 194.5,221.3' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-13 atom-13 atom-14' d='M 194.5,221.3 L 241.0,219.1' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-14 atom-14 atom-15' d='M 241.0,219.1 L 266.2,258.3' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-15 atom-15 atom-16' d='M 266.2,258.3 L 312.7,256.1' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-15 atom-15 atom-16' d='M 269.9,251.1 L 308.4,249.3' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-16 atom-16 atom-17' d='M 312.7,256.1 L 334.1,214.7' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-17 atom-17 atom-18' d='M 334.1,214.7 L 308.9,175.5' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-17 atom-17 atom-18' d='M 326.0,215.1 L 305.2,182.7' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-18 atom-18 atom-19' d='M 308.9,175.5 L 262.4,177.7' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-19 atom-17 atom-20' d='M 334.1,214.7 L 354.5,213.7' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-19 atom-17 atom-20' d='M 354.5,213.7 L 374.8,212.8' style='fill:none;fill-rule:evenodd;stroke:#CCCC00;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-20 atom-20 atom-21' d='M 386.4,212.2 L 406.8,211.3' style='fill:none;fill-rule:evenodd;stroke:#CCCC00;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-20 atom-20 atom-21' d='M 406.8,211.3 L 427.1,210.3' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-21 atom-20 atom-22' d='M 383.7,204.2 L 383.0,189.2' style='fill:none;fill-rule:evenodd;stroke:#CCCC00;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-21 atom-20 atom-22' d='M 383.0,189.2 L 382.3,174.2' style='fill:none;fill-rule:evenodd;stroke:#FF0000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-21 atom-20 atom-22' d='M 376.7,204.5 L 376.0,189.5' style='fill:none;fill-rule:evenodd;stroke:#CCCC00;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-21 atom-20 atom-22' d='M 376.0,189.5 L 375.3,174.5' style='fill:none;fill-rule:evenodd;stroke:#FF0000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-22 atom-20 atom-23' d='M 377.5,221.1 L 378.2,236.1' style='fill:none;fill-rule:evenodd;stroke:#CCCC00;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-22 atom-20 atom-23' d='M 378.2,236.1 L 378.9,251.0' style='fill:none;fill-rule:evenodd;stroke:#FF0000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-22 atom-20 atom-23' d='M 384.5,220.8 L 385.2,235.7' style='fill:none;fill-rule:evenodd;stroke:#CCCC00;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-22 atom-20 atom-23' d='M 385.2,235.7 L 385.9,250.7' style='fill:none;fill-rule:evenodd;stroke:#FF0000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-23 atom-6 atom-1' d='M 253.4,89.0 L 243.4,73.4' style='fill:none;fill-rule:evenodd;stroke:#0000FF;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-23 atom-6 atom-1' d='M 243.4,73.4 L 233.4,57.9' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-23 atom-6 atom-1' d='M 247.5,92.7 L 238.6,78.9' style='fill:none;fill-rule:evenodd;stroke:#0000FF;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-23 atom-6 atom-1' d='M 238.6,78.9 L 229.7,65.1' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-24 atom-13 atom-7' d='M 194.5,221.3 L 169.3,182.1' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-24 atom-13 atom-7' d='M 186.4,221.7 L 165.6,189.2' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-25 atom-19 atom-14' d='M 262.4,177.7 L 241.0,219.1' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path class='bond-25 atom-19 atom-14' d='M 266.7,184.5 L 249.1,218.7' style='fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1' />
+<path d='M 189.2,60.0 L 186.9,60.1 L 185.8,62.2' style='fill:none;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;' />
+<path d='M 166.6,99.4 L 165.5,101.5 L 166.8,103.4' style='fill:none;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;' />
+<path d='M 234.9,138.6 L 237.2,138.5 L 237.6,137.7' style='fill:none;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;' />
+<path d='M 101.9,224.8 L 101.4,225.7 L 102.7,227.6' style='fill:none;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;' />
+<path d='M 170.8,262.8 L 173.1,262.7 L 174.2,260.6' style='fill:none;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;' />
+<path d='M 264.9,256.3 L 266.2,258.3 L 268.5,258.2' style='fill:none;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;' />
+<path d='M 310.4,256.2 L 312.7,256.1 L 313.8,254.0' style='fill:none;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;' />
+<path d='M 310.2,177.5 L 308.9,175.5 L 306.6,175.6' style='fill:none;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;' />
+<path d='M 264.7,177.6 L 262.4,177.7 L 261.3,179.8' style='fill:none;stroke:#000000;stroke-width:2.0px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;' />
+<path class='atom-6' d='M 255.7 90.5
+L 260.0 97.5
+Q 260.4 98.2, 261.1 99.4
+Q 261.8 100.7, 261.8 100.7
+L 261.8 90.5
+L 263.6 90.5
+L 263.6 103.7
+L 261.8 103.7
+L 257.1 96.0
+Q 256.6 95.2, 256.0 94.1
+Q 255.5 93.1, 255.3 92.8
+L 255.3 103.7
+L 253.6 103.7
+L 253.6 90.5
+L 255.7 90.5
+' fill='#0000FF'/>
+<path class='atom-8' d='M 119.9 177.7
+L 124.2 184.7
+Q 124.6 185.4, 125.3 186.6
+Q 126.0 187.9, 126.0 187.9
+L 126.0 177.7
+L 127.8 177.7
+L 127.8 190.9
+L 126.0 190.9
+L 121.3 183.2
+Q 120.8 182.3, 120.2 181.3
+Q 119.7 180.3, 119.5 180.0
+L 119.5 190.9
+L 117.8 190.9
+L 117.8 177.7
+L 119.9 177.7
+' fill='#0000FF'/>
+<path class='atom-11' d='M 92.9 306.7
+Q 92.9 303.4, 94.4 301.7
+Q 95.9 300.0, 98.9 300.0
+Q 101.6 300.0, 103.0 301.9
+L 101.8 302.9
+Q 100.7 301.5, 98.9 301.5
+Q 96.9 301.5, 95.8 302.9
+Q 94.8 304.2, 94.8 306.7
+Q 94.8 309.3, 95.8 310.7
+Q 96.9 312.0, 99.1 312.0
+Q 100.5 312.0, 102.2 311.1
+L 102.7 312.5
+Q 102.0 313.0, 101.0 313.2
+Q 100.0 313.5, 98.8 313.5
+Q 95.9 313.5, 94.4 311.7
+Q 92.9 310.0, 92.9 306.7
+' fill='#00CC00'/>
+<path class='atom-11' d='M 104.4 299.2
+L 106.1 299.2
+L 106.1 313.3
+L 104.4 313.3
+L 104.4 299.2
+' fill='#00CC00'/>
+<path class='atom-20' d='M 376.9 217.0
+Q 377.0 217.1, 377.6 217.3
+Q 378.3 217.6, 378.9 217.8
+Q 379.6 217.9, 380.3 217.9
+Q 381.5 217.9, 382.3 217.3
+Q 383.0 216.7, 383.0 215.6
+Q 383.0 214.9, 382.6 214.5
+Q 382.3 214.0, 381.7 213.8
+Q 381.1 213.5, 380.2 213.3
+Q 379.0 212.9, 378.3 212.6
+Q 377.6 212.2, 377.1 211.5
+Q 376.7 210.8, 376.7 209.6
+Q 376.7 208.0, 377.8 206.9
+Q 378.9 205.9, 381.1 205.9
+Q 382.7 205.9, 384.4 206.6
+L 384.0 208.1
+Q 382.4 207.4, 381.2 207.4
+Q 379.9 207.4, 379.2 208.0
+Q 378.5 208.5, 378.5 209.4
+Q 378.5 210.1, 378.9 210.5
+Q 379.2 211.0, 379.8 211.2
+Q 380.3 211.4, 381.2 211.7
+Q 382.4 212.1, 383.1 212.5
+Q 383.8 212.8, 384.3 213.6
+Q 384.8 214.4, 384.8 215.6
+Q 384.8 217.5, 383.6 218.5
+Q 382.4 219.4, 380.4 219.4
+Q 379.2 219.4, 378.3 219.2
+Q 377.4 218.9, 376.4 218.5
+L 376.9 217.0
+' fill='#CCCC00'/>
+<path class='atom-22' d='M 372.4 166.0
+Q 372.4 162.8, 373.9 161.1
+Q 375.5 159.3, 378.4 159.3
+Q 381.3 159.3, 382.9 161.1
+Q 384.5 162.8, 384.5 166.0
+Q 384.5 169.2, 382.9 171.0
+Q 381.3 172.8, 378.4 172.8
+Q 375.5 172.8, 373.9 171.0
+Q 372.4 169.2, 372.4 166.0
+M 378.4 171.3
+Q 380.4 171.3, 381.5 170.0
+Q 382.6 168.6, 382.6 166.0
+Q 382.6 163.4, 381.5 162.1
+Q 380.4 160.8, 378.4 160.8
+Q 376.4 160.8, 375.3 162.1
+Q 374.2 163.4, 374.2 166.0
+Q 374.2 168.7, 375.3 170.0
+Q 376.4 171.3, 378.4 171.3
+' fill='#FF0000'/>
+<path class='atom-23' d='M 376.7 259.1
+Q 376.7 255.9, 378.3 254.1
+Q 379.9 252.4, 382.8 252.4
+Q 385.7 252.4, 387.3 254.1
+Q 388.9 255.9, 388.9 259.1
+Q 388.9 262.3, 387.3 264.1
+Q 385.7 265.9, 382.8 265.9
+Q 379.9 265.9, 378.3 264.1
+Q 376.7 262.3, 376.7 259.1
+M 382.8 264.4
+Q 384.8 264.4, 385.9 263.1
+Q 387.0 261.7, 387.0 259.1
+Q 387.0 256.5, 385.9 255.2
+Q 384.8 253.8, 382.8 253.8
+Q 380.8 253.8, 379.7 255.1
+Q 378.6 256.5, 378.6 259.1
+Q 378.6 261.7, 379.7 263.1
+Q 380.8 264.4, 382.8 264.4
+' fill='#FF0000'/>
+</svg>
+</div>
+      <div class="ann">
+        <h5>Regions</h5>
+        <p><span class="pill p1">methylsulfone</span> The selectivity element. Enters the COX-2 side pocket; its oxygens are the only polar contacts in the analogous rofecoxib complex.</p>
+        <p><span class="pill p2">central pyridine</span> Scaffold occupying the main channel, holding the two aryl groups at the dihedral the pocket requires.</p>
+        <p><span class="pill p3">chloro-methylpyridine</span> Hydrophobic, sits toward the apex region.</p>
+        <h5>Properties (computed, RDKit)</h5>
+        <table style="margin-top:4px">
+          <tr><td>Formula</td><td><code>C18H15ClN2O2S</code></td></tr>
+          <tr><td>MW</td><td>358.85</td></tr>
+          <tr><td>Rotatable bonds</td><td>3</td></tr>
+          <tr><td>H-bond donors</td><td><strong>0</strong></td></tr>
+          <tr><td>H-bond acceptors</td><td>4</td></tr>
+          <tr><td>cLogP</td><td>4.18</td></tr>
+          <tr><td>TPSA</td><td>59.9 &Aring;<sup>2</sup></td></tr>
+        </table>
+      </div>
+    </div>
+    <p class="cap">Depiction generated from the canonical SMILES <code>Cc1ccc(-c2ncc(Cl)cc2-c2ccc(S(C)(=O)=O)cc2)cn1</code> with RDKit; the computed formula matches the published formula for etoricoxib. Zero hydrogen-bond donors is worth noting: every polar interaction this ligand can make, it makes as an acceptor.</p>
+  </div>
+
+  <h2>4. Choosing structures &mdash; and the problem you have to confront first</h2>
+  <p>Before any docking, resolve this: <strong>there appears to be no deposited protein co-crystal of etoricoxib with either COX isoform.</strong> The etoricoxib crystal structures in the literature are pharmaceutical co-crystals &mdash; etoricoxib with benzoic acid, phthalic acid, picric acid &mdash; and polymorphs and hydrates, none of them protein complexes. Published docking studies of etoricoxib consequently use 5KIR or 3LN1 as the receptor. Verify this against the PDB yourself before you write it up; it is a negative claim and negative claims age.</p>
+  <p>This has a direct methodological consequence. <strong>You cannot validate your protocol by redocking etoricoxib</strong>, because there is no experimental pose to recover. You must validate against a surrogate, and the right surrogate is the closest chemotype in a structure of the same receptor.</p>
+
+  <table>
+    <thead><tr><th>PDB</th><th>Contents</th><th>Resolution</th><th>Role in this study</th></tr></thead>
+    <tbody>
+      <tr><td><code>5KIR</code></td><td>Human COX-2 + rofecoxib</td><td>2.7 &Aring;</td><td><strong>Primary receptor and validation control.</strong> Rofecoxib is a methylsulfone, like etoricoxib &mdash; the same selectivity element in the same pocket.</td></tr>
+      <tr><td><code>3LN1</code></td><td>COX-2 + celecoxib</td><td>&mdash;</td><td>Second COX-2 receptor; cross-check pose and score. Celecoxib is a sulfonamide, so a slightly more distant analogue.</td></tr>
+      <tr><td><code>1EQG</code></td><td>Ovine COX-1 + ibuprofen</td><td>&mdash;</td><td>COX-1 comparator. Note the species difference &mdash; ovine, not human.</td></tr>
+      <tr><td><code>6Y3C</code></td><td>Human COX-1</td><td>&mdash;</td><td>Preferable COX-1 comparator if you want species-matched receptors.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="card warn">
+    <strong>The species trap.</strong>
+    <p class="note" style="margin-bottom:0">Much of the COX-1 literature uses ovine COX-1 while COX-2 structures are human. If you dock into human COX-2 and ovine COX-1 and report the score difference as isoform selectivity, part of your signal is species. Either use human structures on both sides, or state the mismatch as a limitation. This is a defect in a sizeable fraction of published comparative COX docking.</p>
+  </div>
+
+  <h3>What the experimental binding mode actually shows</h3>
+  <p>In the 2.7&nbsp;&Aring; human COX-2&ndash;rofecoxib structure, the methylsulfone sits in the side pocket and its oxygen atoms interact with the side-chain nitrogens of <strong>His90</strong> and <strong>Arg513</strong> at the base of the pocket. <strong>Every other enzyme&ndash;inhibitor contact in that structure is hydrophobic.</strong> The phenyl ring extends toward Tyr385, and Val523 is what provides access. Rofecoxib binds in the same general conformation as celecoxib &mdash; the two structures overlay with a C&alpha; r.m.s.d. of 0.31&nbsp;&Aring; over 542 pairs.</p>
+  <p>Those two hydrogen bonds are the entire polar interaction set, and that should calibrate your expectations for what a docking score is resolving here: a difference dominated by shape complementarity and buried hydrophobic surface, with two polar contacts on top.</p>
+
+  <h2>5. A protocol that is defensible</h2>
+  <p>This sandbox has AutoDock Vina 1.2.5, RDKit, Meeko and gemmi installed and working. Supply the receptor PDB files and the whole thing runs. The order below is not arbitrary: the validation step comes before the production run, and if it fails you stop.</p>
+
+  <h3>5.1 Receptor preparation</h3>
+  <pre><span class="c"># COX enzymes are homodimers; dock into one monomer (chain A).
+# Keep the heme — it is structural, adjacent to the site, and removing it changes the pocket.
+# Strip waters unless you have a specific, defended reason to keep one.</span>
+python3 - &lt;&lt;'PY'
+import gemmi
+st = gemmi.read_structure('5kir.pdb')
+st.setup_entities()
+st.remove_alternative_conformations()
+st.remove_hydrogens()
+
+KEEP_HET = {'HEM'}          <span class="c"># cofactors to retain</span>
+DROP_HET = {'RCX', 'HOH'}   <span class="c"># co-crystallised inhibitor + waters</span>
+
+model = st[0]
+for ch in [c.name for c in model if c.name != 'A']:
+    model.remove_chain(ch)                      <span class="c"># one monomer only</span>
+
+chain = model['A']
+for i in range(len(chain) - 1, -1, -1):         <span class="c"># reverse: deleting shifts indices</span>
+    n = chain[i].name
+    if n in DROP_HET or (chain[i].het_flag == 'H' and n not in KEEP_HET):
+        del chain[i]
+
+st.write_pdb('cox2_rec.pdb')
+<span class="c"># sanity check: HEM present, RCX and HOH gone</span>
+print(sorted({r.name for r in gemmi.read_structure('cox2_rec.pdb')[0]['A']
+              if r.het_flag == 'H'}))
+PY</pre>
+  <p class="note">Save the extracted <code>RCX</code> residue separately before deleting it &mdash; that is your redocking reference and the source of the box centre. Check the deposited ligand code in the entry you actually download rather than trusting the one above.</p>
+  <p class="note">Then add hydrogens at the intended pH and assign charges &mdash; <code>reduce</code>, PDB2PQR or Meeko's receptor path. Protonation at the side pocket is not cosmetic: <strong>Arg513 is the base of the pocket and its charge state determines whether the sulfone contact is modelled at all.</strong></p>
+
+  <h3>5.2 Grid box from the co-crystallised ligand</h3>
+  <p>Centre the box on the centroid of the reference ligand, not on a guess. For a channel this long, a box that is too small truncates the main channel and a box that is too large wastes search effort and invites surface poses.</p>
+  <pre><span class="c"># centroid of the co-crystallised rofecoxib (residue name in 5KIR)</span>
+python3 - &lt;&lt;'PY'
+import gemmi, numpy as np
+st = gemmi.read_structure('5kir.pdb')
+pts = [a.pos for res in st[0]['A'] if res.name == 'RCX' for a in res]
+c = np.mean([[p.x, p.y, p.z] for p in pts], axis=0)
+print('center_x = %.3f\ncenter_y = %.3f\ncenter_z = %.3f' % tuple(c))
+PY</pre>
+  <pre><span class="c"># conf.txt — box large enough for channel + side pocket</span>
+receptor = cox2_rec.pdbqt
+center_x = &lt;from above&gt;
+center_y = &lt;from above&gt;
+center_z = &lt;from above&gt;
+size_x = 26
+size_y = 26
+size_z = 26
+exhaustiveness = 32
+num_modes = 9
+seed = 42</pre>
+  <p class="note">Set <code>seed</code> explicitly. Vina is stochastic; an unseeded run is not reproducible, and a reviewer is entitled to ask you to reproduce it.</p>
+
+  <h3>5.3 Ligand preparation</h3>
+  <pre><span class="c"># etoricoxib from SMILES — 3D embed, MMFF optimise, then PDBQT via Meeko</span>
+python3 - &lt;&lt;'PY'
+from rdkit import Chem
+from rdkit.Chem import AllChem
+from meeko import MoleculePreparation, PDBQTWriterLegacy
+smi = 'Cc1ccc(-c2ncc(Cl)cc2-c2ccc(S(C)(=O)=O)cc2)cn1'
+m = Chem.AddHs(Chem.MolFromSmiles(smi))
+AllChem.EmbedMolecule(m, randomSeed=42)
+AllChem.MMFFOptimizeMolecule(m)
+prep = MoleculePreparation()
+setup = prep.prepare(m)[0]
+pdbqt, ok, err = PDBQTWriterLegacy.write_string(setup)
+open('etoricoxib.pdbqt','w').write(pdbqt)
+PY</pre>
+
+  <h3>5.4 Validation first: redock the native ligand</h3>
+  <pre><span class="c"># extract rofecoxib from 5KIR, prepare it, redock into the prepared receptor,
+# then measure RMSD of the top pose against the crystal coordinates.</span>
+./vina --config conf.txt --ligand rofecoxib_ref.pdbqt --out rofecoxib_redock.pdbqt</pre>
+  <div class="card stop">
+    <strong>The gate.</strong>
+    <p class="note" style="margin-bottom:0">Top-pose heavy-atom RMSD <strong>&le; 2.0&nbsp;&Aring;</strong> against the crystal pose is the conventional pass. If you do not clear it, your preparation is wrong &mdash; protonation, a retained water, the box, a missing cofactor &mdash; and nothing downstream is interpretable. Fix it and re-run. Do not proceed with a failed control and mention it in a limitations paragraph; that is not what a control is for. Report the RMSD you obtained, whatever it was.</p>
+  </div>
+
+  <h3>5.5 Production runs</h3>
+  <pre>./vina --config conf.txt --ligand etoricoxib.pdbqt --out etoricoxib_cox2.pdbqt --cpu 8
+./vina --config conf_cox1.txt --ligand etoricoxib.pdbqt --out etoricoxib_cox1.pdbqt --cpu 8
+<span class="c"># repeat each with several seeds — report mean and spread, never a single run</span></pre>
+
+  <h2>6. Reading the output honestly</h2>
+  <p>Here is the part that decides whether the study is worth anything.</p>
+  <p>Vina reports kcal/mol, which invites over-reading. The score is an <em>empirical function fitted to reproduce known binding data</em>, not a computed free energy. Empirical scoring functions model binding as a weighted sum of steric, hydrophobic, hydrogen-bonding and torsional terms calibrated against experimental affinities, and they rarely correlate well with measured binding affinities. Vina also carries a known size- and torsion-related bias, penalising ligands with more rotatable bonds.</p>
+
+  <div class="card stop">
+    <strong>Comparing scores across two different receptors is the most frequent error in this exact study design.</strong>
+    <p style="margin-bottom:0">The scoring function was fitted across a heterogeneous set of complexes; it is not calibrated to be comparable between two different proteins, and the systematic error does not cancel when you subtract. A more negative Vina score in COX-2 than in COX-1 is <em>consistent with</em> selectivity. It does not measure it, and the numerical difference does not convert to a selectivity ratio. Etoricoxib's reported whole-blood COX-1/COX-2 ratio is 106 in one study and 344 in another &mdash; and no docking score you obtain will distinguish those, or should be presented as if it could.</p>
+  </div>
+
+  <p>What you may legitimately claim from a well-executed run of this design:</p>
+  <ul>
+    <li>that a pose is recovered in COX-2 placing the methylsulfone in the side pocket, consistent with the experimental binding mode of the rofecoxib analogue;</li>
+    <li>that no equivalent pose is available in COX-1, with the steric reason identified at residue 523;</li>
+    <li>that the protocol recovers the native pose of the reference ligand to within <em>x</em>&nbsp;&Aring; RMSD;</li>
+    <li>the scores, reported as scores, with seeds, spread and the scoring function named.</li>
+  </ul>
+  <p>What you may not claim: a predicted selectivity ratio, a binding free energy, a rank-ordering of coxibs by potency, or that the score difference explains the clinical profile.</p>
+
+  <h3>The deeper reason structure alone will not settle it</h3>
+  <p>Rofecoxib is roughly 60-fold more COX-2 selective than celecoxib, yet the two bind in the same general conformation, with the sulfone in the same pocket, in structures that overlay to 0.31&nbsp;&Aring; C&alpha; r.m.s.d. The authors of that work attribute the selectivity difference to <strong>binding kinetics rather than any specific enzyme&ndash;inhibitor interaction</strong>. Coxib selectivity has a substantial time-dependent, slow-tight-binding component. A docking score is a single-point estimate of a static complex; it has no representation of <em>k</em><sub>on</sub>, <em>k</em><sub>off</sub> or a two-step mechanism. A method blind to the variable that drives the phenomenon cannot explain the phenomenon, however good the pose looks.</p>
+
+  <h2>7. Beyond the basics: what would actually test the hypothesis</h2>
+  <ul>
+    <li><strong>Receptor flexibility.</strong> Rigid-receptor docking fixes side chains that are known to move. Leu531 adopts alternate rotamers in COX-2 crystal structures, and MD identified its rotation as a way to expand the channel further. Flexible side chains, ensemble docking over MD snapshots, or induced-fit docking address what a single rigid structure cannot.</li>
+    <li><strong>Rescoring.</strong> MM-GBSA or MM-PBSA on docked poses, with explicit solvation and some conformational sampling, is a better-grounded estimate than a docking score. Still not a free energy, but less naive.</li>
+    <li><strong>Free-energy methods.</strong> Relative binding free-energy calculations (FEP/TI) between coxib analogues in the same receptor are the appropriate tool when you need numbers that can be compared to experiment. Absolute binding free-energy calculations now approach chemical accuracy in favourable cases.</li>
+    <li><strong>Consensus and ML scoring.</strong> Consensus scoring raises pose-prediction success from roughly 66&ndash;76% for individual functions to about 80% or better; CNN-based rescoring (Gnina) raises top-1 redocking accuracy over Vina on benchmark sets. Both help pose selection more than they help affinity.</li>
+    <li><strong>The right controls.</strong> Dock a selective ligand, a non-selective NSAID and a decoy set into both isoforms. If your protocol cannot separate selective from non-selective ligands across the pair, the etoricoxib result carries no weight.</li>
+  </ul>
+
+  <hr>
+
+  <h2>Self-test</h2>
+  <details><summary>Your COX-2 redock of rofecoxib gives 0.9 &Aring; RMSD; the COX-1 redock of ibuprofen gives 3.4 &Aring;. Can you proceed with the comparison?</summary>
+    <p>No. The COX-1 arm has failed its control, so any COX-1 score is uninterpretable, and the comparison is between a validated and an unvalidated calculation. Diagnose the COX-1 preparation first &mdash; protonation, the box, the species of the structure, a retained water in the ibuprofen site, the carboxylate's interaction with Arg120. A one-sided validation is worse than none, because it looks rigorous.</p></details>
+  <details><summary>Etoricoxib scores &minus;9.8 in COX-2 and &minus;8.6 in COX-1. What is the strongest defensible sentence you can write?</summary>
+    <p>Something close to: "Under the stated protocol (Vina 1.2.5, seed 42, exhaustiveness 32, <em>n</em> = 5 runs, mean &plusmn; s.d.), etoricoxib scored &minus;9.8 &plusmn; <em>x</em> against COX-2 (5KIR) and &minus;8.6 &plusmn; <em>x</em> against COX-1 (6Y3C); the COX-2 pose places the methylsulfone in the side pocket, reproducing the binding mode reported for rofecoxib, whereas no side-pocket pose was obtained for COX-1." You report the scores as scores and let the pose carry the structural argument. You do not write "etoricoxib binds COX-2 1.2 kcal/mol more strongly", because the function is not calibrated across receptors and a 1.2 unit gap is within the error of the method.</p></details>
+  <details><summary>Why is etoricoxib having zero hydrogen-bond donors relevant to how you prepare the receptor?</summary>
+    <p>Because every polar interaction in the complex has the ligand as acceptor and the protein as donor. The two experimentally observed polar contacts in the analogous complex come from the side-chain nitrogens of His90 and Arg513. If you mis-assign the protonation of either &mdash; particularly the His90 tautomer &mdash; you delete the donor and the scoring function cannot form the interaction. For this ligand, receptor protonation is not a detail; it is most of the polar signal.</p></details>
+  <details><summary>A reviewer asks why you did not simply redock etoricoxib to validate. What is the answer?</summary>
+    <p>That no protein co-crystal of etoricoxib exists to redock against &mdash; the etoricoxib structures in the literature are pharmaceutical co-crystals with small-molecule formers, not enzyme complexes. Validation therefore used the nearest chemotype in a structure of the same receptor: rofecoxib in 5KIR, which carries the same methylsulfone selectivity element in the same side pocket.</p></details>
+
+  <h2>Sources</h2>
+  <p class="note"><span class="grade">A</span> primary literature or structure entry. <span class="grade b">B</span> peer-reviewed review or benchmark. <span class="grade c">C</span> software documentation and practitioner resources &mdash; used only for tool behaviour, not for biology.</p>
+  <ul class="src">
+    <li><span class="grade">A</span> Orlando BJ, Malkowski MG. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5053162/">Crystal structure of rofecoxib bound to human cyclooxygenase-2</a>. <em>Acta Cryst F</em> 2016;72:772&ndash;776 &mdash; PDB 5KIR at 2.7&nbsp;&Aring;; the methylsulfone oxygens contacting the side-chain nitrogens of His90 and Arg513 with all other contacts hydrophobic; the phenyl ring toward Tyr385; Val523 providing access; the 0.31&nbsp;&Aring; C&alpha; r.m.s.d. overlay with celecoxib over 542 pairs; rofecoxib ~60-fold more selective than celecoxib and the authors' attribution to binding kinetics; the Ile434/His513/Ile523 &rarr; Val434/Arg513/Val523 substitutions increasing active-site volume ~25% and creating the side pocket.</li>
+    <li><span class="grade">A</span> Riendeau D, Percival MD, Brideau C, et al. <a href="https://pubmed.ncbi.nlm.nih.gov/11160644/">Etoricoxib (MK-0663): preclinical profile and comparison with other agents that selectively inhibit cyclooxygenase-2</a>. <em>J Pharmacol Exp Ther</em> 2001;296(2):558&ndash;566 &mdash; the systematic name; human whole-blood IC<sub>50</sub> 1.1 &plusmn; 0.1 &micro;M (COX-2) vs 116 &plusmn; 8 &micro;M (COX-1); selectivity ratio 106, against 35 for rofecoxib, 30 valdecoxib, 7.6 celecoxib, 7.3 nimesulide, 2.4 etodolac, 2.0 meloxicam.</li>
+    <li><span class="grade">A</span> Tacconelli S, Capone ML, Sciulli MG, Ricciotti E, Patrignani P. <a href="https://pubmed.ncbi.nlm.nih.gov/12564662/">The biochemical selectivity of novel COX-2 inhibitors in whole blood assays of COX-isozyme activity</a>. <em>Curr Med Res Opin</em> 2002;18(8):503&ndash;511 &mdash; COX-1/COX-2 IC<sub>50</sub> ratio of 344 for etoricoxib and 61.5 for valdecoxib, i.e. a materially different ratio from the same nominal assay type.</li>
+    <li><span class="grade">A</span> Vecchio AJ, Malkowski MG et al. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3185125/">Structural basis of fatty acid substrate binding to cyclooxygenase-2</a> / NS-398 complex work (PMC) &mdash; the coxib side pocket generated by Ile434 and Ile523 &rarr; Val434 and Val523, increasing channel volume by ~20%, citing Kurumbail 1996 and Luong 1996; NS-398 as a COX-2-selective inhibitor that does <em>not</em> penetrate the side pocket, showing the pocket is not the only route to selectivity.</li>
+    <li><span class="grade b">B</span> <a href="https://asbmb.org/asbmb-today/science/012120/a-new-hotspot-for-cyclooxygenase-inhibition">A new hotspot for cyclooxygenase inhibition</a>, ASBMB Today &mdash; Leu531 rotating between closed and open conformations, identified by MD as expanding the channel volume, with alternate rotamers seen in COX-2 crystal structures; Arg513 at the base of the side pocket.</li>
+    <li><span class="grade b">B</span> <a href="https://brieflands.com/journals/ijpr/articles/125993">Selective COX-2 inhibitors: a review of their structure&ndash;activity relationships</a>, <em>Iran J Pharm Res</em> &mdash; ~60% sequence identity; the three-domain monomer architecture (EGF-like, ~48-residue membrane-binding domain, catalytic domain); Val523 opening access to the side pocket as the prerequisite for selectivity.</li>
+    <li><span class="grade b">B</span> <a href="https://www.mdpi.com/1420-3049/30/16/3361">Benchmarking GNINA and AutoDock Vina for precision virtual screening</a>, <em>Molecules</em> 2025 &mdash; Vina's difficulty with flexible ligands and the size-related bias of its empirical scoring function; approximate scoring functions rarely correlating well with experimental binding affinities; consensus scoring as mitigation.</li>
+    <li><span class="grade c">C</span> <a href="https://autodock-vina.readthedocs.io/en/latest/">AutoDock Vina documentation</a> (v1.2) &mdash; scores from the AutoDock and Vina force fields are not comparable with each other; the search may fail to find the minimum, and a different seed may be needed; rigid-receptor docking caveats.</li>
+    <li><span class="grade c">C</span> Practitioner guidance on Vina score interpretation &mdash; the score as a ranking signal rather than a measured binding free energy, the specific warning that comparing scores across receptors is the most frequent error, and the demonstration that the function can prefer a non-crystal pose to the crystal pose. Treated here as craft knowledge consistent with the peer-reviewed benchmarks above, not as a primary citation.</li>
+    <li><span class="grade">A</span> Zhang et al. (2023) and Rajalakshmi et al. &mdash; <a href="https://pubmed.ncbi.nlm.nih.gov/38967632/">supramolecular cocrystals of etoricoxib with benzoic acid derivatives</a> and related polymorph/hydrate studies, confirming that the published etoricoxib crystal structures are small-molecule co-crystals rather than protein complexes.</li>
+  </ul>
+  <p class="note">Educational notes on method and structure. No dosing or prescribing information is given or implied. PDB codes, resolutions and the absence of an etoricoxib protein complex should be re-verified against the PDB at the time you write up, since depositions change.</p>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var NS='http://www.w3.org/2000/svg';
+  function el(t,a){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);return e;}
+  var svg=document.getElementById('site');
+
+  var iso=2;            // 1 or 2
+  var t=0;              // ligand progress 0..1
+  var showRes=true;
+  var anim=null;
+
+  // ---- ligand path: up the channel, then the sulfone arm swings into the pocket
+  function ligPos(tt){
+    // main body travels along the channel
+    var pts=[[308,500],[308,432],[306,386],[304,340],[302,300],[300,272]];
+    var seg=Math.min(0.999, tt)* (pts.length-1);
+    var i=Math.floor(seg), f=seg-i;
+    var a=pts[i], b=pts[Math.min(pts.length-1,i+1)];
+    return [a[0]+(b[0]-a[0])*f, a[1]+(b[1]-a[1])*f];
+  }
+
+  function build(){
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+
+    var open = (iso===2);
+    var gateR = open ? 17 : 27;              // Val smaller than Ile
+    var gateName = open ? 'Val523' : 'Ile523';
+    var baseName = open ? 'Arg513' : 'His513';
+    var r434 = open ? 'Val434' : 'Ile434';
+
+    // protein body
+    svg.appendChild(el('rect',{x:0,y:0,width:760,height:540,fill:'#fff'}));
+    svg.appendChild(el('rect',{x:70,y:40,width:620,height:430,rx:40,
+      fill: open ? '#e8f1ed' : '#f6ece9', stroke: open ? '#bcd9cd' : '#e2c6bd','stroke-width':2}));
+    var tp=el('text',{x:96,y:70,'font-size':13,'font-weight':'700',fill: open?'#1f6f58':'#a8543f'});
+    tp.textContent = open ? 'COX-2  (human)' : 'COX-1';
+    svg.appendChild(tp);
+
+    // membrane
+    svg.appendChild(el('rect',{x:0,y:470,width:760,height:16,fill:'#dfe4ea'}));
+    svg.appendChild(el('rect',{x:0,y:486,width:760,height:16,fill:'#eef1f5'}));
+    var mt=el('text',{x:16,y:516,'font-size':12,'font-style':'italic',fill:'#6b7280'});
+    mt.textContent='membrane-binding domain / bilayer — substrate enters here';
+    svg.appendChild(mt);
+
+    // lumen: channel
+    var lumen='M250 500 L250 412 Q250 382 268 372 L268 312 Q264 250 276 202 '+
+              'Q286 168 308 166 Q332 166 344 202 Q356 250 352 312 L352 372 '+
+              'Q370 382 370 412 L370 500 Z';
+    svg.appendChild(el('path',{d:lumen,fill:'#ffffff',stroke:'#aeb8c4','stroke-width':2.5}));
+
+    // side pocket (open lumen only in COX-2)
+    var pocket='M350 292 Q404 288 444 292 Q504 298 528 270 Q550 242 524 220 '+
+               'Q488 198 436 210 Q394 220 350 216 Z';
+    svg.appendChild(el('path',{d:pocket,
+      fill: open ? '#ffffff' : '#efe2de',
+      stroke: open ? '#aeb8c4' : '#d8bdb5','stroke-width':2.5,
+      'stroke-dasharray': open ? 'none' : '7 5'}));
+    var pl=el('text',{x:452,y:330,'text-anchor':'middle','font-size':12.5,'font-weight':'700',
+      fill: open? '#1f6f58':'#a8543f', stroke:'#fff','stroke-width':3.5,'paint-order':'stroke'});
+    pl.textContent = open ? 'side pocket' : 'side pocket absent';
+    svg.appendChild(pl);
+
+    // --- residues
+    function res(x,y,r,name,colour,lx,ly){
+      svg.appendChild(el('circle',{cx:x,cy:y,r:r,fill:colour,stroke:'#55606e','stroke-width':1.6,opacity:0.92}));
+      if(showRes){
+        var tx=el('text',{x:(lx!==undefined?lx:x),y:(ly!==undefined?ly:y-r-7),'text-anchor':'middle',
+          'font-size':12,'font-weight':'700',fill:'#2b3440',stroke:'#fff','stroke-width':3.5,'paint-order':'stroke'});
+        tx.textContent=name; svg.appendChild(tx);
+      }
+    }
+    // gate 523 at the pocket mouth
+    res(356,254,gateR, gateName, open?'#9ad3bd':'#e3a894', 356, 254+gateR+18);
+    // base of pocket
+    res(520,246,15, baseName, open?'#7fc3f5':'#f0c48a', 536, 222);
+    // His90 near the pocket
+    res(478,214,13,'His90','#bfd6ef', 486, 194);
+    // 434
+    res(336,198,13,r434, open?'#9ad3bd':'#e3a894', 376, 190);
+    // Phe518
+    res(362,224,12,'Phe518','#cfd6df', 406, 222);
+    // apex
+    res(310,176,14,'Tyr385','#e6d2a8', 310, 152);
+    res(278,206,13,'Ser530','#e6d2a8', 236, 198);
+    // constriction
+    res(256,392,13,'Arg120','#cfd6df', 218, 398);
+    res(364,392,13,'Tyr355','#cfd6df', 404, 398);
+    // Leu531
+    res(282,258,12,'Leu531','#dcd3ea', 240, 262);
+
+    // --- ligand
+    if(t>0){
+      var p=ligPos(t);
+      var g=el('g',{});
+      // chloro-methylpyridine (trailing)
+      g.appendChild(el('circle',{cx:p[0]-4,cy:p[1]+46,r:17,fill:'#c9a9e6',stroke:'#6a4ca3','stroke-width':2}));
+      // central pyridine
+      g.appendChild(el('circle',{cx:p[0],cy:p[1]+14,r:17,fill:'#b48ade',stroke:'#6a4ca3','stroke-width':2}));
+      // methylsulfonylphenyl ring
+      var armT=Math.max(0,(t-0.72)/0.28);
+      var a0x=p[0]+14, a0y=p[1]-4;
+      var a1x=open?400:330, a1y=open?254:244;
+      var ax=a0x+(a1x-a0x)*armT, ay=a0y+(a1y-a0y)*armT;
+      g.appendChild(el('line',{x1:p[0],y1:p[1]+14,x2:ax,y2:ay,stroke:'#6a4ca3','stroke-width':5,'stroke-linecap':'round'}));
+      g.appendChild(el('circle',{cx:ax,cy:ay,r:16,fill:'#a06fd4',stroke:'#6a4ca3','stroke-width':2}));
+      // sulfone head
+      var s1x=open?468:356, s1y=open?248:232;
+      var sx=ax+(s1x-a1x)*armT, sy=ay+(s1y-a1y)*armT;
+      g.appendChild(el('line',{x1:ax,y1:ay,x2:sx,y2:sy,stroke:'#6a4ca3','stroke-width':5,'stroke-linecap':'round'}));
+      g.appendChild(el('circle',{cx:sx,cy:sy,r:13,fill:'#f0d35e',stroke:'#8a6a1e','stroke-width':2.2}));
+      var st=el('text',{x:sx,y:sy+4,'text-anchor':'middle','font-size':10,'font-weight':'700',fill:'#5a4710'});
+      st.textContent='SO₂'; g.appendChild(st);
+      svg.appendChild(g);
+
+      // interactions or clash
+      if(t>0.985){
+        if(open){
+          [[520,246],[478,214]].forEach(function(q){
+            svg.appendChild(el('line',{x1:sx,y1:sy,x2:q[0],y2:q[1],stroke:'#1f6f58','stroke-width':2.6,'stroke-dasharray':'5 4'}));
+          });
+          var ht=el('text',{x:470,y:360,'text-anchor':'middle','font-size':12.5,'font-weight':'700',fill:'#1f6f58',
+            stroke:'#fff','stroke-width':3.5,'paint-order':'stroke'});
+          ht.textContent='sulfone O \u00b7\u00b7\u00b7 N of His90 and Arg513'; svg.appendChild(ht);
+        } else {
+          svg.appendChild(el('circle',{cx:356,cy:254,r:gateR+11,fill:'none',stroke:'#c0392b','stroke-width':3,'stroke-dasharray':'6 4'}));
+          var ct=el('text',{x:470,y:360,'text-anchor':'middle','font-size':12.5,'font-weight':'700',fill:'#c0392b',
+            stroke:'#fff','stroke-width':3.5,'paint-order':'stroke'});
+          ct.textContent='steric clash at Ile523 \u2014 arm excluded'; svg.appendChild(ct);
+        }
+      }
+    }
+
+    // readouts
+    document.getElementById('r523').textContent = open ? 'Val — pocket open' : 'Ile — pocket blocked';
+    document.getElementById('rPocket').textContent = open ? 'present, Arg513 at base' : 'absent (His513)';
+    var s=document.getElementById('rSulf');
+    if(t<0.98) s.textContent='—';
+    else s.textContent = open ? 'in side pocket' : 'cannot enter';
+  }
+
+  function animate(to){
+    if(anim) cancelAnimationFrame(anim);
+    var from=t, t0=null, dur=1400;
+    function step(ts){
+      if(!t0) t0=ts;
+      var k=Math.min(1,(ts-t0)/dur);
+      var e=k<0.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+      t=from+(to-from)*e;
+      build();
+      if(k<1) anim=requestAnimationFrame(step); else anim=null;
+    }
+    anim=requestAnimationFrame(step);
+  }
+
+  function setIso(n){
+    iso=n;
+    document.getElementById('bC1').setAttribute('aria-pressed', n===1?'true':'false');
+    document.getElementById('bC2').setAttribute('aria-pressed', n===2?'true':'false');
+    build();
+  }
+  document.getElementById('bC1').addEventListener('click',function(){setIso(1);});
+  document.getElementById('bC2').addEventListener('click',function(){setIso(2);});
+  document.getElementById('bDock').addEventListener('click',function(){animate(1);});
+  document.getElementById('bOut').addEventListener('click',function(){animate(0);});
+  var br=document.getElementById('bRes');
+  br.addEventListener('click',function(){
+    showRes=!showRes; br.setAttribute('aria-pressed',showRes?'true':'false'); build();
+  });
+
+  build();
+})();
+</script>
+</body>
+</html>

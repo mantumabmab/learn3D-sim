@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How a mass spectrometer works</title>
+<style>
+  :root{
+    --ink:#1d262e; --mid:#4a5a6a; --soft:#7b8794; --rule:#dde4ea;
+    --paper:#fbfcfd; --box:#f3f6f8; --accent:#1f6f8b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font:16px/1.65 ui-serif,Georgia,'Times New Roman',serif;}
+  .wrap{max-width:780px;margin:0 auto;padding:48px 22px 90px}
+  h1{font-size:30px;line-height:1.22;margin:0 0 6px;letter-spacing:-.015em}
+  .sub{color:var(--soft);font:14px/1.5 ui-sans-serif,system-ui,sans-serif;
+    margin:0 0 34px}
+  h2{font-size:20px;margin:42px 0 12px;letter-spacing:-.01em;
+    padding-top:14px;border-top:1px solid var(--rule)}
+  h3{font:600 15px/1.4 ui-sans-serif,system-ui,sans-serif;margin:24px 0 8px}
+  p{margin:0 0 14px}
+  ul,ol{margin:0 0 14px;padding-left:22px}
+  li{margin:0 0 6px}
+  code{font:13.5px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;
+    background:#eef2f5;padding:1px 5px;border-radius:3px}
+  .eq{background:var(--box);border-left:3px solid var(--accent);
+    padding:13px 16px;margin:16px 0;border-radius:0 4px 4px 0;
+    font:15px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;overflow-x:auto}
+  .eq small{display:block;font:12px/1.5 ui-sans-serif,system-ui,sans-serif;
+    color:var(--soft);margin-top:7px}
+  .note{background:#fdf8ef;border:1px solid #f0e2c8;border-radius:5px;
+    padding:13px 16px;margin:18px 0;font-size:15px}
+  .note b{font:600 13px/1.4 ui-sans-serif,system-ui,sans-serif;
+    text-transform:uppercase;letter-spacing:.06em;color:#9a7430;
+    display:block;margin-bottom:5px}
+  .try{background:#eef6f2;border:1px solid #cfe6da;border-radius:5px;
+    padding:13px 16px;margin:18px 0;font-size:15px}
+  .try b{font:600 13px/1.4 ui-sans-serif,system-ui,sans-serif;
+    text-transform:uppercase;letter-spacing:.06em;color:#2e7d4f;
+    display:block;margin-bottom:5px}
+  table{border-collapse:collapse;width:100%;margin:18px 0;
+    font:14px/1.5 ui-sans-serif,system-ui,sans-serif}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--rule);
+    vertical-align:top}
+  th{font-weight:600;color:var(--mid);border-bottom:1.5px solid #c5cfd8;
+    font-size:13px;letter-spacing:.02em}
+  td.n{font-variant-numeric:tabular-nums;white-space:nowrap}
+
+  /* ---- figure ---- */
+  .fig{margin:30px -22px;background:#fff;border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);padding:18px 22px 20px}
+  @media(min-width:860px){.fig{margin:34px -60px;border:1px solid var(--rule);
+    border-radius:8px;padding:20px 26px 22px}}
+  .figh{font:600 13px/1.4 ui-sans-serif,system-ui,sans-serif;
+    text-transform:uppercase;letter-spacing:.07em;color:var(--soft);
+    margin:0 0 10px}
+  .anrow{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}
+  .anbtn{font:13px/1 ui-sans-serif,system-ui,sans-serif;padding:8px 12px;
+    border:1px solid #cdd7df;background:#fff;color:var(--mid);
+    border-radius:5px;cursor:pointer}
+  .anbtn.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  #cv{display:block;cursor:grab;touch-action:none}
+  #cv:active{cursor:grabbing}
+  #sp{display:block;margin-top:2px}
+  .ctl{display:grid;grid-template-columns:1fr;gap:9px;margin-top:12px;
+    font:13px/1.4 ui-sans-serif,system-ui,sans-serif}
+  @media(min-width:620px){.ctl{grid-template-columns:1fr 1fr}}
+  .ctl label{display:flex;align-items:center;gap:9px;color:var(--mid)}
+  .ctl label span.k{flex:0 0 104px}
+  .ctl label span.v{flex:0 0 150px;text-align:right;
+    font-variant-numeric:tabular-nums;color:var(--ink);font-size:12.5px}
+  .ctl input[type=range]{flex:1;min-width:70px}
+  .btnrow{display:flex;gap:8px;margin-top:12px}
+  .btnrow button{font:13px/1 ui-sans-serif,system-ui,sans-serif;padding:8px 14px;
+    border:1px solid #cdd7df;background:#fff;color:var(--mid);
+    border-radius:5px;cursor:pointer}
+  .key{display:flex;gap:14px;flex-wrap:wrap;margin:10px 0 0;
+    font:12.5px/1.4 ui-sans-serif,system-ui,sans-serif;color:var(--soft)}
+  .key i{display:inline-block;width:9px;height:9px;border-radius:50%;
+    margin-right:5px;vertical-align:baseline}
+  .rout{margin-top:10px;font:12.5px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;
+    color:var(--mid);background:var(--box);padding:9px 12px;border-radius:4px}
+  .cap{font:13px/1.6 ui-sans-serif,system-ui,sans-serif;color:var(--soft);
+    margin:12px 0 0}
+
+  .refs{font:13.5px/1.6 ui-sans-serif,system-ui,sans-serif}
+  .refs li{margin-bottom:9px}
+  .g{display:inline-block;font:600 10.5px/1 ui-sans-serif,system-ui,sans-serif;
+    padding:3px 6px;border-radius:3px;margin-right:7px;vertical-align:1px}
+  .gA{background:#dff0e4;color:#1e6b3a}
+  .gB{background:#e4eef6;color:#1f5a7d}
+  .gC{background:#f6eede;color:#8a6a28}
+  .q{margin:16px 0;padding:14px 16px;background:var(--box);border-radius:5px}
+  .q p{margin:0 0 8px;font-weight:600}
+  .q details{font-size:15px}
+  .q summary{cursor:pointer;color:var(--accent);
+    font:13px/1.4 ui-sans-serif,system-ui,sans-serif}
+  .q div.ans{margin-top:8px;color:var(--mid)}
+  footer{margin-top:46px;padding-top:16px;border-top:1px solid var(--rule);
+    font:12.5px/1.6 ui-sans-serif,system-ui,sans-serif;color:var(--soft)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>How a mass spectrometer works</h1>
+<p class="sub">Postgraduate notes &middot; the mechanism end to end &middot; about 25 minutes,
+with a simulation you can drive</p>
+
+<p>A mass spectrometer does three things in sequence, and almost every instrument
+ever built is a different answer to the same three questions: how do you turn a
+neutral molecule into an ion, how do you sort the ions by mass-to-charge ratio,
+and how do you count what arrives. These notes follow one complete chain — an
+electron-ionisation source, a mass analyser, a detector — and then open out the
+middle stage, because that is where the instruments differ.</p>
+
+<p>By the end you should be able to: write down why flight time, bending radius
+and oscillation frequency all scale as <code>&radic;(m/z)</code> and say what that
+implies; predict which ions a quadrupole transmits from the Mathieu parameters;
+explain why a reflectron improves resolution without improving the mass range;
+and read an isotope pattern as a statement about elemental composition.</p>
+
+<h2>1. What the instrument actually measures</h2>
+
+<p>It measures <b>mass-to-charge ratio</b>, not mass. Every equation below
+contains <code>m/z</code> as a single quantity, because an ion's response to an
+electric or magnetic field depends on its inertia and its charge together and on
+nothing else. A doubly charged ion of 400 Da is indistinguishable, in the
+analyser, from a singly charged ion of 200 Da; the two are told apart only by the
+spacing of their isotope peaks, which is <code>1/z</code> Da.</p>
+
+<p>The second thing to hold onto is that the whole chain runs in high vacuum,
+typically 10<sup>&minus;5</sup> to 10<sup>&minus;6</sup> torr in the source and
+lower in the analyser.<sup>[1]</sup> This is not fastidiousness: the mean free
+path has to exceed the flight path, or ions collide, scatter and lose the
+velocity or phase that encodes their mass. Vacuum is a precondition for the
+measurement, not a convenience.</p>
+
+<h2>2. Making the ions: electron ionisation</h2>
+
+<p>A heated filament emits electrons, which are accelerated through 70 V across
+the ionisation volume and cross the stream of neutral analyte. An interaction
+ejects an electron from the molecule:</p>
+
+<div class="eq">M + e<sup>&minus;</sup> &rarr; M<sup>+&bull;</sup> + 2e<sup>&minus;</sup>
+<small>The product is a radical cation — odd-electron, and usually in a highly
+excited vibrational state.</small></div>
+
+<p>Why 70 eV, universally? Two reasons, and it is worth separating them. First,
+70 eV sits on the broad plateau of the ionisation cross-section, so small drifts
+in filament potential barely change the spectrum; this is what makes 70 eV
+spectra reproducible between laboratories and between instrument types, and it is
+the reason the great reference libraries are all recorded at that
+value.<sup>[2][3]</sup> Second, 70 eV is enormous compared with what the molecule
+needs. Ionising a typical organic compound costs about 10 eV, while a typical
+single bond is worth roughly 3 eV, so the excess energy deposited — around 15 eV
+in a typical event — drives extensive fragmentation.<sup>[2]</sup></p>
+
+<p>That fragmentation is the point and the price. It is the point because the
+fragment pattern is a structural fingerprint, reproducible enough to search
+against a library. It is the price because for many compounds the molecular ion
+does not survive at all, so the one number you most wanted — the molecular mass —
+is missing.<sup>[2]</sup> Soft ionisation methods (chemical ionisation,
+electrospray, MALDI) exist precisely to buy the molecular ion back, at the cost
+of the fingerprint.</p>
+
+<div class="note"><b>Worth labelling</b>
+The older name "electron impact" survives in common use but is mechanistically
+misleading: a 70 eV electron passes a molecule in roughly 10<sup>&minus;16</sup> s
+and transfers energy through the perturbation of its field rather than through a
+billiard-ball collision. IUPAC recommends "electron ionisation" for this
+reason.<sup>[4]</sup></div>
+
+<h2>3. The one equation the rest depends on</h2>
+
+<p>Ions leave the source and fall through an accelerating potential
+<code>V</code>. All the electrical work becomes kinetic energy:</p>
+
+<div class="eq">zeV = &frac12;mv&sup2;    &rarr;    v = &radic;(2zeV / m)
+<small>Every ion acquires the <i>same energy</i>, so heavier ions acquire a
+<i>lower speed</i> — and speed is what every analyser downstream converts into a
+measurement.</small></div>
+
+<p>From that single relation the three classical analysers follow immediately.
+Let an ion drift a distance <code>L</code>: the flight time is
+<code>t = L&radic;(m / 2zeV)</code>, proportional to <code>&radic;(m/z)</code>.
+Bend it in a magnetic field <code>B</code>: the Lorentz force sets
+<code>r = mv/zeB = &radic;(2Vm/z)/B</code>, again proportional to
+<code>&radic;(m/z)</code>. The Orbitrap, which does not accelerate ions to a
+common energy at all, nonetheless reports a frequency going as
+<code>1/&radic;(m/z)</code>. The square root is not a coincidence between three
+designs; it is the same relation read three ways.</p>
+
+<h2>4. Separating by m/z: four answers to one problem</h2>
+
+<p>Drive the simulation below. The source on the left is the same in every case;
+only the middle stage changes. Drag to rotate the instrument, and watch the
+spectrum build underneath as ions reach the detector.</p>
+
+<div class="fig">
+  <p class="figh">Figure 1 &middot; <span id="anName">Quadrupole</span> &mdash;
+     drag to rotate</p>
+  <div class="anrow">
+    <button class="anbtn" id="b_sector">Magnetic sector</button>
+    <button class="anbtn" id="b_quad">Quadrupole</button>
+    <button class="anbtn" id="b_tof">Time of flight</button>
+    <button class="anbtn" id="b_orbi">Orbitrap</button>
+  </div>
+  <canvas id="cv"></canvas>
+  <canvas id="sp"></canvas>
+  <div class="key">
+    <span><i style="background:#b9770e"></i>m/z 51</span>
+    <span><i style="background:#1f6f8b"></i>m/z 77</span>
+    <span><i style="background:#2e7d4f"></i>m/z 112</span>
+    <span><i style="background:#7d4f9c"></i>m/z 114</span>
+  </div>
+
+  <div class="ctl" id="p_sector" style="display:none">
+    <label><span class="k">Accel. voltage</span>
+      <input type="range" id="sV" min="1000" max="8000" step="100" value="4000">
+      <span class="v" id="sVv"></span></label>
+    <label><span class="k">Flux density</span>
+      <input type="range" id="sB" min="15" max="80" step="1" value="35">
+      <span class="v" id="sBv"></span></label>
+  </div>
+  <div class="ctl" id="p_quad">
+    <label><span class="k">Below apex by</span>
+      <input type="range" id="sRes" min="2" max="300" step="1" value="100">
+      <span class="v" id="sResv"></span></label>
+  </div>
+  <div class="ctl" id="p_scanmode">
+    <label><span class="k">Sweep</span>
+      <input type="checkbox" id="cScan">
+      <span class="v">scan the whole range</span></label>
+    <label id="parkRow"><span class="k">Parked on</span>
+      <input type="range" id="sPark" min="45" max="125" step="1" value="77">
+      <span class="v" id="sParkv"></span></label>
+  </div>
+  <div class="ctl" id="p_tof" style="display:none">
+    <label><span class="k">Flight tube</span>
+      <input type="range" id="sL" min="30" max="250" step="5" value="100">
+      <span class="v" id="sLv"></span></label>
+    <label><span class="k">Energy spread</span>
+      <input type="range" id="sSpread" min="0" max="40" step="1" value="8">
+      <span class="v" id="sSpreadv"></span></label>
+    <label><span class="k">Reflectron</span>
+      <input type="checkbox" id="cMirror" checked>
+      <span class="v">energy focusing</span></label>
+  </div>
+  <div class="ctl" id="p_orbi" style="display:none">
+    <label><span class="k">Transient</span>
+      <input type="range" id="sTrans" min="8" max="1200" step="8" value="96">
+      <span class="v" id="sTransv"></span></label>
+  </div>
+
+  <div class="btnrow">
+    <button id="bRun">Pause</button>
+    <button id="bClear">Clear spectrum</button>
+    <label style="display:flex;align-items:center;gap:8px;
+      font:13px/1 ui-sans-serif,system-ui,sans-serif;color:#4a5a6a">
+      speed <input type="range" id="sSpeed" min="2" max="30" step="1" value="10"
+        style="width:80px"> <span id="sSpeedv"></span></label>
+  </div>
+  <div class="rout" id="rOut"></div>
+  <p class="cap">The sample is the electron-ionisation fragment set of
+  chlorobenzene. The <i>m/z</i> values are exact nominal masses and the 112:114
+  ratio is the measured <sup>35</sup>Cl/<sup>37</sup>Cl abundance ratio,
+  3.13:1<sup>[5]</sup>; the other relative intensities are schematic, chosen for
+  legibility rather than taken from a reference spectrum. Trajectories are
+  integrated from the equations in the text. In the quadrupole the RF frequency
+  is scaled down so individual oscillations are visible (a real filter runs
+  roughly a hundred RF cycles per transit) and the rods are drawn thinner than
+  the standard <i>r</i><sub>rod</sub> = 1.147&nbsp;<i>r</i><sub>0</sub> so the
+  trajectories inside stay visible; the stability criterion and the radius at
+  which an ion is lost are exact. Flight times, bending radii and oscillation
+  frequencies are computed in SI units from the stated voltages and fields, so
+  the numbers in the readout are real.</p>
+</div>
+
+<h3>Magnetic sector — dispersion in space</h3>
+
+<p>An ion entering a uniform field perpendicular to its velocity follows a
+circular arc of radius <code>r = &radic;(2Vm/z)/B</code>. The exit slit sits at
+one fixed radius, so only one <code>m/z</code> can pass at a time; the spectrum
+is swept by ramping <code>B</code> (or <code>V</code>). A sector is a genuine
+momentum-and-energy filter, which is why it was for decades the reference for
+accurate mass. It is also large, heavy, and intrinsically a scanning instrument:
+while one <code>m/z</code> reaches the detector, every other ion is being thrown
+away.</p>
+
+<h3>Quadrupole — dispersion in stability</h3>
+
+<p>Four parallel rods carry <code>&plusmn;(U + V cos &Omega;t)</code>. In the
+resulting field, transverse ion motion obeys the Mathieu equation, and the
+behaviour depends only on two dimensionless parameters:</p>
+
+<div class="eq">a = 8zeU / (m r&#8320;&sup2; &Omega;&sup2;)      q = 4zeV / (m r&#8320;&sup2; &Omega;&sup2;)
+<small>Both scale as 1/m, so for fixed U, V, r&#8320; and &Omega; every ion sits
+at its own point on a line through the origin of slope a/q = 2U/V.</small></div>
+
+<p>Bounded trajectories exist only inside a stability region whose apex sits at
+<b>q = 0.70600, a = 0.23699</b>; the region meets the q axis at
+<b>q = 0.90805</b>.<sup>[6][7]</sup> Ions outside it gain amplitude exponentially
+and strike a rod. Because the operating point is a straight line through the
+origin, the <i>whole spectrum</i> is scanned by ramping <code>U</code> and
+<code>V</code> together at constant ratio, and that ratio alone sets the
+resolution.</p>
+
+<p>This is the part worth sitting with. A line drawn exactly through the apex is
+tangent to the region and transmits nothing. Lower its slope slightly and it cuts
+a short chord: a narrow window of <code>q</code>, hence a narrow window of
+<code>m/z</code>. Numerically, operating at a fraction <code>f</code> of the apex
+slope gives roughly</p>
+
+<div class="eq">R &asymp; 0.75 / (1 &minus; f)
+<small>Verified by locating the transmitted q window from the Mathieu
+characteristic values: 1&minus;f = 0.01 &rarr; R &asymp; 75; 0.001 &rarr; 737;
+0.0001 &rarr; 6200.</small></div>
+
+<p>So unit resolution at <code>m/z</code> 300 demands that the DC-to-RF ratio be
+held within about 0.25% of the apex value, and higher resolution is bought
+directly in transmitted ion current. That trade — resolution against sensitivity,
+set by one voltage ratio — is the defining characteristic of a quadrupole, and the
+reason its resolving power sits in the hundreds rather than the
+thousands.<sup>[8]</sup></p>
+
+<div class="try"><b>Try this</b>
+Set the quadrupole slider to its widest setting before you move it. Predict what
+happens to the four peaks. Then narrow it. You should see peak width collapse and
+total counts collapse with it — and at the narrowest setting, long gaps where
+nothing reaches the detector at all. That is not a bug in the simulation; that is
+what a quadrupole is doing to your sample for most of every scan.</div>
+
+<h3>Time of flight — dispersion in time</h3>
+
+<p>Pulse the ions, let them drift a field-free distance, and time their arrival:
+<code>t = L&radic;(m / 2zeV)</code>. Every ion is measured in every pulse, so
+unlike a scanning analyser nothing is discarded, and the mass range is unbounded
+in principle. The limit is timing. Since <code>m &prop; t&sup2;</code>, the
+resolving power is</p>
+
+<div class="eq">R = m / &Delta;m = t / 2&Delta;t
+<small>A 1 m tube at 20 kV puts m/z 500 at the detector in 11.4 &micro;s; a 1 ns
+peak width then gives R &asymp; 5700.</small></div>
+
+<p>The dominant contribution to <code>&Delta;t</code> is not electronics but the
+spread of initial kinetic energies in the source: ions of the same mass leave with
+slightly different speeds and arrive smeared. Linear instruments are held to
+roughly a few hundred in resolving power by this alone.<sup>[9][10]</sup></p>
+
+<p>The reflectron fixes it with a trick worth admiring. An ion entering a
+retarding field decelerates, stops, and returns; the time spent inside is
+<code>2mv/zeE</code>, <i>proportional to the entry speed</i>. A hotter ion
+overtakes its cohort in the drift tube and then penetrates deeper into the mirror
+and spends correspondingly longer there. To first order the two effects cancel and
+ions of equal <code>m/z</code> arrive together regardless of their initial
+energy.<sup>[11]</sup> The mirror also folds the flight path, which lengthens
+<code>t</code> without lengthening the instrument.</p>
+
+<p>The simulation lets you see the size of that effect: at &plusmn;15 eV of
+initial energy spread the linear instrument smears <i>m/z</i> 77 over about
+16 ns, and switching the mirror on collapses that to under 10 ps. Do not read
+the resulting six-figure resolving power as a specification. It is the
+contribution of this one term, and once it falls below the others — the
+turn-around time of ions initially moving the wrong way, the spatial spread in
+the source, detector rise time, field imperfections — those become the limit.
+That is why real single-stage reflectron instruments land near
+10<sup>4</sup> rather than 10<sup>6</sup>.</p>
+
+<div class="try"><b>Try this</b>
+Switch to time of flight, set the energy spread to &plusmn;40 eV and turn the
+reflectron <i>off</i>. Read the peak width in the readout. Now switch the
+reflectron on without touching anything else. Predict first: does the arrival
+time get shorter or longer, and what happens to the width?</div>
+
+<h3>Orbitrap — dispersion in frequency</h3>
+
+<p>Ions orbit a spindle-shaped central electrode inside a barrel, in a field
+engineered so that the axial potential is exactly harmonic. The ion's axial
+oscillation therefore has frequency</p>
+
+<div class="eq">&omega; = &radic;(k / (m/z))
+<small>k is the field curvature, fixed by the electrode geometry.</small></div>
+
+<p>The crucial property is that this axial frequency is independent of the ion's
+energy and of its spatial spread.<sup>[12][13]</sup> That is what removes the
+limit every other analyser runs into: a sector must be fed a monoenergetic beam, a
+TOF must correct for energy spread, but the Orbitrap simply does not care. The
+oscillating ions induce an image current on the two halves of the outer electrode;
+the transient is Fourier-transformed, and frequency maps to <code>m/z</code>.</p>
+
+<p>Because frequency is measured rather than position or arrival, resolution is
+bought with time: a longer transient resolves closer frequencies. At a fixed
+acquisition time the resolving power falls as <code>1/&radic;(m/z)</code> —
+more slowly than FT-ICR, where it falls as <code>1/(m/z)</code>, which is why an
+Orbitrap at 60,000 and a 7 T FT-ICR at 100,000 (both quoted at <i>m/z</i> 400)
+cross over near <i>m/z</i> 1100.<sup>[14]</sup></p>
+
+<div class="try"><b>Try this</b>
+On the Orbitrap, set the transient to 16 &micro;s and look at the peak near 112.
+Then drag it to 1200 &micro;s. Predict first: the two frequencies differ by
+6.1 kHz, so how long must you listen before you can tell them apart? Check your
+answer against the resolving power in the readout.<br><br>
+Note what you are watching. Nothing about the ions changed — the same ions are
+still orbiting the same way. All that changed is how long you listened to them.
+That is what it means to buy resolution with time.</div>
+
+<h3>Side by side</h3>
+
+<table>
+  <tr><th>Analyser</th><th>Measures</th><th class="n">Resolving power</th>
+      <th class="n">Mass accuracy</th><th>Character</th></tr>
+  <tr><td>Quadrupole</td><td>trajectory stability</td><td class="n">100&ndash;1000</td>
+      <td class="n">~100 ppm</td><td>scanning; cheap, robust, fast</td></tr>
+  <tr><td>Magnetic sector</td><td>radius of curvature</td><td class="n">10<sup>3</sup>&ndash;10<sup>5</sup></td>
+      <td class="n">&lt;5 ppm</td><td>scanning; large and heavy</td></tr>
+  <tr><td>Time of flight</td><td>arrival time</td><td class="n">10<sup>4</sup>&ndash;2&times;10<sup>4</sup></td>
+      <td class="n">3&ndash;5 ppm</td><td>pulsed; unlimited mass range</td></tr>
+  <tr><td>Orbitrap</td><td>axial frequency</td><td class="n">up to 10<sup>6</sup></td>
+      <td class="n">0.5&ndash;5 ppm</td><td>trapping; resolution costs time</td></tr>
+  <tr><td>FT-ICR</td><td>cyclotron frequency</td><td class="n">&gt;10<sup>7</sup></td>
+      <td class="n">0.05&ndash;1 ppm</td><td>trapping; needs a cryomagnet</td></tr>
+</table>
+<p class="cap">Figures from the sources at [8], [14], [15] and [16]. Ranges this
+wide are unavoidable — a benchtop quadrupole and a research sector instrument are
+separated by decades of engineering, and Orbitrap resolution is conventionally
+quoted at <i>m/z</i> 200 while TOF figures often are not, so the numbers are not
+strictly like for like.</p>
+
+<h2>5. Counting what arrives</h2>
+
+<p>Two detection principles, matched to the two kinds of analyser.</p>
+
+<p><b>Destructive counting.</b> Beam instruments use an electron multiplier: the
+ion strikes a conversion dynode, liberated secondary electrons are accelerated
+into the next surface, and the cascade delivers a gain of around
+10<sup>6</sup>&ndash;10<sup>8</sup>, enough to register a single ion as a usable
+pulse. The ion is consumed in the measurement.</p>
+
+<p><b>Non-destructive sensing.</b> Trapping instruments detect the image current
+that moving ions induce on nearby electrodes. Nothing is absorbed, so the same ion
+population can be observed for the whole transient — which is exactly why
+resolution scales with acquisition time. The signal is a sum of sinusoids and
+means nothing until it is Fourier-transformed; the "spectrum" is a derived
+quantity, not a direct record of arrivals. One consequence worth knowing: a
+transient is a finite record, so its transform carries the side lobes of
+whatever window was applied. Real instruments apodise before transforming
+(the simulation uses a Hann window) which suppresses the lobes at the cost of
+roughly doubling the peak width — so quoted resolving power depends on the
+window as well as on the acquisition time. In the simulation, switching to the
+Orbitrap switches the spectrum panel from a histogram of counts to the magnitude
+spectrum of a transient, which is a real difference in what is being plotted.</p>
+
+<h2>6. Reading the spectrum</h2>
+
+<h3>Isotope patterns are compositional evidence</h3>
+
+<p>Peaks above the monoisotopic mass are not noise; they are a binomial
+distribution over the heavy isotopes present, and they constrain composition
+before you have done any interpretation at all.</p>
+
+<ul>
+  <li><b>Carbon.</b> <sup>13</sup>C is 1.07% abundant,<sup>[5]</sup> so for
+  <code>n</code> carbons the M+1 peak is about <code>1.07n</code> per cent of M.
+  Counting carbons from the M+1 height is a standard first move, accurate to
+  about one carbon for n below roughly 20.</li>
+  <li><b>Chlorine.</b> <sup>35</sup>Cl:<sup>37</sup>Cl is 75.78:24.22, giving
+  M:M+2 of 3.13:1 for one chlorine.<sup>[5]</sup> Two chlorines give
+  1 : 0.639 : 0.102 — a signature you can recognise across a room.</li>
+  <li><b>Bromine.</b> 50.69:49.31, so M and M+2 are near enough equal.<sup>[5]</sup></li>
+  <li><b>Sulfur.</b> <sup>34</sup>S at 4.29% raises M+2 by about 4.4% per sulfur,
+  which is a much weaker signal and is easily lost under an M+2 from two
+  <sup>13</sup>C.<sup>[5]</sup></li>
+</ul>
+
+<h3>Nominal, average and exact mass</h3>
+
+<p>Three different numbers get called "the mass" and conflating them causes real
+errors. Nominal mass uses integer nucleon counts. Average mass weights all
+isotopes by natural abundance and is what a balance measures. Monoisotopic
+(exact) mass uses the lightest isotope of each element with its actual nuclidic
+mass, and it is what a high-resolution instrument reports.</p>
+
+<p>The gap between nominal and exact mass is what makes accurate mass useful. CO
+and N<sub>2</sub> are both nominally 28; exactly, they are 27.9949 and 28.0062, a
+difference of 11.3 mDa, so separating them needs R &asymp; 2500. At <i>m/z</i>
+400, a 5 ppm measurement is a 2.0 mDa window — narrow enough that only a handful
+of elemental formulae fit, which is the whole basis of formula assignment from
+accurate mass.</p>
+
+<div class="note"><b>Careful</b>
+Resolving power and mass accuracy are different claims and are often confused.
+Resolving power says whether two peaks are distinguishable; mass accuracy says how
+close the reported centroid is to the true value. High resolution makes high
+accuracy achievable but does not deliver it — accuracy also needs calibration, and
+it degrades when too many ions are in the trap at once, because space charge shifts
+the very frequencies being measured.<sup>[15]</sup></div>
+
+<h2>7. Beyond the basics</h2>
+
+<p><b>Hybrids are the norm now.</b> Few serious instruments use one analyser. A
+Q-TOF puts a quadrupole in front of a TOF to select a precursor and analyse its
+fragments; an Orbitrap instrument typically has a quadrupole for isolation and a
+C-trap to accumulate and inject ion packets. The quadrupole survives not for its
+resolving power but because it is a fast, cheap, robust gate.</p>
+
+<p><b>Single-stage mirrors are long.</b> The first-order focusing condition
+derived above, E = 4V/L, forces the ion to penetrate to a depth of L/4 — half
+the length of one drift leg, which is why the reflectron in the simulation is
+drawn so deep. Practical instruments use a two-stage mirror: a short, steep
+retarding stage decelerates the ions most of the way, and a weak second stage
+does the turning. That shortens the penetration and, with the extra free
+parameter, allows second-order focusing, which is where resolving powers in the
+tens of thousands come from.</p>
+
+<p><b>Space charge is the ceiling on trapping instruments.</b> Coulomb repulsion
+between trapped ions shifts and broadens frequencies, so the number of ions
+admitted has to be regulated — which is why automatic gain control exists.
+This couples resolution, accuracy and dynamic range in a way beam instruments do
+not experience.<sup>[15]</sup></p>
+
+<p><b>What is still contested.</b> Whether reported resolving powers are
+comparable between vendors is a live irritation rather than a settled matter: the
+convention of quoting Orbitrap resolution at <i>m/z</i> 200, where it is highest,
+is not universally followed for other analysers, and definitions of peak width
+(FWHM versus the 10% valley criterion) differ by a factor of about two. When
+comparing instruments, check which definition and which <i>m/z</i> is being
+quoted before comparing the numbers.</p>
+
+<h2>Check yourself</h2>
+
+<div class="q">
+  <p>1. A quadrupole is scanning with U/V held at 99.6% of the apex ratio. Roughly
+  what resolving power should you expect, and what would doubling it cost?</p>
+  <details><summary>Answer</summary><div class="ans">
+  1 &minus; f = 0.004, so R &asymp; 0.75/0.004 &asymp; 190. Doubling R means
+  halving (1 &minus; f) to 0.002, which halves the width of the transmitted q
+  window — so roughly half the ion current reaches the detector. Resolution in a
+  quadrupole is paid for in sensitivity, almost one for one.</div></details>
+</div>
+
+<div class="q">
+  <p>2. You double the length of a linear TOF drift tube. By how much does the
+  resolving power improve?</p>
+  <details><summary>Answer</summary><div class="ans">
+  Less than twice, and possibly not at all. R = t/2&Delta;t, and doubling L
+  doubles t — but &Delta;t from the initial energy spread also grows with flight
+  distance, because the velocity spread keeps converting into a position spread
+  for longer. This is precisely why reflectrons rather than longer tubes became
+  the answer: the mirror lengthens t while holding &Delta;t almost
+  fixed.<sup>[11]</sup></div></details>
+</div>
+
+<div class="q">
+  <p>3. A spectrum shows M at 100% and M+2 at 65%, with no significant M+1. What
+  does that tell you?</p>
+  <details><summary>Answer</summary><div class="ans">
+  Two chlorines. The predicted pattern for Cl<sub>2</sub> is 1 : 0.639 : 0.102,
+  and the absence of a meaningful M+1 rules out a large carbon count. Note what
+  this does <i>not</i> tell you: nothing about where the chlorines sit, or even
+  whether both are on the same fragment.</div></details>
+</div>
+
+<div class="q">
+  <p>4. An ion is reported at <i>m/z</i> 400.0 with 5 ppm accuracy, and you want
+  its elemental formula. What else do you need?</p>
+  <details><summary>Answer</summary><div class="ans">
+  The charge state, which the isotope spacing gives you (peaks 1 Da apart mean
+  z = 1, 0.5 Da apart mean z = 2). And then constraints: a 2.0 mDa window at mass
+  400 still admits many formulae over an unrestricted element set, so in practice
+  you restrict the elements, apply the nitrogen rule and ring-plus-double-bond
+  equivalents, and check the predicted isotope pattern against the observed one.
+  Accurate mass narrows the field; it rarely closes it alone.</div></details>
+</div>
+
+<h2>Sources</h2>
+<ol class="refs">
+  <li><span class="g gA">A</span> Wikipedia contributors, <i>Electron ionization</i>
+  — source pressure regime, 10<sup>&minus;5</sup>&ndash;10<sup>&minus;6</sup> torr.
+  Grade reflects corroboration by [2] and [3] rather than the venue.</li>
+  <li><span class="g gA">A</span> Van Bramer, S. E., <i>An Introduction to Mass
+  Spectrometry</i> (Widener University; also hosted as Chemistry LibreTexts
+  &sect;3.1) — 70 eV convention, ~10 eV ionisation energy, ~3 eV bond energy,
+  ~15 eV transferred, loss of the molecular ion.</li>
+  <li><span class="g gA">A</span> Amirav, A. <i>et al.</i>, "Cold Electron
+  Ionization Is Not a Supplementary Ion Source to Standard EI", <i>J. Am. Soc.
+  Mass Spectrom.</i> 2021, doi:10.1021/jasms.1c00241 — 70 eV as the library
+  standard, and the caveat that "standard EI" is not a tightly defined term.</li>
+  <li><span class="g gB">B</span> IUPAC / mass spectrometry terminology, via the
+  nomenclature discussion in [3] and [2] — "electron ionisation" preferred over
+  "electron impact".</li>
+  <li><span class="g gA">A</span> IUPAC Subcommittee for Isotopic Abundance
+  Measurements, 1997 report, as tabulated by the University of Alberta mass
+  spectrometry facility — <sup>13</sup>C 1.07%, <sup>35</sup>Cl 75.78%,
+  <sup>37</sup>Cl 24.22%, <sup>79</sup>Br 50.69%, <sup>81</sup>Br 49.31%,
+  <sup>34</sup>S 4.29%.</li>
+  <li><span class="g gA">A</span> Pfeiffer Vacuum, <i>Quadrupole mass
+  spectrometers</i> technical reference; Eckhoff <i>et al.</i>, <i>Adv. Sci.</i>
+  2024, doi:10.1002/advs.202307665; Jimenez, J. L., CHEM-5181 lecture notes
+  (Univ. Colorado) — apex at a = 0.237, q = 0.706.</li>
+  <li><span class="g gA">A</span> Computed independently for these notes from the
+  Mathieu characteristic values and confirmed by direct trajectory integration:
+  apex q = 0.70600, a = 0.23699; q intercept 0.90805; R &asymp; 0.75/(1&minus;f).
+  Method and output are described in the closing note below.</li>
+  <li><span class="g gA">A</span> Hart-Smith, G. &amp; Blanksby, S. J., "Mass
+  Analysis", in <i>Mass Spectrometry in Polymer Chemistry</i> (Wiley) — figures of
+  merit tables for quadrupole, sector, TOF and FT-ICR analysers.</li>
+  <li><span class="g gB">B</span> US 5654545 (Bruker), <i>Mass resolution in
+  time-of-flight mass spectrometers with reflectors</i> — linear TOF limited to
+  R &asymp; 600 by initial velocity distribution.</li>
+  <li><span class="g gB">B</span> US 5464985, <i>Non-linear field reflectron</i>
+  — linear TOF resolution of roughly 1 part in 300&ndash;600 attributable to the
+  initial kinetic energy distribution.</li>
+  <li><span class="g gB">B</span> US 6781121, <i>Time-of-flight mass
+  spectrometer</i> — R = t/2&Delta;t, and the reflectron lengthening the flight
+  path while holding &Delta;t nearly constant.</li>
+  <li><span class="g gA">A</span> Hu, Q.; Noll, R. J.; Li, H.; Makarov, A.;
+  Hardman, M.; Cooks, R. G., "The Orbitrap: a new mass spectrometer",
+  <i>J. Mass Spectrom.</i> 2005, PMID 15838939 — axial frequency independent of
+  ion energy and spatial spread.</li>
+  <li><span class="g gB">B</span> Makarov, A., "Orbitrap Against All Odds",
+  <i>The Analytical Scientist</i>, 2013 — &omega; = &radic;(k/(m/q)) stated by the
+  inventor. Grade reflects the venue, not the authority.</li>
+  <li><span class="g gA">A</span> Perry, R. H.; Cooks, R. G.; Noll, R. J.,
+  "Orbitrap mass spectrometry: instrumentation, ion motion and applications",
+  <i>Mass Spectrom. Rev.</i> 2008, doi:10.1002/mas.20186 — resolving power falling
+  as 1/&radic;(m/z), and the crossover with FT-ICR near <i>m/z</i> 1100.</li>
+  <li><span class="g gA">A</span> Lacorte, S. <i>et al.</i>, "Advances in
+  Ultra-High-Resolution Mass Spectrometry for Pharmaceutical Analysis",
+  PMC10003995 — Orbitrap vs FT-ICR mass accuracy (0.5&ndash;5 ppm vs
+  0.05&ndash;1 ppm), the <i>m/z</i> 200 convention, and space-charge limits.</li>
+  <li><span class="g gB">B</span> US 8952325 — commercial TOF resolving power
+  ~20,000 and mass accuracy 3&ndash;5 ppm; US 8935101 — Orbitrap up to 100,000
+  FWHM against TOF at 10,000&ndash;20,000.</li>
+</ol>
+
+<footer>
+<p>Before these notes were written the physics was checked numerically. The
+quadrupole stability apex was located from the Mathieu characteristic functions
+at q = 0.70600, a = 0.23699, agreeing with the published 0.706 / 0.237, and
+confirmed independently by integrating the equation of motion: a trajectory one
+per cent inside the apex stays bounded and one per cent outside does not. The
+q-axis intercept came out at 0.90805 against the published 0.908. The
+resolution relation R &asymp; 0.75/(1&minus;f) was obtained by measuring the
+transmitted q window as the operating slope was reduced. Flight time, bending
+radius and Orbitrap frequency were each confirmed to scale as &radic;(m/z) or
+its reciprocal to twelve significant figures, the Orbitrap resolving power to
+fall as 1/&radic;(m/z), and the isotope patterns to reproduce the published
+abundance ratios.</p>
+</footer>
+
+</div>
+<script src="sim.js"></script>
+</body>
+</html>

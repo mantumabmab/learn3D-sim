@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How semaglutide binds the GLP-1 receptor</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --ink:#15181e; --soft:#59606e; --rule:#dfe3e9; --card:#fff;
+    --accent:#14467d; --accent2:#0e7a63; --warn:#8a4b1c;
+    --ecd:#4a7fb5; --tm:#c2504a; --pep:#e0a01f; --g:#5b8f68;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:16.5px;line-height:1.62;-webkit-text-size-adjust:100%}
+  .wrap{max-width:860px;margin:0 auto;padding:30px 20px 80px}
+  .kicker{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--soft);font-weight:700}
+  h1{font-size:1.95rem;line-height:1.16;margin:.25em 0 .2em;letter-spacing:-.4px}
+  h2{font-size:1.25rem;margin:2.4em 0 .4em;color:var(--accent);line-height:1.3}
+  h3{font-size:1rem;margin:1.5em 0 .3em}
+  p{margin:.7em 0}
+  .lede{font-size:1.06rem;color:#333c4d}
+  code,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em}
+  .res{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em;
+    background:#eef1f5;border-radius:4px;padding:0 4px;white-space:nowrap}
+  .card{background:var(--card);border:1px solid var(--rule);border-radius:11px;padding:15px 19px;margin:20px 0}
+  .goals{background:#eef4fa;border-color:#cadcee}
+  .goals ul{margin:.3em 0 0;padding-left:1.1em} .goals li{margin:.3em 0}
+  .note{color:var(--soft);font-size:.9rem}
+  .caveat{background:#fdf7ec;border-color:#ecdcb8}
+  table{border-collapse:collapse;width:100%;font-size:.88rem;margin:14px 0}
+  th,td{text-align:left;padding:6px 9px;border-bottom:1px solid var(--rule);vertical-align:top}
+  th{background:#eef1f5;font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:#44506a}
+  tbody tr:hover{background:#fafbfc}
+  .fig{background:#fff;border:1px solid var(--rule);border-radius:11px;padding:15px;margin:24px 0}
+  .fig h4{margin:0 0 4px;font-size:.95rem}
+  .fig svg{display:block;width:100%;height:auto}
+  #stage{touch-action:none;cursor:grab;background:linear-gradient(#f8fafc,#eef2f7);border-radius:9px;
+    user-select:none;-webkit-user-select:none}
+  #stage:active{cursor:grabbing}
+  .controls{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}
+  button{font:inherit;font-size:.88rem;font-weight:600;min-height:36px;padding:0 12px;border-radius:8px;
+    border:1px solid #bcc7d6;background:#fff;color:#2b3a51;cursor:pointer}
+  button:hover{background:#eef3f8}
+  button[aria-pressed="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}
+  button:focus-visible{outline:3px solid #ffb703;outline-offset:2px}
+  .key{display:flex;flex-wrap:wrap;gap:12px;margin-top:11px;font-size:.84rem;color:#44506a}
+  .key span{display:flex;align-items:center;gap:5px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+  .cap{font-size:.85rem;color:var(--soft);margin-top:10px}
+  details{background:#fff;border:1px solid var(--rule);border-radius:9px;padding:10px 14px;margin:9px 0}
+  summary{font-weight:600;cursor:pointer;color:var(--accent)}
+  .sheet{background:#fffdf7;border:2px solid #e6d9b8;border-radius:11px;padding:18px 20px;margin:26px 0}
+  .sheet h3{margin-top:1em}
+  .sheet h3:first-of-type{margin-top:.3em}
+  .sheet ul{margin:.3em 0;padding-left:1.1em}
+  .sheet li{margin:.22em 0;font-size:.93rem}
+  .src{font-size:.9rem;padding-left:1.1em}
+  .src li{margin:.6em 0}
+  .grade{display:inline-block;font-size:.66rem;font-weight:700;border-radius:5px;padding:1px 6px;margin-right:5px;
+    background:#dcebe2;color:#13543a;border:1px solid #a8cdb8}
+  .grade.b{background:#e9ecf3;color:#2c3a5c;border-color:#c2cbe0}
+  a{color:#14467d}
+  hr{border:none;border-top:1px solid var(--rule);margin:2.3em 0}
+  @media print{
+    body{background:#fff} .fig,.controls,details{break-inside:avoid}
+    .sheet{page-break-before:always;border:1px solid #999}
+  }
+  @media (max-width:560px){
+    body{font-size:15.5px} h1{font-size:1.5rem} h2{font-size:1.12rem}
+    table{font-size:.8rem} th,td{padding:5px 6px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="kicker">Structural pharmacology &middot; postgraduate notes</p>
+  <h1>How semaglutide binds the GLP-1 receptor</h1>
+  <p class="lede">Semaglutide is <span class="mono">[Aib<sup>8</sup>, Arg<sup>34</sup>]GLP-1(7&ndash;37)</span> acylated at Lys<sup>26</sup>. It engages GLP-1R by the canonical class&nbsp;B1 two-domain route &mdash; C-terminal helix captured by the extracellular domain, N-terminus driven into the transmembrane bundle &mdash; and the cryo-EM structure shows a binding pose closely resembling that of the native peptide. Almost everything that distinguishes the drug from the hormone is about <em>residence</em>, not about a different way of binding.</p>
+
+  <div class="card goals">
+    <strong>By the end of these notes you can</strong>
+    <ul>
+      <li>describe GLP-1R architecture and the two-domain binding mechanism, and state what the model does and does not predict;</li>
+      <li>enumerate the semaglutide&ndash;GLP-1R contacts resolved in <span class="res">PDB 7KI0</span> and say which are shared with GLP-1 and which are not;</li>
+      <li>explain each engineered modification in terms of the specific liability it addresses;</li>
+      <li>reason about why a 3-fold affinity loss was an acceptable trade for a ~165&nbsp;h half-life;</li>
+      <li>state what remains structurally unresolved, including the fate of the C18 diacid.</li>
+    </ul>
+  </div>
+
+  <h2>1. The receptor</h2>
+  <p>GLP-1R (<span class="res">UniProt P43220</span>) is a class B1 (secretin-like) GPCR. Class B1 receptors are built from two modules: a large N-terminal <strong>extracellular domain</strong> (ECD) of roughly 100&ndash;160 residues, and a seven-transmembrane helical bundle. The ECD carries most of the affinity and selectivity for the peptide ligand; the TM bundle is what actually transduces the signal.</p>
+  <p>The ECD fold is conserved across the family: a three-layer &alpha;&ndash;&beta;&ndash;&beta;/&alpha; architecture, two pairs of antiparallel &beta;-sheets (&beta;1&ndash;&beta;2, &beta;3&ndash;&beta;4) and an N-terminal &alpha;-helix (&alpha;A). The peptide's C-terminal segment binds as an amphipathic &alpha;-helix against a hydrophobic groove on this domain. In <span class="res">PDB 4ZGM</span> &mdash; the 1.80&nbsp;&Aring; crystal structure of the semaglutide <em>peptide backbone</em> with the isolated GLP-1R ECD &mdash; the modelled ECD chain is 122 residues and the peptide chain 31.</p>
+
+  <h2>2. The two-domain mechanism</h2>
+  <p>The classical model for class B1 activation runs in two steps. The C-terminus of the peptide forms the initial complex with the ECD, which acts as an <strong>affinity trap</strong>: it captures the ligand from solution and raises its local concentration at the receptor, with the correct orientation. That tethering then allows the free N-terminus to insert into the juxtamembrane pocket of the TM bundle, where it drives the conformational change that opens the intracellular face for G protein coupling.</p>
+  <p>The model is well supported pharmacologically. N-terminally truncated class B1 peptides lose agonism but retain binding &mdash; they become antagonists &mdash; which is exactly what a two-site mechanism with separable affinity and efficacy determinants predicts.</p>
+
+  <div class="card caveat">
+    <strong>Where the model is less tidy.</strong>
+    <p class="note" style="margin-bottom:0">Human class B1 receptors differ widely in how much they actually need the ECD for activation. For CRF1R, PTH1R and PAC1R the ECD requirement can be bypassed by induced proximity and mass-action effects; GCGR and GLP-1R sit in the other group, where the ECD contribution is harder to substitute. Treat "affinity trap" as a good first-order account of GLP-1R rather than a law of the family. Note also that the semaglutide cryo-EM paper itself does not frame its findings in two-domain language; it reports the observed pose.</p>
+  </div>
+
+  <div class="fig">
+    <h4>Figure 1 &middot; GLP-1R with semaglutide bound &mdash; drag to rotate</h4>
+    <p class="note" style="margin-top:2px">Schematic 3D model showing the arrangement described for <span class="res">PDB 7KI0</span>. Not atomic coordinates: helix positions are idealised to make the two-domain geometry legible.</p>
+    <svg id="stage" viewBox="0 0 820 560" role="img"
+      aria-label="Rotatable schematic three-dimensional model of the GLP-1 receptor with semaglutide bound: extracellular domain above the membrane capturing the peptide C-terminus, seven transmembrane helices forming a funnel, the peptide helix inserting into the core, and the Gs heterotrimer below."></svg>
+    <div class="controls">
+      <button id="bSpin" type="button" aria-pressed="true">&#8635; Spin</button>
+      <button id="bECD" type="button" aria-pressed="true">Extracellular domain</button>
+      <button id="bG" type="button" aria-pressed="true">G<sub>s</sub> protein</button>
+      <button id="bAcyl" type="button" aria-pressed="true">C18 diacid</button>
+      <button id="bLab" type="button" aria-pressed="true">Labels</button>
+      <button id="bView" type="button">Reset view</button>
+    </div>
+    <div class="key">
+      <span><i class="sw" style="background:#4a7fb5"></i>ECD</span>
+      <span><i class="sw" style="background:#c2504a"></i>TM1&ndash;TM7</span>
+      <span><i class="sw" style="background:#e0a01f"></i>semaglutide</span>
+      <span><i class="sw" style="background:#9a7bd0"></i>Lys<sup>26</sup> linker + C18 diacid</span>
+      <span><i class="sw" style="background:#5b8f68"></i>G<sub>s</sub>&alpha;&beta;&gamma;</span>
+    </div>
+    <p class="cap">Note the geometry the two-domain model demands: the peptide is one continuous helix, long enough to be gripped by the ECD at one end while its other end reaches the bottom of the TM funnel. Rotate to the side view to see how far the N-terminus penetrates.</p>
+  </div>
+
+  <h2>3. What was engineered, and why</h2>
+  <p>Native GLP-1(7&ndash;37) has a plasma half-life of roughly 1.5&ndash;2 minutes. DPP-4 removes the N-terminal dipeptide His<sup>7</sup>&ndash;Ala<sup>8</sup> by cleaving the Ala<sup>8</sup>&ndash;Glu<sup>9</sup> bond, giving GLP-1(9&ndash;36), which is inactive at the receptor. Renal clearance removes what survives. Semaglutide carries three changes against that backbone, and Lau et al. set out four simultaneous design constraints: albumin binding to limit renal elimination, DPP-4 stability, access to the right target tissues, and retention of high receptor affinity.</p>
+
+  <div class="fig">
+    <h4>Figure 2 &middot; Semaglutide: the modifications, residue by residue</h4>
+    <svg id="mol" viewBox="0 0 880 300" role="img"
+      aria-label="Diagram of the semaglutide sequence from residue 7 to 37, highlighting alpha-aminoisobutyric acid at position 8, arginine at position 34, and the acylated lysine 26 bearing a gamma-glutamate, two OEG spacers and a C18 diacid."></svg>
+    <p class="cap">94% sequence homology with human GLP-1. Positions are given in GLP-1 numbering, where the mature peptide starts at residue 7.</p>
+  </div>
+
+  <table>
+    <thead><tr><th>Modification</th><th>Liability it addresses</th><th>Consequence</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Ala<sup>8</sup> &rarr; Aib<sup>8</sup></strong><br><span class="note">&alpha;-aminoisobutyric acid</span></td>
+        <td>DPP-4 cleavage of the Ala<sup>8</sup>&ndash;Glu<sup>9</sup> bond</td>
+        <td>The &alpha;,&alpha;-disubstituted residue is not accepted at the protease P1 site, so the N-terminus survives. His<sup>7</sup> stays available for the TM-core contacts that drive activation.</td></tr>
+      <tr><td><strong>Lys<sup>34</sup> &rarr; Arg<sup>34</sup></strong></td>
+        <td>Two lysines compete for acylation</td>
+        <td>Leaves Lys<sup>26</sup> as the single free &epsilon;-amine, so the fatty diacid is installed at one defined position.</td></tr>
+      <tr><td><strong>Lys<sup>26</sup> acylation</strong><br><span class="note">&gamma;Glu &ndash; 2&times;OEG &ndash; C18 diacid</span></td>
+        <td>Renal clearance; short residence</td>
+        <td>The octadecanedioic acid binds serum albumin reversibly, creating a circulating depot that is shielded from filtration and from degradation. The &gamma;Glu and two OEG units are a hydrophilic spacer, tuned to hold albumin affinity and receptor affinity simultaneously.</td></tr>
+    </tbody>
+  </table>
+
+  <p>The trade is explicit in the medicinal chemistry. Semaglutide's GLP-1R affinity is <strong>0.38 &plusmn; 0.06&nbsp;nM</strong>, about three-fold weaker than liraglutide, while its albumin affinity is higher. That loss is bought back many times over in exposure: plasma half-life <strong>46.1&nbsp;h</strong> in mini-pigs after i.v. dosing, mean residence time <strong>63.6&nbsp;h</strong> subcutaneously, and roughly <strong>165&nbsp;h</strong> (about one week) in humans, against 13&ndash;15&nbsp;h for liraglutide. Sub-nanomolar affinity is ample; duration was the binding constraint.</p>
+
+  <h2>4. The binding interface in <span class="res">7KI0</span></h2>
+  <p>Zhang et al. solved semaglutide&ndash;GLP-1R&ndash;G<sub>s</sub> by cryo-EM at <strong>2.5&nbsp;&Aring;</strong> global resolution (<span class="res">EMD-22882</span>), alongside taspoglutide (<span class="res">7KI1</span>). The peptide is a continuous helix: C-terminus on the ECD, N-terminus deep in the TM core, contacting TM1, TM2, TM3, TM5, TM7, ECL2 and ECL3. Most contacts reproduce the GLP-1 binding mode.</p>
+
+  <table>
+    <thead><tr><th>Semaglutide</th><th>GLP-1R</th><th>Region</th><th>Interaction</th></tr></thead>
+    <tbody>
+      <tr><td>His<sup>7</sup></td><td>Gln<sup>234</sup>; Tyr<sup>241</sup></td><td>TM3</td><td>Direct H-bond; water-mediated H-bond</td></tr>
+      <tr><td>Glu<sup>9</sup></td><td>Arg<sup>190</sup>; Tyr<sup>152</sup></td><td>TM2; TM1</td><td>Ionic; H-bond</td></tr>
+      <tr><td>Thr<sup>11</sup></td><td>Asp<sup>372</sup></td><td>ECL3</td><td>H-bond</td></tr>
+      <tr><td>Thr<sup>13</sup></td><td>Tyr<sup>197</sup></td><td>TM2</td><td>H-bond</td></tr>
+      <tr><td>Ser<sup>14</sup>, Ser<sup>17</sup></td><td>Thr<sup>298</sup>, Arg<sup>299</sup>, Asn<sup>300</sup></td><td>ECL2</td><td>H-bond network</td></tr>
+      <tr><td>Asp<sup>15</sup></td><td>Arg<sup>299</sup>; Arg<sup>380</sup></td><td>ECL2; TM7/ECL3</td><td>Ionic; contact</td></tr>
+      <tr><td>Tyr<sup>19</sup></td><td>Glu<sup>138</sup></td><td>ECD&ndash;TM1 stalk</td><td>H-bond</td></tr>
+      <tr><td>Glu<sup>21</sup></td><td>Ser<sup>31</sup>; Arg<sup>299</sup></td><td>ECD; ECL2</td><td>H-bond; ionic</td></tr>
+      <tr><td>Trp<sup>31</sup></td><td>Trp<sup>214</sup></td><td>ECL1</td><td>Aromatic stacking</td></tr>
+      <tr><td>Val<sup>33</sup> (backbone)</td><td>Arg<sup>121</sup></td><td>ECD</td><td>H-bonds</td></tr>
+      <tr><td>Arg<sup>36</sup></td><td>Glu<sup>68</sup></td><td>ECD</td><td>Ionic</td></tr>
+      <tr><td>C-terminal half</td><td>Trp<sup>39</sup>, Tyr<sup>69</sup>, Tyr<sup>88</sup>, Leu<sup>89</sup>, Trp<sup>91</sup></td><td>ECD</td><td>Hydrophobic surface</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Two things worth noticing</h3>
+  <p><strong>Lys<sup>26</sup> loses an interaction.</strong> In GLP-1- and taspoglutide-bound structures, residue 26 contacts Glu<sup>128</sup>. Semaglutide does not form that interaction &mdash; unsurprising, since Lys<sup>26</sup> is the acylation site and its &epsilon;-amine is consumed by the linker. This is a plausible structural contributor to the modest affinity loss.</p>
+  <p><strong>The C18 diacid was never resolved.</strong> It is absent from the consensus map. In the ECD-focused map, density for Lys<sup>26</sup> appeared in two positions, and only the Lys<sup>26</sup>&ndash;2&times;OEG linker was modelled, in the downward orientation; the density then merged into the detergent micelle. The authors infer the lipid tail extends into the micelle, but the diacid itself was not modelled. Anyone drawing the acyl chain in a defined receptor pocket is drawing an inference, not a structure &mdash; including Figure 1 above, where it is shown schematically heading into the membrane.</p>
+
+  <h2>5. From binding to signal</h2>
+  <p>Insertion of the peptide N-terminus into the TM core produces the class B1 activation transition: a sharp kink and outward swing of the intracellular half of TM6, opening the cavity that receives the G&alpha;<sub>s</sub> &alpha;5 helix. That intracellular TM6 kink and outward movement is common to the GLP-1-, semaglutide- and taspoglutide-bound consensus structures &mdash; the three peptides converge on the same active state. Coupling to G<sub>s</sub> activates adenylyl cyclase; cAMP then acts through PKA and Epac2, and in the &beta;-cell potentiates glucose-dependent insulin secretion.</p>
+  <p>GLP-1R also recruits &beta;-arrestin, which drives desensitisation, endocytosis and receptor downregulation. Semaglutide shows reduced &beta;-arrestin recruitment and reduced internalisation relative to endogenous GLP-1.</p>
+  <div class="card caveat">
+    <strong>Contested.</strong>
+    <p class="note" style="margin-bottom:0">Whether semaglutide should be called a <em>biased</em> agonist is not settled. Formal bias quantification across approved GLP-1R agonists has given inconsistent answers depending on the reference ligand and the methodology, and current evidence does not conclusively classify semaglutide as functionally or clinically biased. Purpose-built G protein-biased ligands that abolish &beta;-arrestin recruitment show slower internalisation, less downregulation and longer-lasting cAMP signalling than semaglutide &mdash; which indicates semaglutide retains functionally meaningful arrestin engagement. Report it as "reduced arrestin recruitment", not "G protein-biased".</p>
+  </div>
+
+  <h2>6. Beyond the basics: what the dynamics add</h2>
+  <p>The consensus structures of GLP-1-, semaglutide- and taspoglutide-bound GLP-1R look similar. 3D variability analysis of the same particle sets does not.</p>
+  <ul>
+    <li><strong>Semaglutide gives the most mobile complex.</strong> The largest motions are extracellular: TM2 and ECL1 move substantially, the tops of TM1 and TM7 swing away from the core by roughly 7&nbsp;&Aring; and 8&nbsp;&Aring;, TM4/TM5 and ECL2 move outward, and the peptide itself shifts about 5&nbsp;&Aring; toward TM1/6/7 &mdash; a shift the authors link to loss of ECL2 contacts.</li>
+    <li><strong>Taspoglutide is quieter</strong> at TM2/ECL1, with a peptide shift of about 3&nbsp;&Aring;; <strong>GLP-1 is quieter still</strong>, with TM1/6/7 and ECL3 relatively stable.</li>
+    <li><strong>The ECD is the most dynamic element</strong> in the semaglutide complex. For taspoglutide the ECD shifts about 12&nbsp;&Aring; measured at Gly<sup>52</sup> and for GLP-1 about 7&nbsp;&Aring;, both toward ECL1; the semaglutide and taspoglutide transition routes differ by roughly 90&deg;.</li>
+  </ul>
+  <p>The interpretive link worth holding loosely: ECL3 displacement has independently been identified as the structural feature that tracks with G protein bias at this receptor &mdash; N-terminally modified GLP-1R agonists that displace ECL3 outward show attenuated &beta;-arrestin recruitment and prolonged cAMP signalling, and acetylated semaglutide behaves that way relative to semaglutide itself. Semaglutide's native dynamics already include outward movement of TM6, TM7 and ECL3 where GLP-1's do not. That is a correlation between two literatures, not a demonstrated mechanism.</p>
+
+  <hr>
+
+  <div class="sheet">
+    <h3>Cheat sheet</h3>
+    <p class="note" style="margin-top:0">Prints as a single page.</p>
+    <h3>Molecule</h3>
+    <ul>
+      <li><span class="mono">[Aib<sup>8</sup>, Arg<sup>34</sup>]GLP-1(7&ndash;37)</span>, Lys<sup>26</sup>-acylated with &gamma;Glu&ndash;2&times;OEG&ndash;C18 diacid; 94% homology to human GLP-1.</li>
+      <li>Aib<sup>8</sup> &rarr; blocks DPP-4 (which cleaves Ala<sup>8</sup>&ndash;Glu<sup>9</sup>, giving inactive GLP-1(9&ndash;36)).</li>
+      <li>Arg<sup>34</sup> &rarr; removes the competing lysine so acylation is site-specific at Lys<sup>26</sup>.</li>
+      <li>C18 diacid &rarr; reversible albumin binding; limits renal elimination.</li>
+    </ul>
+    <h3>Receptor</h3>
+    <ul>
+      <li>GLP-1R, class B1 GPCR, <span class="res">UniProt P43220</span>: ECD (~100&ndash;160 aa, &alpha;&ndash;&beta;&ndash;&beta;/&alpha; fold) + 7TM bundle.</li>
+      <li>Two-domain binding: ECD = affinity trap for the peptide C-terminal helix; N-terminus then inserts into the TM funnel to activate.</li>
+      <li>N-terminally truncated class B1 peptides bind but do not activate &rarr; antagonists.</li>
+    </ul>
+    <h3>Structures</h3>
+    <ul>
+      <li><span class="res">7KI0</span> semaglutide&ndash;GLP-1R&ndash;G<sub>s</sub>, cryo-EM 2.5&nbsp;&Aring; (<span class="res">EMD-22882</span>); <span class="res">7KI1</span> taspoglutide.</li>
+      <li><span class="res">4ZGM</span> semaglutide peptide backbone + GLP-1R ECD, X-ray 1.80&nbsp;&Aring;.</li>
+      <li>Anchor contacts: His<sup>7</sup>&ndash;Gln<sup>234</sup>, Glu<sup>9</sup>&ndash;Arg<sup>190</sup>, Asp<sup>15</sup>&ndash;Arg<sup>299</sup>, Trp<sup>31</sup>&ndash;Trp<sup>214</sup>, Arg<sup>36</sup>&ndash;Glu<sup>68</sup>.</li>
+      <li>Lys<sup>26</sup>&ndash;Glu<sup>128</sup> contact seen with GLP-1 is <em>absent</em>. C18 diacid <em>not resolved</em>.</li>
+    </ul>
+    <h3>Numbers</h3>
+    <ul>
+      <li>GLP-1R affinity 0.38 &plusmn; 0.06&nbsp;nM (~3&times; weaker than liraglutide).</li>
+      <li>Human t&frac12; ~165&nbsp;h (~1 week); liraglutide 13&ndash;15&nbsp;h; native GLP-1 ~1.5&ndash;2&nbsp;min.</li>
+      <li>Mini-pig: t&frac12; 46.1&nbsp;h i.v.; MRT 63.6&nbsp;h s.c.</li>
+    </ul>
+    <h3>Signalling</h3>
+    <ul>
+      <li>G&alpha;<sub>s</sub> &rarr; adenylyl cyclase &rarr; cAMP &rarr; PKA / Epac2; intracellular TM6 kink common to all three peptide-bound structures.</li>
+      <li>Reduced &beta;-arrestin recruitment and internalisation vs GLP-1 &mdash; but <em>not</em> established as a biased agonist.</li>
+    </ul>
+  </div>
+
+  <h2>Self-test</h2>
+  <details><summary>Why does replacing Lys<sup>34</sup> with arginine matter, given that position 34 makes no critical receptor contact?</summary>
+    <p>It is a chemistry constraint, not a pharmacology one. With lysines at both 26 and 34, acylation would give a mixture of regioisomers. Arg<sup>34</sup> leaves a single free &epsilon;-amine so the fatty diacid is installed cleanly at Lys<sup>26</sup>. Arginine is the conservative swap: same charge, no free primary amine for the coupling chemistry.</p></details>
+  <details><summary>A colleague's figure shows the C18 diacid docked in a defined groove on TM1. What is wrong with it?</summary>
+    <p>No experimental structure supports a defined pocket. In 7KI0 the diacid is absent from the consensus map; only the Lys<sup>26</sup>&ndash;2&times;OEG linker was modelled, and the density merges into the detergent micelle, which is why the authors infer the tail simply extends into the lipid environment. A specific groove is an over-claim.</p></details>
+  <details><summary>Semaglutide binds GLP-1R three-fold more weakly than liraglutide. Why was that acceptable?</summary>
+    <p>Because affinity was not the limiting variable. At 0.38 nM the receptor is saturated at achievable exposures; the clinical problem being solved was duration. Stronger albumin binding buys a week-long half-life, and the design brief explicitly traded the two &mdash; the requirement was to <em>maintain high</em> affinity, not to maximise it.</p></details>
+  <details><summary>What would you need to show to call semaglutide a biased agonist, and why do current data fall short?</summary>
+    <p>You would need formal bias quantification against a defined reference ligand, with relative potency differences accounted for, showing a statistically significant and reproducible preference for cAMP over &beta;-arrestin that persists across assay systems and maps onto an in vivo outcome. Published analyses disagree depending on reference and methodology, and ligands engineered to abolish arrestin recruitment outperform semaglutide on internalisation, downregulation and cAMP duration &mdash; so semaglutide clearly retains meaningful arrestin engagement.</p></details>
+
+  <h2>Sources</h2>
+  <p class="note"><span class="grade">A</span> primary structural or medicinal-chemistry literature, or a structure database entry. <span class="grade b">B</span> peer-reviewed review or curated secondary resource.</p>
+  <ul class="src">
+    <li><span class="grade">A</span> Zhang X, Belousoff MJ, Liang Y-L, Danev R, Sexton PM, Wootten D. <a href="https://www.cell.com/cell-reports/fulltext/S2211-1247(21)00772-5">Structure and dynamics of semaglutide- and taspoglutide-bound GLP-1R-G<sub>s</sub> complexes</a>. <em>Cell Reports</em> 2021 (<a href="https://www.biorxiv.org/content/10.1101/2021.01.12.426449v1.full">preprint full text</a>) &mdash; 2.5&nbsp;&Aring; structures, <span class="res">PDB 7KI0</span>/<span class="res">7KI1</span>, <span class="res">EMD-22882</span>; TM-core and ECD contacts; the unmodelled C18 diacid and the two Lys<sup>26</sup> densities; 3D variability analysis of peptide, ECD, TM and ECL motions; the common intracellular TM6 kink.</li>
+    <li><span class="grade">A</span> Lau J, Bloch P, Sch&auml;ffer L, Pettersson I, Spetzler J, Kofoed J, Madsen K, Knudsen LB, et al. <a href="https://pubmed.ncbi.nlm.nih.gov/26308095/">Discovery of the Once-Weekly Glucagon-Like Peptide-1 (GLP-1) Analogue Semaglutide</a>. <em>J Med Chem</em> 2015;58(18):7370&ndash;7380 &mdash; the Aib<sup>8</sup>/Arg<sup>34</sup>/Lys<sup>26</sup> design, the four design constraints, GLP-1R affinity 0.38&nbsp;&plusmn;&nbsp;0.06&nbsp;nM and the three-fold difference from liraglutide, mini-pig t&frac12; 46.1&nbsp;h and MRT 63.6&nbsp;h, and the &gamma;Glu/OEG linker exploration.</li>
+    <li><span class="grade">A</span> <a href="https://www.rcsb.org/structure/4ZGM">PDB 4ZGM</a> &mdash; crystal structure of the semaglutide peptide backbone (<span class="mono">8Aib,34R-GLP-1(7&ndash;37)-OH</span>) with the GLP-1R extracellular domain, 1.80&nbsp;&Aring;; chain A 122 residues, chain B 31 residues.</li>
+    <li><span class="grade b">B</span> RCSB PDB-101, <a href="https://pdb101.rcsb.org/global-health/diabetes-mellitus/drugs/incretins/drug/semaglutide/semaglutide">Semaglutide</a> &mdash; curated contact list for <span class="res">7KI0</span> (His<sup>7</sup>&ndash;Gln<sup>234</sup>/Tyr<sup>241</sup>, Glu<sup>9</sup>&ndash;Arg<sup>190</sup>/Tyr<sup>152</sup>, Thr<sup>13</sup>&ndash;Tyr<sup>197</sup>, Asp<sup>15</sup>&ndash;Arg<sup>299</sup>, Ser<sup>14</sup>/Ser<sup>17</sup> network, Tyr<sup>19</sup>&ndash;Glu<sup>138</sup>, Glu<sup>21</sup>&ndash;Ser<sup>31</sup>/Arg<sup>299</sup>, Val<sup>33</sup>&ndash;Arg<sup>121</sup>, Arg<sup>36</sup>&ndash;Glu<sup>68</sup>); the 94% homology figure; the ~165&nbsp;h half-life and albumin as transporter.</li>
+    <li><span class="grade b">B</span> Pal K, Melcher K, Xu HE. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3690506/">Structure and mechanism for recognition of peptide hormones by class B GPCRs</a>. <em>Acta Pharmacol Sin</em> 2012;33:300&ndash;311 &mdash; the two-module architecture, the ECD &alpha;&ndash;&beta;&ndash;&beta;/&alpha; fold, the three-step two-domain binding model, and N-terminal truncation converting agonists to antagonists.</li>
+    <li><span class="grade">A</span> Yang L, et al. <a href="https://www.nature.com/articles/ncomms8859">Conformational states of the full-length glucagon receptor</a>. <em>Nat Commun</em> 2015;6:7859 &mdash; the two-domain binding mechanism as applied to secretin-like class B receptors and the ECD/7TM relationship.</li>
+    <li><span class="grade">A</span> <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5118412/">Class B GPCR ECD requirement for activation</a> &mdash; human class B GPCRs vary widely in their dependence on the ECD; GCGR and GLP-1R are in the ECD-dependent group, unlike CRF1R, PTH1R and PAC1R.</li>
+    <li><span class="grade b">B</span> Jones B, et al. <a href="https://bpspubs.onlinelibrary.wiley.com/doi/full/10.1111/bph.15497">The therapeutic potential of GLP-1 receptor biased agonism</a>. <em>Br J Pharmacol</em> 2022 &mdash; inconsistency of formal bias quantification across approved GLP-1R agonists depending on reference ligand and methodology.</li>
+    <li><span class="grade">A</span> Hinds CE, et al. <a href="https://dom-pubs.onlinelibrary.wiley.com/doi/10.1111/dom.15288">Abolishing &beta;-arrestin recruitment is necessary for the full metabolic benefits of G protein-biased GLP-1R agonists</a>. <em>Diabetes Obes Metab</em> 2024 &mdash; ligands with suppressed &beta;-arrestin recruitment show slower internalisation, reduced downregulation and longer-lasting cAMP than semaglutide, indicating semaglutide retains meaningful arrestin engagement.</li>
+    <li><span class="grade">A</span> <a href="https://www.sciencedirect.com/science/article/pii/S2211124726007965">N-terminally modified GLP1R agonists drive G protein bias via extracellular loop 3 displacement</a>. <em>Cell Reports</em> &mdash; outward ECL3 displacement as the structural correlate of G protein bias; acetylated semaglutide shows reduced &beta;-arrestin-1 recruitment at unchanged cAMP potency.</li>
+    <li><span class="grade">A</span> Leech CA, Chepurny OG, Holz GG. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3009389/">Epac2-dependent Rap1 activation and the control of islet insulin secretion by GLP-1</a> (PMC), and Holz GG et al. <a href="https://pubmed.ncbi.nlm.nih.gov/21782840/">Molecular physiology of GLP-1 insulin secretagogue action in pancreatic &beta; cells</a>, <em>Prog Biophys Mol Biol</em> 2011 &mdash; GLP-1R &rarr; adenylyl cyclase &rarr; cAMP, acting through PKA and Epac2 to potentiate glucose-stimulated insulin secretion.</li>
+    <li><span class="grade b">B</span> Pancreapedia, <a href="https://pancreapedia.org/sites/default/files/GLP-1_Version_2_0.pdf">Glucagon-like peptide-1</a>, and <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC2579648/">Gupta, Diabetes/incretin review (PMC)</a> &mdash; native GLP-1 plasma half-life of roughly 1.5&ndash;2&nbsp;min and DPP-4 removal of the His<sup>7</sup>&ndash;Ala<sup>8</sup> dipeptide to give inactive GLP-1(9&ndash;36).</li>
+  </ul>
+  <p class="note">Educational notes on mechanism and structure. No dosing or prescribing information is given or implied.</p>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var NS='http://www.w3.org/2000/svg';
+  function el(t,a){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);return e;}
+
+  /* ============================================================
+     Figure 1 — schematic 3D model, hand-rolled painter's renderer
+     ============================================================ */
+  var stage=document.getElementById('stage');
+  var W=820,H=560,CX=410,CY=296,SCALE=3.3;
+  var rotX=-0.22, rotY=0.5, spin=true, showECD=true, showG=true, showAcyl=true, showLab=true;
+
+  function rot(p){
+    var x=p[0],y=p[1],z=p[2];
+    var cy=Math.cos(rotY), sy=Math.sin(rotY);
+    var x1=x*cy - z*sy, z1=x*sy + z*cy;
+    var cx=Math.cos(rotX), sx=Math.sin(rotX);
+    var y1=y*cx - z1*sx, z2=y*sx + z1*cx;
+    return [x1,y1,z2];
+  }
+  function proj(p){
+    var r=rot(p);
+    var d=520/(520 + r[2]*SCALE);           // mild perspective
+    return {x:CX + r[0]*SCALE*d, y:CY - r[1]*SCALE*d, z:r[2], d:d};
+  }
+
+  // --- geometry -------------------------------------------------
+  // y is the membrane normal; membrane slab spans y = -20 .. +20
+  var TM=[];
+  (function(){
+    // class B1 bundle: helices splay outward at the extracellular face, forming a funnel
+    var names=['TM1','TM2','TM3','TM4','TM5','TM6','TM7'];
+    var baseR=12, topR=19;
+    for(var i=0;i<7;i++){
+      var a=(i/7)*Math.PI*2 - Math.PI*0.5;
+      var wobble=[0,0.12,-0.1,0.06,-0.05,0.15,-0.12][i];
+      TM.push({
+        ang:a,
+        name:names[i],
+        bot:[Math.cos(a)*baseR*(1+wobble)*0.9, -22, Math.sin(a)*baseR*(1+wobble)*0.9],
+        top:[Math.cos(a)*topR*(1+wobble), 21, Math.sin(a)*topR*(1+wobble)]
+      });
+    }
+    // TM6 kink: intracellular half swings outward in the active state
+    var a6=(5/7)*Math.PI*2 - Math.PI*0.5;
+    TM[5].bot=[Math.cos(a6)*25, -24, Math.sin(a6)*25];
+  })();
+
+  function helixPts(a,b,turns,rad,n){
+    // spiral from a to b about the a->b axis
+    var ax=[b[0]-a[0],b[1]-a[1],b[2]-a[2]];
+    var L=Math.sqrt(ax[0]*ax[0]+ax[1]*ax[1]+ax[2]*ax[2]);
+    var u=[ax[0]/L,ax[1]/L,ax[2]/L];
+    var ref = Math.abs(u[1])<0.9 ? [0,1,0] : [1,0,0];
+    var e1=[u[1]*ref[2]-u[2]*ref[1], u[2]*ref[0]-u[0]*ref[2], u[0]*ref[1]-u[1]*ref[0]];
+    var m=Math.sqrt(e1[0]*e1[0]+e1[1]*e1[1]+e1[2]*e1[2]); e1=[e1[0]/m,e1[1]/m,e1[2]/m];
+    var e2=[u[1]*e1[2]-u[2]*e1[1], u[2]*e1[0]-u[0]*e1[2], u[0]*e1[1]-u[1]*e1[0]];
+    var out=[];
+    for(var i=0;i<=n;i++){
+      var t=i/n, th=t*turns*Math.PI*2;
+      out.push([
+        a[0]+u[0]*L*t + rad*(Math.cos(th)*e1[0]+Math.sin(th)*e2[0]),
+        a[1]+u[1]*L*t + rad*(Math.cos(th)*e1[1]+Math.sin(th)*e2[1]),
+        a[2]+u[2]*L*t + rad*(Math.cos(th)*e1[2]+Math.sin(th)*e2[2])
+      ]);
+    }
+    return out;
+  }
+  function line(a,b,n){
+    var o=[]; for(var i=0;i<=n;i++){var t=i/n;
+      o.push([a[0]+(b[0]-a[0])*t, a[1]+(b[1]-a[1])*t, a[2]+(b[2]-a[2])*t]);} return o;
+  }
+
+  // semaglutide: one continuous helix, N-terminus deep in the core, C-terminus up on the ECD
+  var PEP_N=[2,-11,1], PEP_C=[-19,47,-8];
+  var pepAxis=line(PEP_N,PEP_C,40);
+  var pepHelix=helixPts(PEP_N,PEP_C,9.5,4.0,170);
+
+  // ECD: lobe sitting above the membrane, gripping the peptide C-terminal half
+  var ECD_C=[-18,43,-7];
+
+  // Lys26 is roughly 2/3 along the peptide from the N-terminus
+  function alongPep(t){
+    var i=Math.round(t*(pepAxis.length-1)); return pepAxis[i];
+  }
+  var LYS26=alongPep(0.63);
+
+  var labels=[
+    {p:[44,-2,0], t:'lipid bilayer', c:'#6b7280'}
+  ];
+
+  function build(){
+    while(stage.firstChild) stage.removeChild(stage.firstChild);
+    var items=[];   // {z, node}
+    var labs=[];    // {x, y, z, node} — drawn last, nearest first, collisions dropped
+
+    // membrane slab (drawn as two depth-sorted bands)
+    (function(){
+      var ptsTop=[], ptsBot=[];
+      for(var i=0;i<=48;i++){
+        var a=(i/48)*Math.PI*2;
+        ptsTop.push(proj([Math.cos(a)*38, 17, Math.sin(a)*38]));
+        ptsBot.push(proj([Math.cos(a)*38, -17, Math.sin(a)*38]));
+      }
+      function pathOf(ps){return 'M'+ps.map(function(p){return p.x.toFixed(1)+' '+p.y.toFixed(1);}).join(' L')+' Z';}
+      // both membrane leaflets sit behind the protein so they never mask it
+      items.push({z:9999, node:el('path',{d:pathOf(ptsBot), fill:'#dde5ee', stroke:'#c3cfdc','stroke-width':1, opacity:0.85})});
+      items.push({z:9998, node:el('path',{d:pathOf(ptsTop), fill:'#e9eef5', stroke:'#c3cfdc','stroke-width':1, opacity:0.85})});
+    })();
+
+    // TM helices
+    TM.forEach(function(h,i){
+      var pts=helixPts(h.bot,h.top,4.2,3.6,90).map(proj);
+      var zs=pts.reduce(function(s,p){return s+p.z;},0)/pts.length;
+      var g=el('g',{});
+      var d='M'+pts.map(function(p){return p.x.toFixed(1)+' '+p.y.toFixed(1);}).join(' L');
+      g.appendChild(el('path',{d:d, fill:'none', stroke:'#8d322d','stroke-width':8,'stroke-linecap':'round','stroke-linejoin':'round',opacity:0.55}));
+      g.appendChild(el('path',{d:d, fill:'none', stroke:'#c2504a','stroke-width':5,'stroke-linecap':'round','stroke-linejoin':'round'}));
+      items.push({z:zs, node:g});
+      if(showLab){
+        // push the label radially outward so the seven do not pile up
+        var tp=proj([Math.cos(h.ang)*34, 28, Math.sin(h.ang)*34]);
+        var tx=el('text',{x:tp.x.toFixed(1), y:tp.y.toFixed(1), 'text-anchor':'middle',
+          'font-size':11.5,'font-weight':'700', fill:'#8d322d', stroke:'#fff','stroke-width':3.5,'paint-order':'stroke'});
+        tx.textContent=h.name;
+        labs.push({x:tp.x, y:tp.y, z:tp.z, node:tx});
+      }
+    });
+
+    // G protein heterotrimer
+    if(showG){
+      [{c:[0,-40,0],r:13,f:'#5b8f68',l:'Gαs'},
+       {c:[-16,-50,7],r:10,f:'#7fae89',l:'Gβ'},
+       {c:[13,-52,-6],r:7.5,f:'#9cc4a4',l:'Gγ'}].forEach(function(s){
+        var p=proj(s.c), g=el('g',{});
+        g.appendChild(el('circle',{cx:p.x.toFixed(1),cy:p.y.toFixed(1),r:(s.r*SCALE*p.d).toFixed(1),
+          fill:s.f,stroke:'#3d6b49','stroke-width':1.5,opacity:0.92}));
+        if(showLab){
+          var tx=el('text',{x:p.x.toFixed(1),y:(p.y+4).toFixed(1),'text-anchor':'middle','font-size':12,
+            'font-weight':'700',fill:'#17301e'}); tx.textContent=s.l; g.appendChild(tx);
+        }
+        items.push({z:p.z,node:g});
+      });
+      // alpha5 helix reaching into the TM6-opened cavity
+      var a5=helixPts([0,-30,0],[1,-19,1],1.6,2.8,24).map(proj);
+      items.push({z:a5[12].z-1, node:el('path',{d:'M'+a5.map(function(p){return p.x.toFixed(1)+' '+p.y.toFixed(1);}).join(' L'),
+        fill:'none',stroke:'#3d6b49','stroke-width':5,'stroke-linecap':'round'})});
+    }
+
+    // ECD lobe
+    if(showECD){
+      var ep=proj(ECD_C);
+      var g=el('g',{});
+      var rx=19*SCALE*ep.d, ry=14*SCALE*ep.d;
+      g.appendChild(el('ellipse',{cx:ep.x.toFixed(1),cy:ep.y.toFixed(1),
+        rx:rx.toFixed(1), ry:ry.toFixed(1),
+        transform:'rotate(-14 '+ep.x.toFixed(1)+' '+ep.y.toFixed(1)+')',
+        fill:'#4a7fb5',stroke:'#2d5c8c','stroke-width':2,opacity:0.84}));
+      // beta-sheet hatching, so it reads as a domain rather than a ball
+      for(var k=-2;k<=2;k++){
+        var y0=ep.y + k*(ry/3.2);
+        var halfW=rx*0.72*Math.sqrt(Math.max(0,1-Math.pow(k/3.1,2)));
+        g.appendChild(el('line',{x1:(ep.x-halfW).toFixed(1),y1:y0.toFixed(1),
+          x2:(ep.x+halfW).toFixed(1),y2:(y0-halfW*0.22).toFixed(1),stroke:'#9dc0e0','stroke-width':2.2,opacity:0.75}));
+      }
+      items.push({z:ep.z+6, node:g});
+      if(showLab){
+        var tx=el('text',{x:ep.x.toFixed(1),y:(ep.y-ry-10).toFixed(1),'text-anchor':'middle','font-size':12.5,
+          'font-weight':'700',fill:'#23527f',stroke:'#fff','stroke-width':3.5,'paint-order':'stroke'});
+        tx.textContent='ECD — affinity trap';
+        labs.push({x:ep.x, y:ep.y-ry-10, z:-1e6, node:tx, keep:true});
+      }
+    }
+
+    // semaglutide helix
+    (function(){
+      var pts=pepHelix.map(proj);
+      var zs=pts.reduce(function(s,p){return s+p.z;},0)/pts.length;
+      var g=el('g',{});
+      var d='M'+pts.map(function(p){return p.x.toFixed(1)+' '+p.y.toFixed(1);}).join(' L');
+      g.appendChild(el('path',{d:d,fill:'none',stroke:'#8a5f06','stroke-width':8.5,'stroke-linecap':'round','stroke-linejoin':'round',opacity:0.5}));
+      g.appendChild(el('path',{d:d,fill:'none',stroke:'#e0a01f','stroke-width':5.5,'stroke-linecap':'round','stroke-linejoin':'round'}));
+      // N-terminus marker: His7
+      var np=proj(PEP_N);
+      g.appendChild(el('circle',{cx:np.x.toFixed(1),cy:np.y.toFixed(1),r:7,fill:'#fff3d4',stroke:'#8a5f06','stroke-width':2.5}));
+      items.push({z:zs-2,node:g});
+      if(showLab){
+        var t1=el('text',{x:(np.x+13).toFixed(1),y:(np.y+16).toFixed(1),'font-size':12,'font-weight':'700',
+          fill:'#6d4b05',stroke:'#fff','stroke-width':3.5,'paint-order':'stroke'});
+        t1.textContent='His7 — N-terminus in the core';
+        labs.push({x:np.x+13, y:np.y+16, z:-1e6+1, node:t1, keep:true});
+      }
+    })();
+
+    // Lys26 linker + C18 diacid heading into the membrane
+    if(showAcyl){
+      var start=LYS26;
+      var endL=[start[0]*1.7-6, 14, start[2]*1.7+5];
+      var endA=[endL[0]*1.25, -4, endL[2]*1.25];
+      var lk=line(start,endL,14).map(proj);
+      var ac=line(endL,endA,16).map(proj);
+      var g=el('g',{});
+      g.appendChild(el('path',{d:'M'+lk.map(function(p){return p.x.toFixed(1)+' '+p.y.toFixed(1);}).join(' L'),
+        fill:'none',stroke:'#9a7bd0','stroke-width':3.5,'stroke-dasharray':'1 6','stroke-linecap':'round'}));
+      g.appendChild(el('path',{d:'M'+ac.map(function(p){return p.x.toFixed(1)+' '+p.y.toFixed(1);}).join(' L'),
+        fill:'none',stroke:'#9a7bd0','stroke-width':4.5,'stroke-linecap':'round',opacity:0.85}));
+      var sp=proj(start);
+      g.appendChild(el('circle',{cx:sp.x.toFixed(1),cy:sp.y.toFixed(1),r:5.5,fill:'#9a7bd0',stroke:'#6a4ca3','stroke-width':2}));
+      items.push({z:sp.z-4,node:g});
+      if(showLab){
+        var ep2=proj(endA);
+        var tx=el('text',{x:ep2.x.toFixed(1),y:(ep2.y+20).toFixed(1),'text-anchor':'middle','font-size':11.5,
+          'font-weight':'700',fill:'#5b3f91',stroke:'#fff','stroke-width':3.5,'paint-order':'stroke'});
+        tx.textContent='Lys26 acyl chain (unresolved)';
+        labs.push({x:ep2.x, y:ep2.y+20, z:-1e6+2, node:tx, keep:true});
+      }
+    }
+
+    if(showLab){
+      labels.forEach(function(L){
+        var p=proj(L.p);
+        var tx=el('text',{x:p.x.toFixed(1),y:p.y.toFixed(1),'text-anchor':'middle','font-size':11.5,
+          'font-style':'italic',fill:L.c,stroke:'#fff','stroke-width':3,'paint-order':'stroke'});
+        tx.textContent=L.t;
+        labs.push({x:p.x, y:p.y, z:p.z, node:tx});
+      });
+    }
+
+    items.sort(function(a,b){return b.z-a.z;});
+    items.forEach(function(it){stage.appendChild(it.node);});
+
+    // labels on top: nearest first, drop any that would sit on one already placed
+    labs.sort(function(a,b){return a.z-b.z;});
+    var placed=[];
+    labs.forEach(function(L){
+      if(!L.keep){
+        for(var i=0;i<placed.length;i++){
+          if(Math.abs(placed[i].x-L.x)<34 && Math.abs(placed[i].y-L.y)<15) return;
+        }
+      }
+      placed.push(L);
+      stage.appendChild(L.node);
+    });
+  }
+
+  // interaction
+  var drag=false, lx=0, ly=0;
+  stage.addEventListener('pointerdown',function(e){drag=true;lx=e.clientX;ly=e.clientY;stage.setPointerCapture(e.pointerId);spin=false;syncSpin();});
+  stage.addEventListener('pointermove',function(e){
+    if(!drag)return;
+    rotY += (e.clientX-lx)*0.009; rotX += (e.clientY-ly)*0.007;
+    rotX=Math.max(-1.2,Math.min(1.2,rotX));
+    lx=e.clientX; ly=e.clientY; build();
+  });
+  stage.addEventListener('pointerup',function(){drag=false;});
+  stage.addEventListener('pointercancel',function(){drag=false;});
+
+  function syncSpin(){document.getElementById('bSpin').setAttribute('aria-pressed',spin?'true':'false');}
+  function tog(id,get,set){
+    var b=document.getElementById(id);
+    b.addEventListener('click',function(){set(!get());b.setAttribute('aria-pressed',get()?'true':'false');build();});
+  }
+  document.getElementById('bSpin').addEventListener('click',function(){spin=!spin;syncSpin();});
+  tog('bECD',function(){return showECD;},function(v){showECD=v;});
+  tog('bG',function(){return showG;},function(v){showG=v;});
+  tog('bAcyl',function(){return showAcyl;},function(v){showAcyl=v;});
+  tog('bLab',function(){return showLab;},function(v){showLab=v;});
+  document.getElementById('bView').addEventListener('click',function(){rotX=-0.22;rotY=0.5;build();});
+
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduce){ spin=false; syncSpin(); }
+  (function loop(){
+    if(spin && !drag){ rotY += 0.0045; build(); }
+    requestAnimationFrame(loop);
+  })();
+  build();
+
+  /* ============================================================
+     Figure 2 — annotated semaglutide sequence
+     ============================================================ */
+  (function(){
+    var svg=document.getElementById('mol');
+    var seq='HAEGTFTSDVSSYLEGQAAKEFIAWLVRGRG'.split('');  // positions 7..37, semaglutide (Arg34)
+    var x0=26, y0=130, bw=26.5;
+    svg.appendChild(el('rect',{x:0,y:0,width:880,height:300,fill:'#fcfcfd',rx:8}));
+
+    var t=el('text',{x:26,y:30,'font-size':13,'font-weight':'700',fill:'#15181e'});
+    t.textContent='Semaglutide  =  [Aib⁸, Arg³⁴] GLP-1(7–37),  Lys²⁶-acylated';
+    svg.appendChild(t);
+    var t2=el('text',{x:26,y:50,'font-size':11.5,fill:'#59606e'});
+    t2.textContent='Positions in GLP-1 numbering. Grey = unchanged from human GLP-1.';
+    svg.appendChild(t2);
+
+    seq.forEach(function(ch,i){
+      var pos=i+7, x=x0+i*bw;
+      var mod = (pos===8) ? 'aib' : (pos===34 ? 'arg' : (pos===26 ? 'acyl' : null));
+      var fill = mod==='aib' ? '#1d6f52' : mod==='arg' ? '#8a4b1c' : mod==='acyl' ? '#5b3f91' : '#eef1f5';
+      var tcol = mod ? '#fff' : '#2b3340';
+      svg.appendChild(el('rect',{x:x,y:y0,width:bw-3,height:30,rx:5,fill:fill,
+        stroke: mod? 'none':'#d7dde5','stroke-width':1}));
+      var lt=el('text',{x:(x+(bw-3)/2).toFixed(1),y:y0+20,'text-anchor':'middle',
+        'font-size': pos===8 ? 10.5 : 13.5,
+        'font-weight':mod?'700':'600',fill:tcol,'font-family':'ui-monospace,Menlo,monospace'});
+      lt.textContent = pos===8 ? 'Aib' : ch;
+      svg.appendChild(lt);
+      if(pos%5===0 || pos===7 || pos===37){
+        var nt=el('text',{x:(x+(bw-3)/2).toFixed(1),y:y0+44,'text-anchor':'middle','font-size':9.5,fill:'#8b93a1'});
+        nt.textContent=pos; svg.appendChild(nt);
+      }
+    });
+
+    function callout(pos, cx, cy, title, body, colour, up){
+      var x = x0 + (pos-7)*bw + (bw-3)/2;
+      var yAnchor = up ? y0 : y0+30;
+      var elbow = up ? y0-12 : y0+56;
+      svg.appendChild(el('path',{d:'M'+x+' '+yAnchor+' L'+x+' '+elbow+' L'+cx+' '+elbow,
+        fill:'none',stroke:colour,'stroke-width':1.6,'stroke-dasharray':'4 3'}));
+      var tt=el('text',{x:cx,y:cy,'font-size':12,'font-weight':'700',fill:colour});
+      tt.textContent=title; svg.appendChild(tt);
+      body.forEach(function(ln,i){
+        var bt=el('text',{x:cx,y:cy+16+i*14,'font-size':11,fill:'#424a58'});
+        bt.textContent=ln; svg.appendChild(bt);
+      });
+    }
+
+    callout(8, 26, 82, 'Position 8:  Ala → Aib',
+      ['α-aminoisobutyric acid blocks DPP-4, which otherwise',
+       'cleaves Ala⁸–Glu⁹ to give inactive GLP-1(9–36).'], '#1d6f52', true);
+
+    callout(34, 500, 82, 'Position 34:  Lys → Arg',
+      ['Removes the second lysine, so acylation is',
+       'site-specific at Lys²⁶. Charge preserved.'], '#8a4b1c', true);
+
+    callout(26, 26, 212, 'Position 26:  Lys, acylated',
+      ['γGlu – 2×OEG spacer – C18 fatty diacid (octadecanedioic acid).',
+       'The diacid binds serum albumin reversibly — the circulating depot',
+       'that takes the half-life from ~2 min to ~1 week. The spacer is tuned',
+       'to hold albumin affinity and GLP-1R affinity at the same time.'], '#5b3f91', false);
+
+    // mini schematic of the side chain
+    var sx=500, sy=206;
+    var sh=el('text',{x:sx,y:sy-10,'font-size':11,'font-weight':'700',fill:'#5b3f91'});
+    sh.textContent='side chain at Lys²⁶'; svg.appendChild(sh);
+    [['Lys²⁶','#efe9fa',46],['γGlu','#e3d9f6',46],['OEG','#d7caf2',46],['OEG','#d7caf2',46],['C18 diacid','#c3b0ec',78]]
+      .forEach(function(seg,i){
+        var w=seg[2], xx=sx+[0,56,112,168,224][i];
+        svg.appendChild(el('rect',{x:xx,y:sy,width:w,height:24,rx:5,fill:seg[1],stroke:'#9a7bd0','stroke-width':1.2}));
+        var st=el('text',{x:xx+w/2,y:sy+16,'text-anchor':'middle','font-size':10,'font-weight':'600',fill:'#4a3178'});
+        st.textContent=seg[0]; svg.appendChild(st);
+        if(i<4) svg.appendChild(el('line',{x1:xx+w,y1:sy+12,x2:sx+[0,56,112,168,224][i+1],y2:sy+12,
+          stroke:'#9a7bd0','stroke-width':1.6}));
+      });
+    var at=el('text',{x:sx,y:sy+46,'font-size':10.5,fill:'#6b7280'});
+    at.textContent='binds albumin — not resolved in the cryo-EM density of 7KI0';
+    svg.appendChild(at);
+  })();
+})();
+</script>
+</body>
+</html>

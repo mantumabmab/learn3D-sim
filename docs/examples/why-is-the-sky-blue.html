@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why is the sky blue?</title>
+<style>
+  :root{
+    --paper:#fff8ee; --ink:#20242e; --soft:#5a6275;
+    --blue:#2f6fe0; --deep:#15337a; --sun:#f5a524; --warm:#e0552f;
+    --card:#ffffff; --line:#e8dfd0; --mint:#e6f4ec; --lemon:#fff4d6;
+    --r:18px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(900px 500px at 80% -10%, #dcecff 0%, rgba(220,236,255,0) 60%),
+      var(--paper);
+    color:var(--ink);
+    font-family:"Verdana","Trebuchet MS",system-ui,sans-serif;
+    font-size:19px; line-height:1.65;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:860px;margin:0 auto;padding:28px 20px 80px}
+  h1{font-size:2.1rem;line-height:1.15;margin:.2em 0 .1em;letter-spacing:-.5px}
+  h2{font-size:1.45rem;line-height:1.25;margin:2.2em 0 .5em;color:var(--deep)}
+  h3{font-size:1.1rem;margin:1.4em 0 .3em}
+  p{margin:.7em 0}
+  .kicker{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--soft);font-weight:bold}
+  .lede{font-size:1.15rem;color:#36405a}
+  .card{background:var(--card);border:2px solid var(--line);border-radius:var(--r);padding:18px 20px;margin:22px 0;
+        box-shadow:0 3px 0 rgba(32,36,46,.06)}
+  .goals{background:var(--mint);border-color:#c6e4d4}
+  .goals ul{margin:.4em 0 0;padding-left:1.1em}
+  .goals li{margin:.35em 0}
+  .big{font-size:1.25rem;font-weight:bold;color:var(--deep)}
+  .try{background:var(--lemon);border-color:#f2dfa8}
+  .try h3{margin-top:.2em}
+  .try ol{margin:.3em 0 0;padding-left:1.3em}
+  .try li{margin:.5em 0}
+  .word{background:#f2f0ff;border-color:#ddd8f7}
+  .word dt{font-weight:bold;color:var(--deep);margin-top:.7em}
+  .word dd{margin:.1em 0 0 0}
+  .note{color:var(--soft);font-size:.92rem}
+  mark{background:#ffe98f;padding:0 .15em;border-radius:4px}
+  .fig{background:#fff;border:2px solid var(--line);border-radius:var(--r);padding:14px;margin:26px 0}
+  .fig svg.scene{width:100%;height:auto;display:block;border-radius:12px;touch-action:none;cursor:grab}
+  .fig svg.scene:active{cursor:grabbing}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;align-items:center}
+  button{
+    font:inherit;font-weight:bold;min-height:48px;padding:0 18px;border-radius:14px;
+    border:2px solid var(--deep);background:#fff;color:var(--deep);cursor:pointer
+  }
+  button:hover{background:#eef4ff}
+  button[aria-pressed="true"]{background:var(--deep);color:#fff}
+  button:focus-visible{outline:4px solid #ffc34d;outline-offset:2px}
+  .sliderrow{display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap}
+  .sliderrow label{font-weight:bold;min-width:150px}
+  input[type=range]{flex:1;min-width:220px;height:48px;background:transparent;-webkit-appearance:none;appearance:none}
+  input[type=range]:focus-visible{outline:4px solid #ffc34d;outline-offset:4px;border-radius:8px}
+  input[type=range]::-webkit-slider-runnable-track{height:14px;border-radius:9px;
+    background:linear-gradient(90deg,#1b2448 0%,#9c3d16 9%,#e0552f 14%,#ffc15e 22%,#b9d4f7 48%,#2f6fe0 100%)}
+  input[type=range]::-moz-range-track{height:14px;border-radius:9px;
+    background:linear-gradient(90deg,#1b2448 0%,#9c3d16 9%,#e0552f 14%,#ffc15e 22%,#b9d4f7 48%,#2f6fe0 100%)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:44px;height:44px;margin-top:-15px;border-radius:50%;
+    background:#fff;border:4px solid var(--deep);box-shadow:0 2px 6px rgba(0,0,0,.25)}
+  input[type=range]::-moz-range-thumb{width:40px;height:40px;border-radius:50%;background:#fff;border:4px solid var(--deep)}
+  .readout{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+  .chip{background:#f4f1ea;border:2px solid var(--line);border-radius:12px;padding:8px 14px;font-size:.95rem}
+  .chip b{color:var(--deep)}
+  .sw{display:inline-block;width:22px;height:22px;border-radius:50%;border:2px solid #333;vertical-align:-5px;margin-right:6px}
+  .cap{font-size:.92rem;color:var(--soft);margin-top:10px}
+  details{background:#fff;border:2px solid var(--line);border-radius:14px;padding:12px 16px;margin:12px 0}
+  details summary{font-weight:bold;cursor:pointer;min-height:36px;display:flex;align-items:center;color:var(--deep)}
+  details[open] summary{margin-bottom:.4em}
+  .src{font-size:.95rem}
+  .src li{margin:.6em 0}
+  .grade{display:inline-block;font-size:.72rem;font-weight:bold;border-radius:6px;padding:1px 7px;vertical-align:1px;margin-right:6px;
+         background:#dff3e4;color:#17603a;border:1px solid #9fd3b4}
+  .grade.b{background:#eceff7;color:#2d3a61;border-color:#c3cce4}
+  a{color:#1551c4}
+  hr{border:none;border-top:2px dashed var(--line);margin:2.4em 0}
+  .waves{width:100%;height:auto}
+  @media (max-width:560px){
+    body{font-size:18px}
+    h1{font-size:1.65rem}
+    h2{font-size:1.25rem}
+    .sliderrow label{min-width:100%}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="kicker">Science notes &middot; for curious kids</p>
+  <h1>Why is the sky blue?</h1>
+  <p class="lede">Sunlight is secretly every colour at once. The air picks out the blue and throws it all over the sky &mdash; and that is the whole trick.</p>
+
+  <div class="card goals">
+    <p class="big">By the end of these notes you can&hellip;</p>
+    <ul>
+      <li>tell someone what sunlight is really made of;</li>
+      <li>explain why <em>blue</em> gets spread across the sky and red mostly does not;</li>
+      <li>work out for yourself why sunsets go orange, and why there is no blue sky on the Moon.</li>
+    </ul>
+  </div>
+
+  <h2>1. Sunlight is a rainbow in disguise</h2>
+  <p>Sunlight looks white or pale yellow. It is not. It is <mark>every colour of the rainbow travelling together</mark>, all mixed up. When the colours are mixed, your eyes just see "white".</p>
+  <p>You can catch them coming apart. A rainbow does it with raindrops. A glass of water on a sunny windowsill does it too, and so does the edge of a CD.</p>
+
+  <div class="card try">
+    <h3>Try this</h3>
+    <ol>
+      <li>Find a rainbow, a prism, a garden sprinkler, or a shiny CD in sunlight.</li>
+      <li>Before you look: which colour do you think will be at the top of the rainbow, and which at the bottom? Say your guess out loud.</li>
+      <li>Now look. Red is on the outside, violet on the inside. Every colour was hiding inside the plain white light the whole time.</li>
+    </ol>
+  </div>
+
+  <h2>2. Light travels as waves &mdash; some choppy, some long and lazy</h2>
+  <p>Light moves like a wave, a bit like a wiggle sent down a skipping rope. Here is the important part: <strong>each colour wiggles a different amount.</strong></p>
+  <p>Blue light is a short, choppy wave. Red light is a long, lazy wave. Scientists call the length of one wiggle the <strong>wavelength</strong>.</p>
+
+  <svg class="waves" viewBox="0 0 700 180" role="img" aria-label="A short choppy blue wave above a long lazy red wave, drawn over the same distance.">
+    <rect x="0" y="0" width="700" height="180" rx="14" fill="#f7f3ea"/>
+    <text x="24" y="38" font-family="Verdana,sans-serif" font-size="19" font-weight="bold" fill="#15337a">Blue &mdash; short, choppy wiggles</text>
+    <path d="M24 70 q11 -24 22 0 t22 0 t22 0 t22 0 t22 0 t22 0 t22 0 t22 0 t22 0 t22 0 t22 0 t22 0 t22 0 t22 0 t22 0 t22 0 t22 0 t22 0 t22 0 t22 0 t22 0 t22 0 t22 0 t22 0 t22 0 t22 0 t22 0 t22 0 t22 0"
+          fill="none" stroke="#2f6fe0" stroke-width="5" stroke-linecap="round"/>
+    <text x="24" y="124" font-family="Verdana,sans-serif" font-size="19" font-weight="bold" fill="#8a2d12">Red &mdash; long, lazy wiggles</text>
+    <path d="M24 156 q44 -36 88 0 t88 0 t88 0 t88 0 t88 0 t88 0 t88 0"
+          fill="none" stroke="#e0552f" stroke-width="5" stroke-linecap="round"/>
+  </svg>
+  <p class="cap">Both waves are drawn crossing the same distance. The blue one fits far more wiggles in.</p>
+
+  <h2>3. The air is full of specks too small to see</h2>
+  <p>The air around you is not empty. It is packed with tiny pieces of gas called <strong>molecules</strong> &mdash; mostly nitrogen and oxygen. They are <em>unbelievably</em> small: more than a thousand times smaller than one wiggle of light. You will never see one.</p>
+  <p>When a wave of light bumps into one of these specks, the speck can fling the light off sideways, in a brand new direction. That flinging-off is called <strong>scattering</strong>.</p>
+  <p>And here is the heart of the whole thing: <mark>short choppy waves get flung around much more easily than long lazy ones.</mark></p>
+  <p>How much more? Do the sums for blue light against red light, and blue gets scattered <strong>nearly 6 times as much</strong>. Violet, choppier still, gets flung about <strong>9 times</strong> as much as red.</p>
+  <p>So when sunlight pours into the air, the red, orange and yellow mostly sail straight on through. The blue gets bounced from speck to speck to speck, until it is coming at you from every part of the sky at once.</p>
+  <p class="big">You see blue above you because blue is the colour that got lost in the air.</p>
+
+  <h2>4. Move the Sun yourself</h2>
+  <p>This is a working model of the sky. The colours are not painted in by hand &mdash; the figure does the scattering sums for red, green and blue light each time you move the Sun, and shows you the answer.</p>
+
+  <div class="fig">
+    <svg class="scene" id="scene" viewBox="0 0 800 470" role="img"
+         aria-label="A sky scene. Drag the Sun from overhead down to the horizon and the sky colour changes from deep blue to orange and red.">
+      <defs>
+        <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop id="stopTop" offset="0" stop-color="#3b78e8"/>
+          <stop id="stopMid" offset="0.40" stop-color="#78a9f2"/>
+          <stop id="stopLow" offset="0.72" stop-color="#a9ccf7"/>
+          <stop id="stopBot" offset="1" stop-color="#cfe2fb"/>
+        </linearGradient>
+        <radialGradient id="glow">
+          <stop id="glowIn" offset="0" stop-color="#fff" stop-opacity="0.95"/>
+          <stop id="glowMid" offset="0.45" stop-color="#fff" stop-opacity="0.32"/>
+          <stop id="glowOut" offset="1" stop-color="#fff" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="awayGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop id="awayA" offset="0" stop-color="#5c7a94" stop-opacity="0.9"/>
+          <stop id="awayB" offset="0.46" stop-color="#5c7a94" stop-opacity="0.45"/>
+          <stop id="awayC" offset="0.82" stop-color="#5c7a94" stop-opacity="0"/>
+        </linearGradient>
+        <clipPath id="skyClip"><rect x="0" y="0" width="800" height="372"/></clipPath>
+      </defs>
+
+      <rect x="0" y="0" width="800" height="372" fill="url(#skyGrad)"/>
+      <rect id="awayRect" x="0" y="0" width="800" height="372" fill="url(#awayGrad)" opacity="0"/>
+      <g id="stars" clip-path="url(#skyClip)" opacity="0"></g>
+
+      <!-- top of the air -->
+      <g id="airEdge">
+        <line x1="0" y1="34" x2="800" y2="34" stroke="#ffffff" stroke-opacity="0.55" stroke-width="3" stroke-dasharray="10 9"/>
+        <text x="12" y="26" font-family="Verdana,sans-serif" font-size="15" fill="#ffffff" fill-opacity="0.85">top of the air &mdash; above this line, space</text>
+      </g>
+
+      <g clip-path="url(#skyClip)">
+        <circle id="sunGlow" cx="400" cy="60" r="150" fill="url(#glow)" opacity="0.55"/>
+        <line id="ray" x1="400" y1="60" x2="168" y2="356" stroke="#fff2c2" stroke-width="7" stroke-linecap="round" opacity="0.92"/>
+        <g id="dots"></g>
+        <circle id="sun" cx="400" cy="60" r="30" fill="#fffbe9" stroke="#8a6a1e" stroke-width="2"/>
+      </g>
+
+      <!-- ground -->
+      <rect x="0" y="366" width="800" height="104" fill="#5d8a4a"/>
+      <path d="M0 366 L800 366 L800 390 L0 396 Z" fill="#6c9d55"/>
+      <g stroke="#4d7540" stroke-width="2" opacity="0.7">
+        <line x1="-40" y1="470" x2="300" y2="372"/><line x1="180" y1="470" x2="390" y2="372"/>
+        <line x1="420" y1="470" x2="470" y2="372"/><line x1="680" y1="470" x2="560" y2="372"/>
+        <line x1="900" y1="470" x2="660" y2="372"/>
+      </g>
+
+      <!-- the kid looking up -->
+      <g id="kid" transform="translate(150,366)">
+        <ellipse cx="18" cy="2" rx="26" ry="7" fill="#000" opacity="0.18"/>
+        <rect x="8" y="-34" width="20" height="34" rx="9" fill="#e85f8a"/>
+        <circle cx="18" cy="-48" r="14" fill="#ffd9b0" stroke="#b8784a" stroke-width="2"/>
+        <path d="M5 -52 q13 -13 26 0 q-13 -6 -26 0" fill="#6b4226"/>
+        <line x1="28" y1="-26" x2="46" y2="-40" stroke="#e85f8a" stroke-width="7" stroke-linecap="round"/>
+        <text x="58" y="-30" font-family="Verdana,sans-serif" font-size="15" font-weight="bold"
+              fill="#1d2a16" stroke="#ffffff" stroke-width="3.5" paint-order="stroke">you</text>
+      </g>
+
+      <text id="airLabel" x="400" y="352" text-anchor="middle" font-family="Verdana,sans-serif" font-size="16"
+            font-weight="bold" fill="#13306f" stroke="#ffffff" stroke-width="3.5" stroke-opacity="0.85"
+            paint-order="stroke">the air</text>
+    </svg>
+
+    <div class="sliderrow">
+      <label for="sunh">Move the Sun&nbsp;&uarr;&darr;</label>
+      <input id="sunh" type="range" min="-12" max="90" value="78" step="1"
+             aria-label="Height of the Sun in the sky, from below the horizon to straight overhead">
+    </div>
+
+    <div class="controls">
+      <button id="bNoon" type="button">&#9728;&#65039; Noon</button>
+      <button id="bSet" type="button">&#127749; Sunset</button>
+      <button id="bNight" type="button">&#127769; Night</button>
+      <button id="bDots" type="button" aria-pressed="false">&#128065;&#65039; Show the bouncing blue</button>
+      <button id="bAir" type="button" aria-pressed="false">&#127765; Take the air away</button>
+    </div>
+
+    <div class="readout">
+      <div class="chip">Air the sunlight crosses: <b id="rAir">1 helping</b></div>
+      <div class="chip"><span class="sw" id="swSun"></span>Colour of the Sun itself: <b id="rSun">white</b></div>
+      <div class="chip"><span class="sw" id="swSky"></span>Sky straight above you: <b id="rSky">deep blue</b></div>
+      <div class="chip"><span class="sw" id="swLow"></span>Sky down near the Sun: <b id="rLow">pale</b></div>
+    </div>
+
+    <p class="cap" id="figNote">Drag the Sun, or use the slider. Each time, the model works out how much of each colour survives the journey and how much gets scattered into the sky.</p>
+  </div>
+
+  <div class="card try">
+    <h3>Try this before you touch anything</h3>
+    <ol>
+      <li><strong>Predict:</strong> when you drag the Sun down to the horizon, the light has to travel through <em>much more</em> air to reach you. Which colour do you think runs out first &mdash; blue or red? Say it out loud, then drag.</li>
+      <li>Watch the little number marked <em>"Air the sunlight crosses"</em>. At sunset it is about <strong>37 helpings</strong> of air instead of 1. Did you expect it to grow that much?</li>
+      <li>Press <strong>Take the air away</strong>. What colour is the sky now? Why do you think that is?</li>
+    </ol>
+  </div>
+
+  <h2>5. So why do sunsets go orange and red?</h2>
+  <p>Nothing changes about the Sun in the evening. What changes is <strong>how much air the light has to push through to get to you</strong>.</p>
+  <p>When the Sun is high above your head, its light takes a short cut straight down &mdash; one helping of air. When the Sun sits on the horizon, the light comes in at a long slant, skimming sideways through <em>about 37 times</em> as much air.</p>
+  <p>On a journey that long, nearly all the blue gets scattered away before it reaches you. It is bounced off sideways and ends up lighting the sky for somebody else, far away. What is left to arrive at your eyes is the long, lazy, hard-to-scatter light: <strong>orange and red</strong>.</p>
+  <p class="big">A sunset is simply what sunlight looks like once the air has stolen the blue out of it.</p>
+
+  <h2>6. Why the sky is palest down near the ground</h2>
+  <p>Look straight up on a clear day: deep, strong blue. Now look out at the horizon: pale, washed-out, almost white.</p>
+  <p>Straight up, you are looking through the thinnest slice of air there is. Towards the horizon you are looking the long way, through heaps of air. The blue light in there gets scattered again, and again, and again &mdash; and light bounced that many times comes at you from all directions and in all colours mixed together. All the colours mixed together is exactly what <em>white</em> means.</p>
+
+  <h2>7. Hang on &mdash; violet is even choppier. Why isn't the sky purple?</h2>
+  <p>Good catch. This is the question that catches out most grown-ups.</p>
+  <p>Violet light <em>is</em> scattered even more than blue. So the sky really does have plenty of violet in it. Two things stop you seeing purple:</p>
+  <ul>
+    <li>the Sun sends out <strong>less violet light</strong> to begin with than blue, so there is simply less of it to spread about;</li>
+    <li>the colour detectors inside your eyes are <strong>not very good at violet</strong>. They are much more excited by blue.</li>
+  </ul>
+  <p>So the sky is a mixture &mdash; lots of blue, some violet, a little of everything else &mdash; and your eyes report the whole mixture to your brain as "blue". <mark>The sky's colour is partly about the air, and partly about your eyes.</mark> Another animal, with different eyes, would not see quite the colour you see.</p>
+
+  <h2>8. No air, no blue sky</h2>
+  <p>If the blue comes from air, then somewhere with no air should have no blue sky at all. And that is exactly what we find.</p>
+  <p>Astronauts standing on the Moon saw a <strong>black</strong> sky, with stars in it, in the middle of the day with the Sun blazing above them. The Moon has almost no air, so there is nothing there to scatter sunlight sideways into your eyes. The sunlight just goes straight past you and carries on.</p>
+  <h3>Mars does it back to front</h3>
+  <p>Mars has a thin air, full of fine dust. Dust is far bigger than a gas molecule and it scatters light in its own way. NASA's landers have photographed the result: the Martian sky is <strong>orange-ish in the daytime</strong>, and turns <strong>blue-grey around the Sun at sunset</strong> &mdash; the opposite way round from Earth.</p>
+  <p>A planet's sky colour is a clue about what its air is made of. That is a genuinely useful thing for scientists, not just a pretty one.</p>
+
+  <hr>
+
+  <h2>Show what you know</h2>
+  <p>Have a go at answering before you open each one.</p>
+
+  <details>
+    <summary>1. What colour is sunlight really?</summary>
+    <p>All of them at once. Sunlight carries every colour of the rainbow mixed together, which your eyes read as white.</p>
+  </details>
+  <details>
+    <summary>2. Why does blue end up all over the sky instead of red?</summary>
+    <p>Blue travels as short, choppy waves, and short waves are flung sideways by the tiny specks of gas in the air far more easily &mdash; nearly 6 times as much as red. The red light mostly carries straight on.</p>
+  </details>
+  <details>
+    <summary>3. Your friend says the sky is blue because it reflects the sea. What do you say?</summary>
+    <p>That the sky is just as blue over the middle of a desert, thousands of kilometres from any sea &mdash; so it cannot be coming from the water. The blue is made in the air itself.</p>
+  </details>
+  <details>
+    <summary>4. Why is the Moon's daytime sky black?</summary>
+    <p>There is almost no air on the Moon, so there are no specks to scatter sunlight sideways into an astronaut's eyes. No scattering, no sky colour &mdash; just black, with stars.</p>
+  </details>
+  <details>
+    <summary>5. Harder: if Earth's air were twice as thick, what would a sunset look like?</summary>
+    <p>Reasonable answer: even redder, and darker. More air means more scattering, so blue and green would be stripped out even sooner, leaving deeper red &mdash; and less light getting through overall. (Dust and smoke in the air do something similar, which is why sunsets after a big wildfire can be an astonishing red.)</p>
+  </details>
+
+  <div class="card word">
+    <p class="big">Big words, small meanings</p>
+    <dl>
+      <dt>Molecule</dt><dd>A tiny piece of a substance. Air is made of them; they are thousands of times smaller than a wave of light.</dd>
+      <dt>Scatter</dt><dd>To fling light off in a new direction instead of letting it go straight on.</dd>
+      <dt>Wavelength</dt><dd>The length of one wiggle of a light wave. Blue has short wiggles, red has long ones.</dd>
+      <dt>Atmosphere</dt><dd>The blanket of air wrapped around a planet.</dd>
+      <dt>Rayleigh scattering</dt><dd>The grown-up name for what this whole page is about: light being scattered by specks much smaller than its own wiggle. Named after Lord Rayleigh, who worked out the sums in the 1870s.</dd>
+    </dl>
+  </div>
+
+  <h2>Where this comes from</h2>
+  <p class="note">Everything on this page was checked against these. <span class="grade">A</span> = space agency, observatory or scientist writing in their own field. <span class="grade b">B</span> = careful science writing that matches the A sources.</p>
+  <ul class="src">
+    <li><span class="grade">A</span> NASA Space Place, <a href="https://spaceplace.nasa.gov/blue-sky/en/">Why Is the Sky Blue?</a> &mdash; sunlight contains every colour; blue waves are shorter than red; blue is scattered most; the horizon pales because light crosses more air and is re-scattered; sunsets redden; the Martian sky is orange by day and blue-grey at sunset (Mars Pathfinder images).</li>
+    <li><span class="grade">A</span> A. D. Del Genio (NASA Goddard Institute for Space Studies / Columbia University), <a href="https://www.scientificamerican.com/article/why-is-the-sky-blue/">answering in <em>Scientific American</em></a> &mdash; you see only the light the air redirects into your line of sight, which happens far more often for blue; a planet with no atmosphere cannot have a bright sky.</li>
+    <li><span class="grade">A</span> Royal Museums Greenwich, <a href="https://www.rmg.co.uk/discover/explore/why-is-the-sky-blue">What makes the sky blue?</a> &mdash; small air molecules do the scattering; low Sun means a longer path through the atmosphere; violet is scattered more than blue, and why the sky still looks blue.</li>
+    <li><span class="grade b">B</span> E. Siegel, <a href="https://bigthink.com/starts-with-a-bang/why-the-sky-is-blue-according-to-science/">Why the sky is blue, according to science</a>, <em>Big Think</em> &mdash; scattering follows 1/(wavelength)<sup>4</sup>; violet at the edge of human vision is scattered about nine times as often as red; the zenith is a deeper blue than the horizon.</li>
+  </ul>
+  <p class="note">The "nearly 6 times" figure is that same 1/(wavelength)<sup>4</sup> law worked out for blue light at 450&nbsp;nm against red at 700&nbsp;nm: (700/450)<sup>4</sup> &asymp; 5.9. The "about 37 helpings of air" at the horizon is the standard air-mass formula used by astronomers (Kasten &amp; Young, 1989), which is also what the figure above uses.</p>
+  <p class="note">These are notes for learning, not a weather or eye-safety guide. Never look straight at the Sun, and never through binoculars or a telescope &mdash; sunset or not.</p>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+  // Rayleigh optical depth at the zenith for red, green and blue light, plus a grey haze (aerosol) term.
+  var TAU = {r:0.0526, g:0.1050, b:0.2420};
+  var AER = 0.10;
+  var NSEG = 14;
+  var scene = document.getElementById('scene');
+  var sunEl = document.getElementById('sun');
+  var glowEl = document.getElementById('sunGlow');
+  var rayEl = document.getElementById('ray');
+  var stopTop = document.getElementById('stopTop');
+  var stopMid = document.getElementById('stopMid');
+  var stopLow = document.getElementById('stopLow');
+  var stopBot = document.getElementById('stopBot');
+  var glowIn = document.getElementById('glowIn');
+  var glowMid = document.getElementById('glowMid');
+  var glowOut = document.getElementById('glowOut');
+  var awayRect = document.getElementById('awayRect');
+  var awayA = document.getElementById('awayA');
+  var awayB = document.getElementById('awayB');
+  var awayC = document.getElementById('awayC');
+  var starsG = document.getElementById('stars');
+  var dotsG = document.getElementById('dots');
+  var slider = document.getElementById('sunh');
+  var rAir = document.getElementById('rAir');
+  var rSun = document.getElementById('rSun');
+  var rSky = document.getElementById('rSky');
+  var rLow = document.getElementById('rLow');
+  var swSun = document.getElementById('swSun');
+  var swSky = document.getElementById('swSky');
+  var swLow = document.getElementById('swLow');
+  var airLabel = document.getElementById('airLabel');
+  var airEdge = document.getElementById('airEdge');
+  var kid = document.getElementById('kid');
+
+  var elev = 78;      // degrees above the horizon
+  var noAir = false;
+  var showDots = false;
+
+  var EYE = {x:168, y:338};
+
+  // stars
+  var starHTML = '';
+  for (var i=0;i<70;i++){
+    var sx = (i*97.3)%800, sy = ((i*53.7)%330);
+    var sr = 0.8 + ((i*37)%10)/8;
+    starHTML += '<circle cx="'+sx.toFixed(1)+'" cy="'+sy.toFixed(1)+'" r="'+sr.toFixed(2)+'" fill="#fff" opacity="'+(0.45+((i*13)%10)/18).toFixed(2)+'"/>';
+  }
+  starsG.innerHTML = starHTML;
+
+  function airmass(e){                       // Kasten & Young (1989)
+    var z = 90 - Math.max(e, 0.05);
+    var rad = Math.PI/180;
+    return 1/(Math.cos(z*rad) + 0.50572*Math.pow(96.07995 - z, -1.6364));
+  }
+  function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
+  function mix(a,b,t){ return a+(b-a)*t; }
+
+  // Single scattering added up along the line of sight.
+  //  ms = air the sunlight crosses, mv = air the view crosses, elev = Sun's height.
+  function scatter(ms, mv, elev){
+    var c = {}, k, span = 1/mv, seg = mv/NSEG;
+    for (k in TAU){
+      var t = TAU[k], sum = 0;
+      for (var j = 1; j <= NSEG; j++){
+        var f = 1 - span*(j - 0.5)/NSEG;                 // share of the air column the sunlight crossed
+        var illum = clamp((elev + 1.0 + 11*(1 - f))/2.5, 0, 1); // low air slips into shadow after sunset
+        sum += illum * t * Math.exp(-(t+AER)*f*ms) * Math.exp(-(t+AER)*(j-0.5)*seg) * seg;
+      }
+      c[k] = sum;
+    }
+    return c;
+  }
+  function render(c, haze, bright){
+    var maxv = Math.max(c.r, c.g, c.b), out = [], k;
+    for (k in TAU){
+      var v = maxv > 0 ? c[k]/maxv : 0;
+      v = clamp(1 - (1 - v)*1.15, 0, 1);          // a little extra colour, as eyes see it
+      v = v*(1-haze) + haze;                      // re-scattered and ground light whiten the view
+      out.push(Math.round(255*clamp(Math.pow(v, 1/2.2)*bright, 0, 1)));
+    }
+    return out;
+  }
+  function skyColor(ms, mv, elev, haze, bright){
+    return render(scatter(ms, mv, elev), haze, bright);
+  }
+  function sunColor(ms){
+    var c = [], k, maxv = 0, raw = {};
+    for (k in TAU){ raw[k] = Math.exp(-(TAU[k]+AER)*ms); if (raw[k] > maxv) maxv = raw[k]; }
+    for (k in TAU){ c.push(Math.round(255*clamp(Math.pow(raw[k]/maxv, 1/2.2), 0, 1))); }
+    return c;
+  }
+  function floorNight(a){ return [Math.max(a[0],13), Math.max(a[1],18), Math.max(a[2],42)]; }
+  function css(a){ return 'rgb('+a[0]+','+a[1]+','+a[2]+')'; }
+  function toward(a, b, t){ return [Math.round(mix(a[0],b[0],t)), Math.round(mix(a[1],b[1],t)), Math.round(mix(a[2],b[2],t))]; }
+
+  function nameSky(a, night){
+    var r=a[0], g=a[1], b=a[2];
+    if (night && r<70 && b<90) return 'night';
+    if (b >= r && b >= g){
+      if (b>200 && r>185) return 'pale, almost white';
+      if (b>165 && r<125) return 'deep blue';
+      if (b<120) return 'dusky blue';
+      return 'blue';
+    }
+    if (r >= g){
+      if (g>150) return 'golden';
+      if (g>110) return 'orange';
+      if (g>60)  return 'deep orange';
+      return 'red';
+    }
+    return 'hazy yellow';
+  }
+  function nameSun(a){
+    if (a[2]>200) return 'white';
+    if (a[1]>190) return 'pale yellow';
+    if (a[1]>140) return 'yellow';
+    if (a[1]>90)  return 'orange';
+    return 'deep red';
+  }
+
+  function sunXY(e){
+    var rad = Math.max(e, -14)*Math.PI/180;
+    return { x: 400 + 340*Math.cos(rad), y: 366 - 322*Math.sin(rad) };
+  }
+
+  var state = {ms:1, path:[], blue:0.5};
+
+  function draw(){
+    var p = sunXY(elev);
+    sunEl.setAttribute('cx', p.x.toFixed(1));
+    sunEl.setAttribute('cy', p.y.toFixed(1));
+    glowEl.setAttribute('cx', p.x.toFixed(1));
+    glowEl.setAttribute('cy', p.y.toFixed(1));
+    rayEl.setAttribute('x1', p.x.toFixed(1));
+    rayEl.setAttribute('y1', p.y.toFixed(1));
+    rayEl.setAttribute('x2', EYE.x);
+    rayEl.setAttribute('y2', EYE.y);
+
+    var below = elev < -0.5;
+    var ms = airmass(elev);
+    state.ms = ms;
+    state.path = [p.x, p.y, EYE.x, EYE.y];
+    state.blue = clamp(Math.exp(-TAU.b*ms), 0, 1);
+
+    if (noAir){
+      stopTop.setAttribute('stop-color', '#000005');
+      stopMid.setAttribute('stop-color', '#010106');
+      stopBot.setAttribute('stop-color', '#02030a');
+      starsG.setAttribute('opacity', '1');
+      awayRect.setAttribute('opacity', '0');
+      airEdge.setAttribute('opacity', '0');
+      airLabel.setAttribute('opacity', '0');
+      var sc = [255,253,245];
+      sunEl.setAttribute('fill', css(sc));
+      sunEl.setAttribute('opacity', below ? '0' : '1');
+      glowEl.setAttribute('opacity', '0.08');
+      rayEl.setAttribute('stroke', '#fff6d8');
+      rayEl.setAttribute('opacity', below ? '0' : '0.85');
+      rAir.textContent = 'none at all';
+      swSun.style.background = css(sc); rSun.textContent = 'white';
+      swSky.style.background = '#000005'; rSky.textContent = 'black, with stars';
+      swLow.style.background = '#000005'; rLow.textContent = 'black, with stars';
+      dotsG.innerHTML = '';
+      return;
+    }
+
+    airEdge.setAttribute('opacity', '1');
+    airLabel.setAttribute('opacity', '0.85');
+
+    // twilight: how far the Sun is below the horizon
+    var nf = clamp((-elev)/11, 0, 1);
+    var bright = 0.56 + 0.44*Math.pow(clamp(Math.sin(Math.max(elev,0)*Math.PI/180), 0, 1), 0.30);
+    var hazeFall = Math.exp(-(ms-1)/9);
+
+    var top = floorNight(skyColor(ms, 1.0, elev, 0.03*hazeFall, bright));
+    var mid = floorNight(skyColor(ms, 2.2, elev, 0.12*hazeFall, bright));
+    var low = floorNight(skyColor(ms, 4.5, elev, 0.26*hazeFall, bright*0.99));
+    var bot = floorNight(skyColor(ms, 12.0, elev, 0.44*hazeFall, bright*0.97));
+
+    stopTop.setAttribute('stop-color', css(top));
+    stopMid.setAttribute('stop-color', css(mid));
+    stopLow.setAttribute('stop-color', css(low));
+    stopBot.setAttribute('stop-color', css(bot));
+
+    // The half of the sky away from a low Sun keeps its cool colour: the warm light is all on the Sun's side.
+    var away = css(toward(top, [70,92,122], 0.25));
+    awayA.setAttribute('stop-color', away);
+    awayB.setAttribute('stop-color', away);
+    awayC.setAttribute('stop-color', away);
+    awayRect.setAttribute('opacity', (clamp((ms-2.2)/14, 0, 1)*(1-nf)).toFixed(2));
+    starsG.setAttribute('opacity', (nf*0.95).toFixed(2));
+
+    var sc2 = sunColor(ms);
+    sunEl.setAttribute('fill', css(sc2));
+    sunEl.setAttribute('opacity', below ? '0' : '1');
+    // light scattered gently forwards makes a bright halo round the Sun, warm when the Sun is low
+    var warm = toward([255,255,250], sc2, clamp((ms-1)/12, 0, 1));
+    glowIn.setAttribute('stop-color', css(warm));
+    glowMid.setAttribute('stop-color', css(warm));
+    glowOut.setAttribute('stop-color', css(warm));
+    glowEl.setAttribute('r', (150 + 90*clamp((ms-1)/25,0,1)).toFixed(0));
+    glowEl.setAttribute('opacity', (0.62*(1-nf)).toFixed(2));
+    rayEl.setAttribute('stroke', css(sc2));
+    rayEl.setAttribute('opacity', below ? '0' : (0.35 + 0.6*(1-clamp((ms-1)/25,0,1))).toFixed(2));
+
+    rAir.textContent = below ? 'the Sun has set' :
+       (ms < 1.05 ? '1 helping' : 'about ' + (ms<10 ? ms.toFixed(1) : Math.round(ms)) + ' helpings');
+    swSun.style.background = css(sc2);
+    rSun.textContent = below ? '—' : nameSun(sc2);
+    swSky.style.background = css(top);
+    rSky.textContent = nameSky(top, nf > 0.5);
+    swLow.style.background = css(bot);
+    rLow.textContent = below ? nameSky(bot, true) : nameSky(bot, nf > 0.5);
+  }
+
+  // ---- bouncing-blue animation ----
+  var parts = [], raf = null;
+  function seed(){
+    parts = [];
+    for (var i=0;i<30;i++){
+      parts.push({t: Math.random(), life: Math.random(), vx:0, vy:0, out:0});
+    }
+  }
+  function animate(){
+    if (!showDots || noAir){ dotsG.innerHTML = ''; raf = null; return; }
+    var x1 = state.path[0], y1 = state.path[1], x2 = state.path[2], y2 = state.path[3];
+    var dx = x2-x1, dy = y2-y1, len = Math.sqrt(dx*dx+dy*dy) || 1;
+    var nx = -dy/len, ny = dx/len;
+    // the more air, the more blue gets knocked out of the beam
+    var strength = clamp(1 - state.blue, 0.05, 1);
+    var s = '';
+    for (var i=0;i<parts.length;i++){
+      var pt = parts[i];
+      pt.life += 0.016 + 0.02*strength;
+      if (pt.life > 1){ pt.life = 0; pt.t = Math.random(); pt.out = (Math.random()<0.5?-1:1)*(0.4+Math.random()*0.9); }
+      var bx = x1 + dx*pt.t, by = y1 + dy*pt.t;
+      var spread = pt.life*pt.life*95*Math.abs(pt.out)*strength;
+      var px = bx + nx*spread*Math.sign(pt.out||1) + (Math.random()-0.5)*1.5;
+      var py = by + ny*spread*Math.sign(pt.out||1) - pt.life*18;
+      var op = (1-pt.life)*(0.45 + 0.55*strength);
+      if (py < 364 && op > 0.03){
+        s += '<circle cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" r="'+(6.2-3.2*pt.life).toFixed(2)
+          +'" fill="#1769e8" stroke="#dff0ff" stroke-width="1.6" opacity="'+op.toFixed(2)+'"/>';
+      }
+    }
+    dotsG.innerHTML = s;
+    raf = requestAnimationFrame(animate);
+  }
+
+  // ---- input ----
+  function setElev(v, fromSlider){
+    elev = clamp(v, -12, 90);
+    if (!fromSlider) slider.value = Math.round(elev);
+    draw();
+  }
+  slider.addEventListener('input', function(){ setElev(parseFloat(slider.value), true); });
+
+  function pointerElev(ev){
+    var r = scene.getBoundingClientRect();
+    var sx = (ev.clientX - r.left) * (800/r.width);
+    var sy = (ev.clientY - r.top) * (470/r.height);
+    var a = Math.atan2(366 - sy, sx - 400) * 180/Math.PI;
+    setElev(a);
+  }
+  var dragging = false;
+  scene.addEventListener('pointerdown', function(ev){ dragging = true; scene.setPointerCapture(ev.pointerId); pointerElev(ev); });
+  scene.addEventListener('pointermove', function(ev){ if (dragging) pointerElev(ev); });
+  scene.addEventListener('pointerup', function(){ dragging = false; });
+  scene.addEventListener('pointercancel', function(){ dragging = false; });
+
+  document.getElementById('bNoon').addEventListener('click', function(){ setElev(88); });
+  document.getElementById('bSet').addEventListener('click', function(){ setElev(0); });
+  document.getElementById('bNight').addEventListener('click', function(){ setElev(-11); });
+
+  var bDots = document.getElementById('bDots');
+  bDots.addEventListener('click', function(){
+    showDots = !showDots;
+    bDots.setAttribute('aria-pressed', showDots ? 'true' : 'false');
+    if (showDots){ seed(); if (!raf) raf = requestAnimationFrame(animate); }
+    else { dotsG.innerHTML = ''; }
+  });
+
+  var bAir = document.getElementById('bAir');
+  bAir.addEventListener('click', function(){
+    noAir = !noAir;
+    bAir.setAttribute('aria-pressed', noAir ? 'true' : 'false');
+    bAir.innerHTML = noAir ? '&#127757; Give the air back' : '&#127765; Take the air away';
+    document.getElementById('figNote').textContent = noAir
+      ? 'With the air gone there is nothing to scatter the sunlight sideways, so the sky is black even though the Sun is shining. This is what astronauts saw on the Moon.'
+      : 'Drag the Sun, or use the slider. Each time, the model works out how much of each colour survives the journey and how much gets scattered into the sky.';
+    if (noAir){ dotsG.innerHTML = ''; }
+    else if (showDots && !raf){ raf = requestAnimationFrame(animate); }
+    draw();
+  });
+
+  seed();
+  draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The four-stroke engine and the Otto cycle</title>
+<style>
+  :root{
+    --bg:#f6f6f4; --ink:#16181c; --soft:#5a6069; --rule:#e0ddd6; --card:#fff;
+    --accent:#14467d; --hot:#c0392b; --cool:#2a6fb0; --fuel:#1d7a4f; --exh:#8a6a3a;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:16.5px;line-height:1.62;-webkit-text-size-adjust:100%}
+  .wrap{max-width:880px;margin:0 auto;padding:30px 20px 80px}
+  .kicker{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--soft);font-weight:700}
+  h1{font-size:1.95rem;line-height:1.16;margin:.25em 0 .2em;letter-spacing:-.4px}
+  h2{font-size:1.24rem;margin:2.4em 0 .4em;color:var(--accent);line-height:1.3}
+  h3{font-size:1rem;margin:1.5em 0 .3em}
+  p{margin:.7em 0}
+  .lede{font-size:1.05rem;color:#333842}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em;
+    background:#eceef1;border-radius:4px;padding:1px 5px}
+  .eq{background:#fbfbfa;border:1px solid var(--rule);border-left:3px solid var(--accent);
+    border-radius:6px;padding:10px 14px;margin:12px 0;overflow-x:auto;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92rem}
+  .card{background:var(--card);border:1px solid var(--rule);border-radius:11px;padding:15px 19px;margin:20px 0}
+  .goals{background:#eef3f9;border-color:#ccdcea}
+  .goals ul{margin:.3em 0 0;padding-left:1.1em} .goals li{margin:.3em 0}
+  .warn{background:#fdf6e9;border-color:#ecd9b0}
+  .note{color:var(--soft);font-size:.9rem}
+  table{border-collapse:collapse;width:100%;font-size:.88rem;margin:14px 0}
+  th,td{text-align:left;padding:6px 9px;border-bottom:1px solid var(--rule);vertical-align:top}
+  th{background:#eceef1;font-weight:700;font-size:.76rem;text-transform:uppercase;letter-spacing:.05em;color:#434a56}
+  td.num{text-align:right;font-variant-numeric:tabular-nums}
+  .fig{background:#fff;border:1px solid var(--rule);border-radius:11px;padding:15px;margin:24px 0}
+  .fig h4{margin:0 0 4px;font-size:.95rem}
+  .fig svg{display:block;width:100%;height:auto}
+  .controls{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px;align-items:center}
+  button{font:inherit;font-size:.87rem;font-weight:600;min-height:38px;padding:0 13px;border-radius:8px;
+    border:1px solid #bdc3cc;background:#fff;color:#2b3340;cursor:pointer}
+  button:hover{background:#eef2f6}
+  button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  button[aria-pressed="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}
+  button:focus-visible{outline:3px solid #ffb703;outline-offset:2px}
+  .scrub{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+  .scrub label{font-size:.85rem;font-weight:600;color:#434a56;min-width:92px}
+  input[type=range]{flex:1;min-width:200px;accent-color:#14467d;height:32px}
+  .readouts{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:12px}
+  .ro{background:#f3f4f6;border:1px solid var(--rule);border-radius:8px;padding:8px 10px}
+  .ro .lab{font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--soft);font-weight:700}
+  .ro .val{font-weight:700;font-size:.95rem;font-variant-numeric:tabular-nums}
+  .cap{font-size:.85rem;color:var(--soft);margin-top:10px}
+  details{background:#fff;border:1px solid var(--rule);border-radius:9px;padding:10px 14px;margin:9px 0}
+  summary{font-weight:600;cursor:pointer;color:var(--accent)}
+  .sheet{background:#fffdf6;border:2px solid #e8dcbb;border-radius:11px;padding:18px 20px;margin:26px 0}
+  .sheet h3{margin-top:1.1em} .sheet h3:first-of-type{margin-top:.2em}
+  .sheet ul{margin:.3em 0;padding-left:1.1em} .sheet li{margin:.22em 0;font-size:.93rem}
+  .src{font-size:.9rem;padding-left:1.1em} .src li{margin:.55em 0}
+  .grade{display:inline-block;font-size:.66rem;font-weight:700;border-radius:5px;padding:1px 6px;margin-right:5px;
+    background:#dcebe2;color:#13543a;border:1px solid #a8cdb8}
+  .grade.b{background:#e9ecf3;color:#2c3a5c;border-color:#c2cbe0}
+  a{color:#174a86}
+  hr{border:none;border-top:1px solid var(--rule);margin:2.3em 0}
+  @media print{ .controls,.scrub{display:none} .sheet{page-break-before:always} }
+  @media (max-width:560px){
+    body{font-size:15.5px} h1{font-size:1.5rem} h2{font-size:1.12rem}
+    .readouts{grid-template-columns:repeat(2,1fr)} table{font-size:.8rem} th,td{padding:5px 6px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="kicker">Engineering thermodynamics &middot; undergraduate</p>
+  <h1>The four-stroke engine and the Otto cycle</h1>
+  <p class="lede">A four-stroke engine turns two crankshaft revolutions into one power pulse. The thermodynamics that explains it &mdash; the air-standard Otto cycle &mdash; delivers one strikingly clean result: ideal efficiency depends on the compression ratio and nothing else. Not the fuel, not the heat released, not the peak temperature. These notes build the mechanism, derive that result, and then account for the roughly 20 efficiency points that separate it from a real engine.</p>
+
+  <div class="card goals">
+    <strong>By the end you can</strong>
+    <ul>
+      <li>relate crank angle to cylinder volume through the slider-crank geometry, and read a four-stroke indicator diagram;</li>
+      <li>analyse each Otto process with the closed-system energy equation and derive &eta; = 1 &minus; r<sup>1&minus;&gamma;</sup>;</li>
+      <li>compute states, net work, efficiency and mean effective pressure for a given cycle;</li>
+      <li>name the specific mechanisms that take a 60% ideal cycle down to a 40% engine, and size each one.</li>
+    </ul>
+  </div>
+
+  <h2>1. The four strokes</h2>
+  <p>One cycle spans <strong>720&deg; of crank rotation</strong> &mdash; two revolutions &mdash; and four piston travels. Nikolaus Otto built the first successful four-stroke engine in 1876.</p>
+  <table>
+    <thead><tr><th>Stroke</th><th>Crank angle</th><th>Piston</th><th>Valves</th><th>What happens</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Intake</strong></td><td>0&ndash;180&deg;</td><td>TDC &rarr; BDC</td><td>Intake open</td><td>Descending piston draws in the fresh charge. Cylinder pressure sits slightly <em>below</em> atmospheric &mdash; that deficit is pumping work.</td></tr>
+      <tr><td><strong>Compression</strong></td><td>180&ndash;360&deg;</td><td>BDC &rarr; TDC</td><td>Both shut</td><td>Charge compressed; pressure and temperature climb. Work goes <em>into</em> the gas.</td></tr>
+      <tr><td><strong>Power</strong></td><td>360&ndash;540&deg;</td><td>TDC &rarr; BDC</td><td>Both shut</td><td>Spark near TDC; combustion raises pressure sharply, and the gas does work on the piston. The only stroke that pays.</td></tr>
+      <tr><td><strong>Exhaust</strong></td><td>540&ndash;720&deg;</td><td>BDC &rarr; TDC</td><td>Exhaust open</td><td>Burned gas pushed out slightly <em>above</em> atmospheric. More pumping work.</td></tr>
+    </tbody>
+  </table>
+  <p>Two details the idealisation will quietly discard. Real valves do not open and shut at dead centre: the exhaust valve opens <em>before</em> BDC so blowdown starts early, and the intake valve closes <em>after</em> BDC to exploit charge inertia. Near TDC between exhaust and intake both valves are briefly open together &mdash; <strong>valve overlap</strong>, which scavenges residual gas.</p>
+
+  <h2>2. Geometry: crank angle to cylinder volume</h2>
+  <p>Everything thermodynamic is a function of volume, and volume is set by the slider-crank. With crank radius <em>a</em> = <em>S</em>/2, connecting-rod length <em>L</em> and crank angle &theta; measured from TDC, the piston displacement is</p>
+  <div class="eq">x(&theta;) = a(1 &minus; cos&theta;) + L(1 &minus; &radic;(1 &minus; &lambda;&sup2;sin&sup2;&theta;)),&nbsp;&nbsp;&lambda; = a/L</div>
+  <p>and the instantaneous cylinder volume is <code>V(&theta;) = V_c + A&middot;x(&theta;)</code> with bore area <em>A</em> = &pi;<em>B</em>&sup2;/4. The clearance volume follows from the compression ratio:</p>
+  <div class="eq">r = (V_c + V_d)/V_c&nbsp;&nbsp;&rArr;&nbsp;&nbsp;V_c = V_d/(r &minus; 1)</div>
+  <p>Note that V(&theta;) is <em>not</em> sinusoidal. The &radic;(1 &minus; &lambda;&sup2;sin&sup2;&theta;) term makes the piston spend longer near TDC than a pure sinusoid would &mdash; which matters, because that is where combustion happens.</p>
+
+  <h2>3. Watch it run</h2>
+  <p>The figure below is driven by the equations above, not by a hand-drawn loop: the engine at 86&nbsp;mm bore &times; 86&nbsp;mm stroke, 143&nbsp;mm rod, <em>r</em> = 10, giving V<sub>d</sub> = 500&nbsp;cm&sup3; and V<sub>c</sub> = 55.5&nbsp;cm&sup3;. Pressure comes from isentropic relations on the closed strokes and from fixed manifold pressures during gas exchange.</p>
+
+  <div class="fig">
+    <h4>Figure 1 &middot; Four-stroke engine with its indicator diagram, in step</h4>
+    <svg id="eng" viewBox="0 0 920 620" role="img"
+      aria-label="An animated four-stroke engine cross-section showing piston, connecting rod, crank, intake and exhaust valves and spark plug, coupled to a live pressure-volume indicator diagram tracing the cycle."></svg>
+    <div class="controls">
+      <button id="bPlay" class="primary" type="button">&#9654;&nbsp; Play</button>
+      <button id="bSlow" type="button">Slower</button>
+      <button id="bFast" type="button">Faster</button>
+      <button id="bOtto" type="button" aria-pressed="true">Ideal Otto overlay</button>
+      <button id="bLog" type="button" aria-pressed="false">Log P axis</button>
+    </div>
+    <div class="scrub">
+      <label for="theta">Crank angle</label>
+      <input id="theta" type="range" min="0" max="720" step="1" value="0">
+    </div>
+    <div class="readouts">
+      <div class="ro"><div class="lab">Crank angle</div><div class="val" id="rTh">0&deg;</div></div>
+      <div class="ro"><div class="lab">Stroke</div><div class="val" id="rSt">Intake</div></div>
+      <div class="ro"><div class="lab">Volume</div><div class="val" id="rV">55.5 cm&sup3;</div></div>
+      <div class="ro"><div class="lab">Pressure</div><div class="val" id="rP">0.90 bar</div></div>
+    </div>
+    <p class="cap">On a linear pressure axis the gas-exchange strokes collapse almost onto the volume axis &mdash; switch to the log axis to see the <strong>pumping loop</strong>, the small loop traced anticlockwise at the bottom. Anticlockwise means negative work: the engine spends work breathing. The ideal Otto overlay has no pumping loop at all, because the idealisation replaces both gas-exchange strokes with a single constant-volume heat rejection at BDC. <em>Predict first:</em> at which crank angle is cylinder pressure highest &mdash; and is that the same angle at which the gas is doing most work on the piston?</p>
+  </div>
+
+  <h2>4. The air-standard Otto cycle</h2>
+  <p>The idealisation makes the mechanism tractable. The working fluid is air treated as an ideal gas with constant specific heats; the same air is retained throughout, so the gas-exchange strokes vanish; combustion is replaced by external constant-volume heat addition; exhaust is replaced by constant-volume heat rejection. Four processes remain:</p>
+  <table>
+    <thead><tr><th>Process</th><th>Description</th><th>Energy equation (closed system, per unit mass)</th></tr></thead>
+    <tbody>
+      <tr><td><strong>1&rarr;2</strong></td><td>Isentropic compression</td><td><code>w<sub>12</sub> = u<sub>1</sub> &minus; u<sub>2</sub> = c<sub>v</sub>(T<sub>1</sub> &minus; T<sub>2</sub>)</code>, q = 0</td></tr>
+      <tr><td><strong>2&rarr;3</strong></td><td>Constant-volume heat addition</td><td><code>q<sub>in</sub> = u<sub>3</sub> &minus; u<sub>2</sub> = c<sub>v</sub>(T<sub>3</sub> &minus; T<sub>2</sub>)</code>, w = 0</td></tr>
+      <tr><td><strong>3&rarr;4</strong></td><td>Isentropic expansion</td><td><code>w<sub>34</sub> = u<sub>3</sub> &minus; u<sub>4</sub> = c<sub>v</sub>(T<sub>3</sub> &minus; T<sub>4</sub>)</code>, q = 0</td></tr>
+      <tr><td><strong>4&rarr;1</strong></td><td>Constant-volume heat rejection</td><td><code>q<sub>out</sub> = u<sub>4</sub> &minus; u<sub>1</sub> = c<sub>v</sub>(T<sub>4</sub> &minus; T<sub>1</sub>)</code>, w = 0</td></tr>
+    </tbody>
+  </table>
+  <p>Work crosses the boundary only on the two isentropes; heat crosses only on the two isochores. That separation is what makes the algebra collapse.</p>
+
+  <h3>Deriving the efficiency</h3>
+  <p>Thermal efficiency is net work over heat in, and since the isochores do no work:</p>
+  <div class="eq">&eta; = w<sub>net</sub>/q<sub>in</sub> = 1 &minus; q<sub>out</sub>/q<sub>in</sub> = 1 &minus; c<sub>v</sub>(T<sub>4</sub> &minus; T<sub>1</sub>) / c<sub>v</sub>(T<sub>3</sub> &minus; T<sub>2</sub>) = 1 &minus; (T<sub>4</sub> &minus; T<sub>1</sub>)/(T<sub>3</sub> &minus; T<sub>2</sub>)</div>
+  <p>For an isentropic process in an ideal gas with constant specific heats, <code>TV<sup>&gamma;&minus;1</sup> = const</code>. Both isentropes span the same volume ratio, V<sub>1</sub>/V<sub>2</sub> = V<sub>4</sub>/V<sub>3</sub> = r, so</p>
+  <div class="eq">T<sub>2</sub>/T<sub>1</sub> = r<sup>&gamma;&minus;1</sup>&nbsp;&nbsp;and&nbsp;&nbsp;T<sub>3</sub>/T<sub>4</sub> = r<sup>&gamma;&minus;1</sup>&nbsp;&nbsp;&rArr;&nbsp;&nbsp;T<sub>1</sub> = T<sub>2</sub>r<sup>1&minus;&gamma;</sup>, T<sub>4</sub> = T<sub>3</sub>r<sup>1&minus;&gamma;</sup></div>
+  <p>Substituting, the factor <code>r<sup>1&minus;&gamma;</sup></code> comes out of the numerator and the bracket (T<sub>3</sub> &minus; T<sub>2</sub>) cancels top and bottom:</p>
+  <div class="eq">&eta;<sub>Otto</sub> = 1 &minus; r<sup>1&minus;&gamma;</sup> = 1 &minus; 1/r<sup>&gamma;&minus;1</sup></div>
+  <p>Everything about the combustion has disappeared. The ideal efficiency does not depend on how much heat you add, on the peak temperature, on the peak pressure, or on engine size &mdash; only on the compression ratio and the specific heat ratio.</p>
+
+  <div class="fig">
+    <h4>Figure 2 &middot; Ideal Otto efficiency against compression ratio</h4>
+    <svg id="eta" viewBox="0 0 760 372" role="img"
+      aria-label="Ideal Otto cycle efficiency plotted against compression ratio for gamma 1.4 and gamma 1.3, showing diminishing returns and the typical petrol engine range."></svg>
+    <p class="cap">Two things to read off. The curve <strong>flattens</strong>: going from r = 8 to 10 buys 3.7 points, from 16 to 18 only 1.5. And the gap between the two curves is the cost of the cold-air-standard assumption &mdash; real combustion products have &gamma; nearer 1.3, which at r = 10 removes about 10 efficiency points before any other loss is counted.</p>
+  </div>
+
+  <table>
+    <thead><tr><th>r</th><th class="num">&eta; (&gamma; = 1.4)</th><th class="num">&eta; (&gamma; = 1.3)</th><th>Note</th></tr></thead>
+    <tbody>
+      <tr><td>6</td><td class="num">51.2%</td><td class="num">41.6%</td><td>Low-octane / older engines</td></tr>
+      <tr><td>8</td><td class="num">56.5%</td><td class="num">46.4%</td><td rowspan="3" style="vertical-align:middle">Typical petrol range, 8:1 to 12:1 &mdash; the ceiling is set by knock, not by thermodynamics</td></tr>
+      <tr><td>10</td><td class="num">60.2%</td><td class="num">49.9%</td></tr>
+      <tr><td>12</td><td class="num">63.0%</td><td class="num">52.5%</td></tr>
+      <tr><td>14</td><td class="num">65.2%</td><td class="num">54.7%</td><td>Direct injection, high octane, Atkinson timing</td></tr>
+      <tr><td>18</td><td class="num">68.5%</td><td class="num">58.0%</td><td>Diesel territory &mdash; no knock limit, since only air is compressed</td></tr>
+    </tbody>
+  </table>
+
+  <div class="card warn">
+    <strong>Why knock sets the ceiling.</strong>
+    <p class="note" style="margin-bottom:0">Compressing the charge raises its temperature as well as its pressure. Push <em>r</em> too high and the end-gas &mdash; the mixture ahead of the advancing flame front &mdash; reaches its autoignition temperature and detonates spontaneously instead of burning smoothly. The resulting pressure waves are audible and can destroy pistons. This is a <em>chemical kinetics</em> limit on a fuel property (octane rating), not a thermodynamic one, which is why a compression-ignition engine &mdash; compressing air alone, with fuel injected only when combustion is wanted &mdash; can run at r &asymp; 18 and reach higher efficiency.</p>
+  </div>
+
+  <h2>5. Mean effective pressure, and a worked cycle</h2>
+  <p>Efficiency says nothing about size. <strong>Mean effective pressure</strong> is the fictitious constant pressure that, acting on the piston through one full power stroke, would produce the same net work as the whole cycle:</p>
+  <div class="eq">MEP = w<sub>net</sub> / (v<sub>1</sub> &minus; v<sub>2</sub>) = W<sub>net</sub> / V<sub>d</sub></div>
+  <p>It is the fair way to compare engines of different displacement: two engines with the same MEP extract the same work per litre swept.</p>
+
+  <h3>Worked example</h3>
+  <p>An ideal air-standard Otto cycle with <em>r</em> = 9. At state 1, P<sub>1</sub> = 100&nbsp;kPa and T<sub>1</sub> = 300&nbsp;K; heat added is 1800&nbsp;kJ/kg. Take c<sub>v</sub> = 0.718&nbsp;kJ/kg&middot;K, R = 0.287&nbsp;kJ/kg&middot;K, &gamma; = 1.4.</p>
+  <p><em>Compression.</em> r<sup>&gamma;&minus;1</sup> = 9<sup>0.4</sup> = 2.408, so T<sub>2</sub> = 300 &times; 2.408 = <strong>722.5&nbsp;K</strong> and P<sub>2</sub> = 100 &times; 9<sup>1.4</sup> = <strong>2167&nbsp;kPa</strong>.</p>
+  <p><em>Heat addition.</em> T<sub>3</sub> = T<sub>2</sub> + q<sub>in</sub>/c<sub>v</sub> = 722.5 + 1800/0.718 = <strong>3229&nbsp;K</strong>; at constant volume P<sub>3</sub> = P<sub>2</sub>(T<sub>3</sub>/T<sub>2</sub>) = <strong>9688&nbsp;kPa</strong>.</p>
+  <p><em>Expansion.</em> T<sub>4</sub> = T<sub>3</sub>/2.408 = <strong>1341&nbsp;K</strong>; P<sub>4</sub> = P<sub>3</sub>/9<sup>1.4</sup> = <strong>447&nbsp;kPa</strong>.</p>
+  <p><em>Results.</em> q<sub>out</sub> = 0.718(1341 &minus; 300) = 747.4&nbsp;kJ/kg, so w<sub>net</sub> = 1800 &minus; 747.4 = <strong>1052.6&nbsp;kJ/kg</strong> and &eta; = 1052.6/1800 = <strong>58.5%</strong> &mdash; which the closed form 1 &minus; 9<sup>&minus;0.4</sup> reproduces exactly, as it must.</p>
+  <p>For MEP: v<sub>1</sub> = RT<sub>1</sub>/P<sub>1</sub> = 0.287(300)/100 = 0.861&nbsp;m&sup3;/kg, v<sub>2</sub> = v<sub>1</sub>/9 = 0.0957, so MEP = 1052.6/0.7653 = <strong>1375&nbsp;kPa &asymp; 13.8&nbsp;bar</strong>.</p>
+  <div class="card warn">
+    <strong>Read T<sub>3</sub> sceptically.</strong>
+    <p class="note" style="margin-bottom:0">3229&nbsp;K is above the adiabatic flame temperature of a stoichiometric petrol&ndash;air mixture, and well above the point where combustion products dissociate and absorb energy. The constant-specific-heat assumption has broken down &mdash; c<sub>v</sub> for air rises substantially with temperature, so the real T<sub>3</sub> is far lower for the same heat input. Textbook Otto problems routinely produce this artefact. Quote it as a model output, never as a cylinder temperature.</p>
+  </div>
+
+  <h2>6. From 60% to 40%: where it actually goes</h2>
+  <p>A modern production petrol engine reaches around 40% peak brake thermal efficiency, and the average engine about 35% &mdash; Toyota's Dynamic Force family claims 40% in the conventional version and 41% in the Atkinson-cycle hybrid version, a world-best for mass production. The ideal cycle at r = 10 promised 60.2%. The gap is not one effect; it is a stack, and they are worth sizing separately.</p>
+  <table>
+    <thead><tr><th>Loss</th><th>Why the model misses it</th><th>Rough scale</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Variable specific heats</strong></td><td>&gamma; falls from 1.4 toward ~1.3 as temperature rises and products dissociate; the model fixes it at the cold-air value.</td><td>The single largest correction &mdash; around 10 points at r = 10</td></tr>
+      <tr><td><strong>Finite combustion duration</strong></td><td>Heat release takes 30&ndash;60&deg; of crank rotation, not zero. Burning while the piston is already descending gives up expansion work; hence spark advance before TDC as a compromise.</td><td>Several points</td></tr>
+      <tr><td><strong>Heat transfer</strong></td><td>Compression and expansion are modelled as adiabatic, but the cylinder is water-cooled and the gas is at ~2500&nbsp;K. Heat leaves through the walls throughout.</td><td>Several points</td></tr>
+      <tr><td><strong>Exhaust blowdown</strong></td><td>The valve opens before BDC, so gas at pressure above ambient escapes without completing expansion. The model instead rejects heat at constant volume.</td><td>A few points</td></tr>
+      <tr><td><strong>Pumping work</strong></td><td>The negative loop in Figure 1. Severe at part load in a throttled petrol engine, where the intake manifold runs well below atmospheric.</td><td>Small at full load, large at part load</td></tr>
+      <tr><td><strong>Mechanical friction</strong></td><td>Piston rings, bearings, valvetrain, oil and water pumps. This is the step from <em>indicated</em> to <em>brake</em> efficiency &mdash; the model has no moving parts at all.</td><td>10&ndash;25% of indicated work</td></tr>
+      <tr><td><strong>Incomplete combustion</strong></td><td>Unburned hydrocarbons and CO leave chemical energy in the exhaust.</td><td>Small, but it is the emissions story</td></tr>
+    </tbody>
+  </table>
+  <p>Note what the list implies about engineering strategy. Raising <em>r</em> is attacking the first-order term and is blocked by knock. So the gains of the last two decades came from the others: direct injection to cool the charge and allow higher <em>r</em>, variable valve timing to cut pumping work, Atkinson-style late intake closing to expand more than you compress, cooled EGR to limit peak temperature, and friction reduction everywhere.</p>
+
+  <hr>
+
+  <div class="sheet">
+    <h3>Cheat sheet</h3>
+    <h3>Geometry</h3>
+    <ul>
+      <li>x(&theta;) = a(1 &minus; cos&theta;) + L(1 &minus; &radic;(1 &minus; &lambda;&sup2;sin&sup2;&theta;)), &nbsp;a = S/2, &nbsp;&lambda; = a/L</li>
+      <li>V(&theta;) = V<sub>c</sub> + A&middot;x(&theta;); &nbsp;A = &pi;B&sup2;/4; &nbsp;V<sub>d</sub> = A&middot;S</li>
+      <li>r = (V<sub>c</sub> + V<sub>d</sub>)/V<sub>c</sub> &nbsp;&rArr;&nbsp; V<sub>c</sub> = V<sub>d</sub>/(r &minus; 1)</li>
+      <li>One cycle = 720&deg; crank = 2 revolutions = 1 power stroke</li>
+    </ul>
+    <h3>Cycle</h3>
+    <ul>
+      <li>1&rarr;2 isentropic compression &middot; 2&rarr;3 constant-volume heat addition &middot; 3&rarr;4 isentropic expansion &middot; 4&rarr;1 constant-volume heat rejection</li>
+      <li>Isentropic: TV<sup>&gamma;&minus;1</sup> = const, &nbsp;PV<sup>&gamma;</sup> = const, &nbsp;T<sub>2</sub>/T<sub>1</sub> = r<sup>&gamma;&minus;1</sup>, &nbsp;P<sub>2</sub>/P<sub>1</sub> = r<sup>&gamma;</sup></li>
+      <li>q<sub>in</sub> = c<sub>v</sub>(T<sub>3</sub> &minus; T<sub>2</sub>), &nbsp;q<sub>out</sub> = c<sub>v</sub>(T<sub>4</sub> &minus; T<sub>1</sub>), &nbsp;w<sub>net</sub> = q<sub>in</sub> &minus; q<sub>out</sub></li>
+      <li><strong>&eta; = 1 &minus; r<sup>1&minus;&gamma;</sup></strong> &mdash; depends on r and &gamma; only</li>
+      <li>MEP = w<sub>net</sub>/(v<sub>1</sub> &minus; v<sub>2</sub>) = W<sub>net</sub>/V<sub>d</sub></li>
+    </ul>
+    <h3>Numbers</h3>
+    <ul>
+      <li>Air: c<sub>v</sub> = 0.718, c<sub>p</sub> = 1.005, R = 0.287 kJ/kg&middot;K, &gamma; = 1.4 (cold air-standard)</li>
+      <li>&eta;<sub>ideal</sub>: r = 8 &rarr; 56.5% &middot; r = 10 &rarr; 60.2% &middot; r = 12 &rarr; 63.0%</li>
+      <li>Petrol r typically 8:1 to 12:1 (knock-limited); diesel r &asymp; 18</li>
+      <li>Real petrol engine: ~35% average, ~40&ndash;41% best in production; Toyota GD diesel claims 44%</li>
+      <li>Combustion products: &gamma; &rarr; ~1.3, costing ~10 points at r = 10</li>
+    </ul>
+    <h3>Traps</h3>
+    <ul>
+      <li>&eta; is independent of q<sub>in</sub> &mdash; adding more heat raises work and MEP, not efficiency</li>
+      <li>Otto &eta; is <em>not</em> Carnot &eta;; compare only at matched temperature limits</li>
+      <li>Textbook T<sub>3</sub> values above ~2800 K are artefacts of constant c<sub>v</sub></li>
+      <li>Indicated &ne; brake: friction has not been counted until you say "brake"</li>
+    </ul>
+  </div>
+
+  <h2>Self-test</h2>
+  <details><summary>Two engines have the same compression ratio; one runs rich and releases far more heat per cycle. Which has the higher ideal efficiency?</summary>
+    <p>Neither &mdash; they are equal. &eta; = 1 &minus; r<sup>1&minus;&gamma;</sup> contains no heat term. The engine releasing more heat produces more net work per cycle and therefore a higher MEP and more power, but it also rejects proportionally more heat, and the ratio is unchanged. Confusing "more work" with "more efficient" is the single most common error with this cycle.</p></details>
+  <details><summary>Why does the pumping loop run anticlockwise, and what does that signify?</summary>
+    <p>During intake the pressure is below atmospheric while the volume increases; during exhaust it is above atmospheric while the volume decreases. Traversed in that order the loop encloses area in the negative sense, so &oint;P&nbsp;dV is negative: the engine does net work on the gas to breathe. It is subtracted from the gross indicated work. Throttling a petrol engine at part load deepens the intake depression and enlarges this loop, which is why part-load efficiency is poor and why variable valve timing and lean/unthrottled strategies pay off.</p></details>
+  <details><summary>Spark fires before TDC, during compression. Doesn't that oppose the piston and waste work?</summary>
+    <p>Partly, yes &mdash; and that is the compromise. Combustion takes 30&ndash;60&deg; of crank angle, so igniting exactly at TDC would release most of the heat while the piston was already well down the bore, at a large volume where the pressure rise does far less work. Advancing the spark puts peak pressure shortly after TDC, where the crank has good leverage. Too much advance and the negative compression work plus knock risk outweigh the gain; the optimum is MBT &mdash; minimum advance for best torque.</p></details>
+  <details><summary>You double the displacement at fixed r, fixed MEP and fixed speed. What happens to efficiency and to power?</summary>
+    <p>Efficiency is unchanged: it depends on r and &gamma;, and MEP is work per swept volume, so work per cycle scales with displacement while heat input scales with it too. Power roughly doubles, since W<sub>net</sub> = MEP &times; V<sub>d</sub> per cycle at the same cycle rate. This is exactly why MEP, not work, is the right currency for comparing engines.</p></details>
+
+  <h2>Sources</h2>
+  <p class="note"><span class="grade">A</span> university course material or manufacturer technical claim. <span class="grade b">B</span> reference and teaching resources consistent with the above.</p>
+  <ul class="src">
+    <li><span class="grade">A</span> Wassgren C. <a href="https://engineering.purdue.edu/~wassgren/teaching/ME20000/NotesAndReading/Lec38_LectureNotes.pdf">Otto, Diesel and Dual Power Cycles</a> and <a href="https://engineering.purdue.edu/~wassgren/teaching/ME20000/NotesAndReading/Lec37_Reading_Wassgren.pdf">Notes on Thermodynamics</a>, ME 200, Purdue University &mdash; the air-standard assumptions, the process-by-process closed-system energy analysis, and the derivation of the efficiency from internal-energy differences; typical fuel-to-air mass ratio ~1/15.</li>
+    <li><span class="grade">A</span> Bahrami M. <a href="https://www.sfu.ca/~mbahrami/Mech%20240/Lectures/Internal%20Combustion%20Engine%20Cycles.pdf">Internal Combustion Engine Cycles</a>, MECH 240, Simon Fraser University &mdash; the Otto cycle as the ideal cycle for spark-ignition engines, the actual four-stroke P&ndash;v diagram against the ideal, and the knock limit on compression ratio.</li>
+    <li><span class="grade">A</span> Urieli I. <a href="https://people.ohio.edu/urieli/thermo/Intro/Chapt.1_6/Chapter3d.html">The Air Standard Otto Cycle</a>, Ohio University &mdash; the air-standard idealisation and the contrast with the Diesel cycle's much higher compression ratio (~18:1) and constant-pressure heat addition.</li>
+    <li><span class="grade b">B</span> <a href="https://engineeringhulk.com/mechanical/thermodynamics/otto-cycle/">Otto Cycle &mdash; efficiency formula, P&ndash;V diagram and solved problems</a> &mdash; &eta; = 1 &minus; 1/r<sup>&gamma;&minus;1</sup>; the result's independence from heat added and peak temperature; typical petrol compression ratios of 8:1 to 12:1 limited by knock; Nikolaus Otto's first successful four-stroke engine in 1876.</li>
+    <li><span class="grade">A</span> <a href="https://www.toyota.ca/toyota/en/connect/3066/dynamic-force-engines">Toyota Dynamic Force engines</a> and <a href="https://www.mobilityengineeringtech.com/component/content/article/43504-sae-ma-02815">SAE Mobility Engineering coverage</a> &mdash; 41% peak thermal efficiency in the Atkinson-cycle hybrid version and 40% in the conventional version, against about 35% for an average petrol engine.</li>
+    <li><span class="grade b">B</span> <a href="https://en.wikipedia.org/wiki/Toyota_GD_engine">Toyota GD engine</a> &mdash; claimed maximum thermal efficiency of 44% for the compression-ignition GD series, illustrating the diesel advantage.</li>
+  </ul>
+  <p class="note">Figure 1 is computed live from the slider-crank relation and isentropic gas relations at the stated geometry; it is a teaching model, not engine test data, and the manifold pressures and heat-release ratio are representative values rather than measurements from a particular engine.</p>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var NS='http://www.w3.org/2000/svg';
+  function el(t,a){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);return e;}
+  function S(id){return document.getElementById(id);}
+
+  /* ================= engine + indicator diagram ================= */
+  var svg=S('eng');
+
+  // --- physical model (SI, then displayed in cm3 / bar)
+  var B=0.086, STR=0.086, L=0.143, RC=10;
+  var a=STR/2, lam=a/L, A=Math.PI*B*B/4;
+  var Vd=A*STR, Vc=Vd/(RC-1), Vmax=Vc+Vd;
+  var GAM=1.4, P_IN=0.90, P_EX=1.10, ALPHA=2.6;   // bar, combustion pressure ratio
+
+  function vol(th){                                 // th in degrees, 0 = TDC
+    var t=th*Math.PI/180;
+    var x=a*(1-Math.cos(t))+L*(1-Math.sqrt(1-Math.pow(lam*Math.sin(t),2)));
+    return Vc+A*x;
+  }
+  var P1=P_IN, P2=P1*Math.pow(RC,GAM), P3=P2*ALPHA, P4=P3/Math.pow(RC,GAM);
+
+  function pres(th){
+    th=((th%720)+720)%720;
+    if(th<180)  return P_IN;                                   // intake
+    if(th<360)  return P1*Math.pow(Vmax/vol(th),GAM);           // compression
+    if(th<540)  return P3*Math.pow(Vc/vol(th),GAM);             // expansion
+    return P_EX;                                                // exhaust
+  }
+  function strokeName(th){
+    th=((th%720)+720)%720;
+    return th<180?'Intake':th<360?'Compression':th<540?'Power':'Exhaust';
+  }
+
+  // --- layout
+  var EX=40, EW=340;                 // engine panel
+  var PX=430, PY=86, PW=462, PH=430; // P-V panel
+  var CYL_L=112, CYL_R=250, CYL_TOP=100;
+  var CRANK=[181,520], aPx=75, LPx=250;
+
+  function pinY(th){
+    var t=th*Math.PI/180;
+    return CRANK[1]-(aPx*Math.cos(t)+Math.sqrt(LPx*LPx-Math.pow(aPx*Math.sin(t),2)));
+  }
+
+  var theta=0, playing=false, speed=1.6, showOtto=true, logP=false, raf=null;
+  var trace=[];
+
+  // axis mapping
+  var Vlo=Vc*0.92, Vhi=Vmax*1.04;
+  var Plo=0.55, Phi=P3*1.1;
+  function vx(V){ return PX+ (V-Vlo)/(Vhi-Vlo)*PW; }
+  function py(P){
+    if(logP){
+      var l0=Math.log(Plo), l1=Math.log(Phi);
+      return PY+PH-(Math.log(Math.max(P,Plo))-l0)/(l1-l0)*PH;
+    }
+    return PY+PH-(Math.min(P,Phi)-0)/(Phi-0)*PH;
+  }
+
+  function build(){
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+    svg.appendChild(el('rect',{x:0,y:0,width:920,height:620,fill:'#fff'}));
+
+    var th=theta, V=vol(th), P=pres(th), st=strokeName(th);
+    var yPin=pinY(th), yCrown=yPin-40;
+
+    // ---------- engine ----------
+    svg.appendChild(el('rect',{x:EX,y:70,width:EW,height:520,rx:14,fill:'#f4f5f6',stroke:'#dfe2e6'}));
+
+    // water jacket / block
+    svg.appendChild(el('rect',{x:CYL_L-26,y:CYL_TOP-34,width:(CYL_R-CYL_L)+52,height:300,rx:8,
+      fill:'#dfe3e8',stroke:'#c3c9d1','stroke-width':2}));
+    // combustion chamber gas, coloured by state
+    var gasCol = (th>=360&&th<540) ? '#f6b26b' : (th>=180&&th<360) ? '#cfe0f0' : (th<180) ? '#e4f0e4' : '#ded5c8';
+    svg.appendChild(el('rect',{x:CYL_L,y:CYL_TOP,width:CYL_R-CYL_L,height:Math.max(2,yCrown-CYL_TOP),
+      fill:gasCol,stroke:'none'}));
+    // cylinder walls
+    svg.appendChild(el('line',{x1:CYL_L,y1:CYL_TOP,x2:CYL_L,y2:400,stroke:'#8b939d','stroke-width':4}));
+    svg.appendChild(el('line',{x1:CYL_R,y1:CYL_TOP,x2:CYL_R,y2:400,stroke:'#8b939d','stroke-width':4}));
+    svg.appendChild(el('line',{x1:CYL_L-2,y1:CYL_TOP,x2:CYL_R+2,y2:CYL_TOP,stroke:'#6f7781','stroke-width':6}));
+
+    // valves — lift profiles
+    function lift(open0,open1){
+      var t=((th%720)+720)%720, span=open1-open0, u;
+      if(t<open0||t>open1){
+        if(open0<0 && t>720+open0) u=(t-(720+open0))/span; else return 0;
+      } else u=(t-open0)/span;
+      return Math.max(0,Math.sin(Math.PI*u))*22;
+    }
+    var liftIn=lift(-8,188), liftEx=lift(532,728);
+    [[146,liftIn,'#1d7a4f','intake'],[216,liftEx,'#8a6a3a','exhaust']].forEach(function(v){
+      var x=v[0], lf=v[1];
+      svg.appendChild(el('line',{x1:x,y1:CYL_TOP-56,x2:x,y2:CYL_TOP+lf,stroke:'#7b838d','stroke-width':6,'stroke-linecap':'round'}));
+      svg.appendChild(el('path',{d:'M'+(x-17)+' '+(CYL_TOP+lf)+' L'+(x+17)+' '+(CYL_TOP+lf)+' L'+(x+11)+' '+(CYL_TOP+lf+11)+' L'+(x-11)+' '+(CYL_TOP+lf+11)+' Z',
+        fill: lf>0.6? v[2] : '#9aa2ab', stroke:'#5f666f','stroke-width':1.6}));
+      var col = lf>0.6? v[2] : '#9aa2ab';
+      var vt=el('text',{x:x,y:CYL_TOP-76,'text-anchor':'middle','font-size':11,'font-weight':'700',fill:col});
+      vt.textContent=v[3]; svg.appendChild(vt);
+      var vt2=el('text',{x:x,y:CYL_TOP-64,'text-anchor':'middle','font-size':10.5,'font-weight':'700',fill:col});
+      vt2.textContent=(lf>0.6?'OPEN':'shut'); svg.appendChild(vt2);
+    });
+
+    // spark plug
+    svg.appendChild(el('rect',{x:175,y:CYL_TOP-30,width:12,height:30,fill:'#b9bfc7',stroke:'#80878f'}));
+    if(th>=355&&th<=372){
+      svg.appendChild(el('circle',{cx:181,cy:CYL_TOP+10,r:13,fill:'#ffd34d',opacity:0.85}));
+      svg.appendChild(el('circle',{cx:181,cy:CYL_TOP+10,r:7,fill:'#fff7cc'}));
+    }
+
+    // piston
+    svg.appendChild(el('rect',{x:CYL_L+2,y:yCrown,width:CYL_R-CYL_L-4,height:46,rx:4,
+      fill:'#b6bcc4',stroke:'#7f868f','stroke-width':2}));
+    [8,16,24].forEach(function(dy){
+      svg.appendChild(el('line',{x1:CYL_L+2,y1:yCrown+dy,x2:CYL_R-2,y2:yCrown+dy,stroke:'#8f969e','stroke-width':2}));
+    });
+
+    // conrod + crank
+    var t=th*Math.PI/180;
+    var cpx=CRANK[0]+aPx*Math.sin(t), cpy=CRANK[1]-aPx*Math.cos(t);
+    svg.appendChild(el('line',{x1:181,y1:yPin,x2:cpx,y2:cpy,stroke:'#6f7781','stroke-width':11,'stroke-linecap':'round'}));
+    svg.appendChild(el('circle',{cx:181,cy:yPin,r:7,fill:'#5c636b'}));
+    svg.appendChild(el('circle',{cx:CRANK[0],cy:CRANK[1],r:aPx,fill:'none',stroke:'#cdd3da','stroke-width':2,'stroke-dasharray':'4 5'}));
+    svg.appendChild(el('line',{x1:CRANK[0],y1:CRANK[1],x2:cpx,y2:cpy,stroke:'#8a919a','stroke-width':9,'stroke-linecap':'round'}));
+    svg.appendChild(el('circle',{cx:cpx,cy:cpy,r:9,fill:'#5c636b'}));
+    svg.appendChild(el('circle',{cx:CRANK[0],cy:CRANK[1],r:15,fill:'#4f565e'}));
+
+    // TDC / BDC guides
+    var yT=pinY(0)-40, yB=pinY(180)-40;
+    [[yT,'TDC'],[yB,'BDC']].forEach(function(q){
+      svg.appendChild(el('line',{x1:CYL_L-30,y1:q[0],x2:CYL_R+30,y2:q[0],stroke:'#aab1b9','stroke-width':1.5,'stroke-dasharray':'5 5'}));
+      var tt=el('text',{x:CYL_R+34,y:q[0]+4,'font-size':11,'font-weight':'700',fill:'#8a919a'});
+      tt.textContent=q[1]; svg.appendChild(tt);
+    });
+
+    // stroke caption
+    var sc=el('text',{x:EX+EW/2,y:578,'text-anchor':'middle','font-size':15,'font-weight':'700',
+      fill: st==='Power'?'#c0392b':st==='Compression'?'#2a6fb0':st==='Intake'?'#1d7a4f':'#8a6a3a'});
+    sc.textContent=st+' stroke'; svg.appendChild(sc);
+
+    // ---------- P-V panel ----------
+    svg.appendChild(el('rect',{x:PX,y:PY,width:PW,height:PH,fill:'#fcfcfb',stroke:'#dfe2e6'}));
+    // gridlines
+    var ticksP = logP ? [1,2,5,10,20,50] : [0,10,20,30,40,50,60];
+    ticksP.forEach(function(p){
+      if(p>Phi) return;
+      var y=py(p);
+      svg.appendChild(el('line',{x1:PX,y1:y,x2:PX+PW,y2:y,stroke:'#eceef0','stroke-width':1}));
+      var tx=el('text',{x:PX-7,y:y+4,'text-anchor':'end','font-size':10.5,fill:'#8a919a'});
+      tx.textContent=p; svg.appendChild(tx);
+    });
+    [Vc,200e-6,400e-6,Vmax].forEach(function(v){
+      var x=vx(v);
+      svg.appendChild(el('line',{x1:x,y1:PY,x2:x,y2:PY+PH,stroke:'#eceef0','stroke-width':1}));
+      var tx=el('text',{x:x,y:PY+PH+16,'text-anchor':'middle','font-size':10.5,fill:'#8a919a'});
+      tx.textContent=(v*1e6).toFixed(0); svg.appendChild(tx);
+    });
+    var ax=el('text',{x:PX+PW/2,y:PY+PH+34,'text-anchor':'middle','font-size':12,'font-weight':'700',fill:'#5a6069'});
+    ax.textContent='cylinder volume  V  (cm³)'; svg.appendChild(ax);
+    var ay=el('text',{x:PX-34,y:PY+PH/2,'text-anchor':'middle','font-size':12,'font-weight':'700',fill:'#5a6069',
+      transform:'rotate(-90 '+(PX-34)+' '+(PY+PH/2)+')'});
+    ay.textContent='pressure  P  (bar'+(logP?', log':'')+')'; svg.appendChild(ay);
+    svg.appendChild(el('line',{x1:PX,y1:PY+PH,x2:PX+PW,y2:PY+PH,stroke:'#9aa2ab','stroke-width':2}));
+    svg.appendChild(el('line',{x1:PX,y1:PY,x2:PX,y2:PY+PH,stroke:'#9aa2ab','stroke-width':2}));
+
+    // ideal Otto overlay (1-2-3-4-1)
+    if(showOtto){
+      var d='M'+vx(Vmax)+' '+py(P1);
+      for(var q=0;q<=40;q++){ var Vq=Vmax+(Vc-Vmax)*q/40; d+=' L'+vx(Vq)+' '+py(P1*Math.pow(Vmax/Vq,GAM)); }
+      d+=' L'+vx(Vc)+' '+py(P3);
+      for(var q2=0;q2<=40;q2++){ var Vr=Vc+(Vmax-Vc)*q2/40; d+=' L'+vx(Vr)+' '+py(P3*Math.pow(Vc/Vr,GAM)); }
+      d+=' L'+vx(Vmax)+' '+py(P1);
+      svg.appendChild(el('path',{d:d,fill:'none',stroke:'#b9c2cc','stroke-width':2.5,'stroke-dasharray':'7 5'}));
+      [[Vmax,P1,'1'],[Vc,P2,'2'],[Vc,P3,'3'],[Vmax,P4,'4']].forEach(function(s){
+        svg.appendChild(el('circle',{cx:vx(s[0]),cy:py(s[1]),r:4.5,fill:'#fff',stroke:'#8a919a','stroke-width':2}));
+        var dx = (s[0]===Vc) ? 12 : -15;
+        var dy = (s[2]==='4') ? -9 : (s[2]==='1') ? 15 : 4;
+        var lt=el('text',{x:vx(s[0])+dx,y:py(s[1])+dy,'font-size':12,'font-weight':'700',fill:'#6b737c',
+          stroke:'#fcfcfb','stroke-width':3,'paint-order':'stroke'});
+        lt.textContent=s[2]; svg.appendChild(lt);
+      });
+    }
+
+    // traced path
+    if(trace.length>1){
+      var dd='M'+vx(trace[0][0])+' '+py(trace[0][1]);
+      for(var i=1;i<trace.length;i++) dd+=' L'+vx(trace[i][0])+' '+py(trace[i][1]);
+      svg.appendChild(el('path',{d:dd,fill:'none',stroke:'#14467d','stroke-width':2.6,'stroke-linejoin':'round'}));
+    }
+    // current point
+    svg.appendChild(el('circle',{cx:vx(V),cy:py(P),r:7,fill:'#c0392b',stroke:'#fff','stroke-width':2.5}));
+
+    var ht=el('text',{x:PX+PW-6,y:PY+16,'text-anchor':'end','font-size':11.5,fill:'#8a919a'});
+    ht.textContent = showOtto ? 'dashed = ideal Otto · solid = four-stroke trace' : 'solid = four-stroke trace';
+    svg.appendChild(ht);
+
+    // readouts
+    S('rTh').textContent=Math.round(((th%720)+720)%720)+'°';
+    S('rSt').textContent=st;
+    S('rV').textContent=(V*1e6).toFixed(1)+' cm³';
+    S('rP').textContent=P.toFixed(2)+' bar';
+    S('theta').value=Math.round(((th%720)+720)%720);
+  }
+
+  function pushTrace(th){
+    var tN=((th%720)+720)%720;
+    if(tN<2 && trace.length>50) trace=[];
+    trace.push([vol(tN),pres(tN)]);
+    if(trace.length>1600) trace.shift();
+  }
+
+  var last=null;
+  function loop(ts){
+    if(playing){
+      if(last===null) last=ts;
+      var dt=Math.min(70,ts-last); last=ts;
+      var step=dt*0.001*speed*180;         // deg per second scaled
+      var from=theta;
+      for(var k=1;k<=4;k++) pushTrace(from+step*k/4);
+      theta=(theta+step)%720;
+      build();
+    } else last=null;
+    raf=requestAnimationFrame(loop);
+  }
+
+  S('bPlay').addEventListener('click',function(){
+    playing=!playing;
+    this.innerHTML = playing ? '&#10073;&#10073;&nbsp; Pause' : '&#9654;&nbsp; Play';
+  });
+  S('bSlow').addEventListener('click',function(){ speed=Math.max(0.25,speed/1.6); });
+  S('bFast').addEventListener('click',function(){ speed=Math.min(8,speed*1.6); });
+  var bo=S('bOtto'); bo.addEventListener('click',function(){
+    showOtto=!showOtto; bo.setAttribute('aria-pressed',showOtto?'true':'false'); build();
+  });
+  var bl=S('bLog'); bl.addEventListener('click',function(){
+    logP=!logP; bl.setAttribute('aria-pressed',logP?'true':'false'); build();
+  });
+  S('theta').addEventListener('input',function(){
+    playing=false; S('bPlay').innerHTML='&#9654;&nbsp; Play';
+    var v=parseFloat(this.value);
+    trace=[];
+    for(var q=0;q<=v;q+=2) pushTrace(q);
+    theta=v; build();
+  });
+
+  pushTrace(0); build();
+  raf=requestAnimationFrame(loop);
+
+  /* ================= efficiency curve ================= */
+  (function(){
+    var s=S('eta');
+    var X0=68,Y0=44,W=640,H=226;
+    s.appendChild(el('rect',{x:0,y:0,width:760,height:372,fill:'#fcfcfb'}));
+    function ex(r){ return X0+(r-4)/(20-4)*W; }
+    function ey(e){ return Y0+H-(e-0.3)/(0.75-0.3)*H; }
+
+    [0.3,0.4,0.5,0.6,0.7].forEach(function(e){
+      s.appendChild(el('line',{x1:X0,y1:ey(e),x2:X0+W,y2:ey(e),stroke:'#eceef0'}));
+      var t=el('text',{x:X0-9,y:ey(e)+4,'text-anchor':'end','font-size':11,fill:'#8a919a'});
+      t.textContent=(e*100).toFixed(0)+'%'; s.appendChild(t);
+    });
+    [4,6,8,10,12,14,16,18,20].forEach(function(r){
+      s.appendChild(el('line',{x1:ex(r),y1:Y0,x2:ex(r),y2:Y0+H,stroke:'#eceef0'}));
+      var t=el('text',{x:ex(r),y:Y0+H+17,'text-anchor':'middle','font-size':11,fill:'#8a919a'});
+      t.textContent=r; s.appendChild(t);
+    });
+    // typical petrol band
+    s.appendChild(el('rect',{x:ex(8),y:Y0,width:ex(12)-ex(8),height:H,fill:'#14467d',opacity:0.07}));
+    var bt=el('text',{x:(ex(8)+ex(12))/2,y:Y0+15,'text-anchor':'middle','font-size':11,'font-weight':'700',fill:'#14467d'});
+    bt.textContent='typical petrol'; s.appendChild(bt);
+
+    [[1.4,'#14467d','γ = 1.4  (cold air-standard)'],[1.3,'#c0392b','γ = 1.3  (hot combustion products)']]
+    .forEach(function(c,i){
+      var d='';
+      for(var r=4;r<=20;r+=0.25){
+        var e=1-Math.pow(r,1-c[0]);
+        d+=(d?' L':'M')+ex(r)+' '+ey(e);
+      }
+      s.appendChild(el('path',{d:d,fill:'none',stroke:c[1],'stroke-width':3,'stroke-linecap':'round'}));
+      s.appendChild(el('line',{x1:X0+8,y1:Y0+H+42+i*19,x2:X0+38,y2:Y0+H+42+i*19,stroke:c[1],'stroke-width':3}));
+      var lt=el('text',{x:X0+46,y:Y0+H+46+i*19,'font-size':12,fill:'#434a56'});
+      lt.textContent=c[2]; s.appendChild(lt);
+    });
+    // r=10 marker
+    [[1.4,'#14467d'],[1.3,'#c0392b']].forEach(function(c){
+      var e=1-Math.pow(10,1-c[0]);
+      s.appendChild(el('circle',{cx:ex(10),cy:ey(e),r:5,fill:'#fff',stroke:c[1],'stroke-width':2.5}));
+      var t=el('text',{x:ex(10)+10,y:ey(e)-7,'font-size':11.5,'font-weight':'700',fill:c[1],
+        stroke:'#fff','stroke-width':3,'paint-order':'stroke'});
+      t.textContent=(e*100).toFixed(1)+'%'; s.appendChild(t);
+    });
+    s.appendChild(el('line',{x1:X0,y1:Y0+H,x2:X0+W,y2:Y0+H,stroke:'#9aa2ab','stroke-width':2}));
+    s.appendChild(el('line',{x1:X0,y1:Y0,x2:X0,y2:Y0+H,stroke:'#9aa2ab','stroke-width':2}));
+    var xt=el('text',{x:X0+W/2,y:Y0+H+36,'text-anchor':'middle','font-size':12,'font-weight':'700',fill:'#5a6069'});
+    xt.textContent='compression ratio  r'; s.appendChild(xt);
+    var yt=el('text',{x:20,y:Y0+H/2,'text-anchor':'middle','font-size':12,'font-weight':'700',fill:'#5a6069',
+      transform:'rotate(-90 20 '+(Y0+H/2)+')'});
+    yt.textContent='ideal thermal efficiency'; s.appendChild(yt);
+  })();
+})();
+</script>
+</body>
+</html>

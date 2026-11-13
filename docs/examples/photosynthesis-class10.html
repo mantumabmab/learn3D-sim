@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Photosynthesis — CBSE Class 10 exam notes</title>
+<style>
+  :root{
+    --bg:#f6f8f5; --ink:#17201a; --soft:#56635a; --rule:#dde4dc; --card:#fff;
+    --green:#1d7a4f; --deep:#14563a; --amber:#b8750d; --blue:#1f5f9e; --red:#b03a2e;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:17px;line-height:1.65;-webkit-text-size-adjust:100%}
+  .wrap{max-width:840px;margin:0 auto;padding:28px 20px 80px}
+  .kicker{font-size:.73rem;letter-spacing:.15em;text-transform:uppercase;color:var(--soft);font-weight:700}
+  h1{font-size:1.95rem;line-height:1.16;margin:.25em 0 .2em;letter-spacing:-.3px}
+  h2{font-size:1.25rem;margin:2.3em 0 .4em;color:var(--deep);line-height:1.3}
+  h3{font-size:1.03rem;margin:1.5em 0 .3em}
+  p{margin:.7em 0}
+  .lede{font-size:1.06rem;color:#2f3b33}
+  .card{background:var(--card);border:1px solid var(--rule);border-radius:11px;padding:15px 19px;margin:20px 0}
+  .goals{background:#e9f4ee;border-color:#c3e0d0}
+  .goals ul{margin:.3em 0 0;padding-left:1.1em} .goals li{margin:.3em 0}
+  .tip{background:#fff8e8;border-color:#ecd9a8}
+  .trap{background:#fdeeec;border-color:#edc7c1}
+  .note{color:var(--soft);font-size:.91rem}
+  .eqbox{background:#0f2a1d;color:#e8f5ee;border-radius:10px;padding:16px 18px;margin:14px 0;text-align:center}
+  .eqbox .eq{font-size:1.12rem;font-weight:700;letter-spacing:.2px;line-height:1.9}
+  .eqbox .over{display:inline-block;text-align:center;vertical-align:middle;margin:0 6px}
+  .eqbox .over b{display:block;font-size:.72rem;font-weight:600;color:#9fd9bb;letter-spacing:.05em}
+  .eqbox .over span{display:block;font-size:1.4rem;line-height:.9}
+  .eqbox .sub{font-size:.8rem;color:#9fd9bb;margin-top:8px;letter-spacing:.03em}
+  table{border-collapse:collapse;width:100%;font-size:.9rem;margin:14px 0}
+  th,td{text-align:left;padding:7px 9px;border-bottom:1px solid var(--rule);vertical-align:top}
+  th{background:#e9eee9;font-weight:700;font-size:.76rem;text-transform:uppercase;letter-spacing:.05em;color:#3f4d44}
+  .fig{background:#fff;border:1px solid var(--rule);border-radius:11px;padding:15px;margin:24px 0}
+  .fig h4{margin:0 0 6px;font-size:.95rem}
+  .fig svg{display:block;width:100%;height:auto;border-radius:8px}
+  .stages{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+  .stages button{flex:1 1 auto}
+  button{font:inherit;font-size:.86rem;font-weight:600;min-height:40px;padding:0 13px;border-radius:8px;
+    border:1px solid #bdcbc1;background:#fff;color:#2b3a31;cursor:pointer}
+  button:hover{background:#eef5f0}
+  button[aria-pressed="true"]{background:var(--green);color:#fff;border-color:var(--green)}
+  button:focus-visible{outline:3px solid #ffb703;outline-offset:2px}
+  .info{background:#f2f7f3;border:1px solid var(--rule);border-radius:9px;padding:11px 14px;margin-top:11px;min-height:86px}
+  .info .nm{font-weight:700;color:var(--deep);font-size:1rem}
+  .info .fn{font-size:.93rem;margin-top:2px}
+  .info .ex{display:inline-block;font-size:.72rem;font-weight:700;border-radius:5px;padding:1px 7px;margin-top:6px}
+  .ex.must{background:#d9f0e2;color:#14563a;border:1px solid #a9d9bf}
+  .ex.extra{background:#eceff3;color:#44506a;border:1px solid #c6cedb}
+  .hot{cursor:pointer}
+  .hot:hover{filter:brightness(1.07)}
+  .cap{font-size:.86rem;color:var(--soft);margin-top:10px}
+  details{background:#fff;border:1px solid var(--rule);border-radius:9px;padding:11px 15px;margin:10px 0}
+  summary{font-weight:600;cursor:pointer;color:var(--deep)}
+  .marks{float:right;font-size:.74rem;font-weight:700;background:#e9eee9;color:#44544a;
+    border-radius:20px;padding:2px 10px;margin-left:8px}
+  .model{background:#f7faf8;border-left:3px solid var(--green);border-radius:0 7px 7px 0;padding:9px 13px;margin:9px 0}
+  .model .mk{font-size:.8rem;color:var(--green);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+  .src{font-size:.9rem;padding-left:1.1em} .src li{margin:.55em 0}
+  .grade{display:inline-block;font-size:.67rem;font-weight:700;border-radius:5px;padding:1px 6px;margin-right:5px;
+    background:#dcebe2;color:#13543a;border:1px solid #a8cdb8}
+  .grade.b{background:#e9ecf3;color:#2c3a5c;border-color:#c2cbe0}
+  a{color:#176b45}
+  hr{border:none;border-top:1px solid var(--rule);margin:2.3em 0}
+  @media (max-width:560px){
+    body{font-size:16px} h1{font-size:1.5rem} h2{font-size:1.12rem}
+    .eqbox .eq{font-size:.95rem} table{font-size:.82rem} th,td{padding:5px 6px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="kicker">CBSE Class 10 &middot; Science &middot; Life Processes</p>
+  <h1>Photosynthesis</h1>
+  <p class="lede">Everything the examiner can ask about photosynthesis in Class 10 comes from a short part of the Life Processes chapter. The marks are concentrated in four places: the equation written properly, the <strong>three events</strong> in NCERT's own words, the stomata, and the experiments. This page covers those, then gives you model answers.</p>
+
+  <div class="card goals">
+    <strong>What you should be able to do after this</strong>
+    <ul>
+      <li>write the balanced equation with the conditions marked correctly;</li>
+      <li>state the three events of photosynthesis exactly as NCERT lists them;</li>
+      <li>label a leaf, a stoma and a chloroplast, and say what each part does;</li>
+      <li>describe the four experiments with their aim, result and conclusion;</li>
+      <li>answer the case-based and "give reason" questions that carry the higher marks.</li>
+    </ul>
+  </div>
+
+  <h2>1. What photosynthesis is</h2>
+  <p><strong>Photosynthesis is the process by which green plants make their own food (glucose) from carbon dioxide and water, using light energy trapped by chlorophyll, releasing oxygen as a by-product.</strong></p>
+  <p>Plants are <strong>autotrophs</strong> &mdash; they prepare their own food. Photosynthesis supplies both the <em>carbon</em> and the <em>energy</em> the plant needs.</p>
+
+  <div class="eqbox">
+    <div class="eq">
+      6CO<sub>2</sub> &nbsp;+&nbsp; 6H<sub>2</sub>O
+      <span class="over"><b>Sunlight</b><span>&rarr;</span><b>Chlorophyll</b></span>
+      C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> &nbsp;+&nbsp; 6O<sub>2</sub>
+    </div>
+    <div class="sub">carbon dioxide + water &rarr; glucose + oxygen</div>
+  </div>
+
+  <div class="card tip">
+    <strong>Writing the equation for full marks</strong>
+    <p class="note" style="margin-bottom:0">Three things are checked: that it is <strong>balanced</strong> (6, 6, 1, 6); that <strong>sunlight and chlorophyll are written on the arrow</strong>, not added as reactants &mdash; chlorophyll is not used up, so it is a condition, not a reactant; and that you write <strong>C<sub>6</sub>H<sub>12</sub>O<sub>6</sub></strong>, not "food" or "starch". Glucose is the product; the plant converts it to starch for storage afterwards.</p>
+  </div>
+
+  <h2>2. Raw materials and conditions</h2>
+  <table>
+    <thead><tr><th>What is needed</th><th>Where it comes from</th><th>How it reaches the leaf</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Carbon dioxide</strong></td><td>The air</td><td>Diffuses in through the <strong>stomata</strong></td></tr>
+      <tr><td><strong>Water</strong></td><td>The soil</td><td>Absorbed by roots, carried up by <strong>xylem</strong></td></tr>
+      <tr><td><strong>Sunlight</strong></td><td>The Sun</td><td>Falls on the leaf surface</td></tr>
+      <tr><td><strong>Chlorophyll</strong></td><td>Made by the plant</td><td>Present in <strong>chloroplasts</strong> in green parts</td></tr>
+    </tbody>
+  </table>
+  <p>Plants also need minerals from the soil &mdash; <strong>nitrogen, phosphorus, iron and magnesium</strong> &mdash; which they take up as ions dissolved in water. Nitrogen is needed for proteins; magnesium is part of the chlorophyll molecule itself.</p>
+  <p class="note">A common one-mark question: <em>why is chlorophyll not a raw material?</em> Because it is not consumed. It traps light and is still there at the end &mdash; so it is a <strong>condition</strong>, like sunlight.</p>
+
+  <h2>3. Where it happens</h2>
+  <p>Work from the outside in: the leaf is the organ, the stoma is the doorway for gases, and the chloroplast is where the chemistry actually happens. Click any labelled part in the figure to see what it does.</p>
+
+  <div class="fig">
+    <h4>Figure 1 &middot; From the whole leaf down to one chloroplast</h4>
+    <div class="stages">
+      <button class="st" data-s="0" type="button" aria-pressed="true">1. The leaf</button>
+      <button class="st" data-s="1" type="button" aria-pressed="false">2. Inside the leaf</button>
+      <button class="st" data-s="2" type="button" aria-pressed="false">3. A stoma</button>
+      <button class="st" data-s="3" type="button" aria-pressed="false">4. A chloroplast</button>
+    </div>
+    <svg id="zoom" viewBox="0 0 760 420" role="img"
+      aria-label="A four-stage zoom from a whole leaf, to a cross-section through the leaf, to a single stoma with its guard cells, to a chloroplast, with clickable labelled parts."></svg>
+    <div class="controls" id="xtra" style="display:flex;gap:6px;margin-top:9px"></div>
+    <div class="info" id="info">
+      <div class="nm">Tap a labelled part</div>
+      <div class="fn">Each part's job will appear here &mdash; these are exactly the labels asked for in diagram questions.</div>
+    </div>
+    <p class="cap">Diagram questions usually ask for a labelled sketch of a <strong>stoma</strong> or of a leaf cross-section. Draw it large, label with straight lines that do not cross, and write labels horizontally. <em>Before you click:</em> predict which layer of the leaf has the most chloroplasts, and why that makes sense given where the light comes from.</p>
+  </div>
+
+  <h2>4. The three events &mdash; learn this wording</h2>
+  <p>This is the highest-value thing on the page. NCERT lists <strong>three</strong> events, and board answers are marked against them:</p>
+  <table>
+    <thead><tr><th>#</th><th>Event</th><th>What it means</th></tr></thead>
+    <tbody>
+      <tr><td><strong>1</strong></td><td><strong>Absorption of light energy by chlorophyll</strong></td><td>Chlorophyll traps the sunlight falling on the leaf.</td></tr>
+      <tr><td><strong>2</strong></td><td><strong>Conversion of light energy to chemical energy, and splitting of water molecules into hydrogen and oxygen</strong></td><td>The trapped energy is stored in chemical form, and water is split. The oxygen released goes out through the stomata. Splitting water using light is called <strong>photolysis</strong>.</td></tr>
+      <tr><td><strong>3</strong></td><td><strong>Reduction of carbon dioxide to carbohydrates</strong></td><td>CO<sub>2</sub> is reduced &mdash; hydrogen is added to it &mdash; to build glucose.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="card trap">
+    <strong>The three-versus-four trap.</strong>
+    <p class="note" style="margin-bottom:0">Many guide books split event 2 into two and list <em>four</em> events. If the question says "state the three events", write NCERT's three, keeping the splitting of water inside event 2. If you list four, you have not lost the science, but you have stopped matching the marking scheme. Safest form: write the three numbered events, and mention photolysis <em>within</em> event 2.</p>
+  </div>
+
+  <h3>"Must these steps happen one after the other immediately?"</h3>
+  <p>This exact question has appeared in a CBSE sample paper and again as a case-based passage in a recent board paper, so learn the answer.</p>
+  <p><strong>No.</strong> The steps need not follow each other immediately. <strong>Desert plants</strong> keep their stomata closed during the day to reduce water loss. They take in carbon dioxide at <strong>night</strong> and convert it into an <strong>intermediate compound</strong>. During the day, this intermediate is acted upon by the energy absorbed by chlorophyll, and photosynthesis is completed &mdash; even though the stomata are shut.</p>
+
+  <h2>5. Stomata and guard cells</h2>
+  <p><strong>Stomata</strong> (singular: stoma) are tiny pores, found mainly on the <strong>lower surface</strong> of the leaf. Each pore is surrounded by two bean-shaped (kidney-shaped) <strong>guard cells</strong>.</p>
+  <h3>Functions</h3>
+  <ul>
+    <li><strong>Exchange of gases</strong> &mdash; CO<sub>2</sub> in, O<sub>2</sub> out.</li>
+    <li><strong>Transpiration</strong> &mdash; loss of water vapour from the leaf.</li>
+  </ul>
+  <h3>How opening and closing works</h3>
+  <p>When water flows <strong>into</strong> the guard cells, they <strong>swell</strong>, become curved, and the pore <strong>opens</strong>. When the guard cells <strong>lose water</strong>, they <strong>shrink</strong> and the pore <strong>closes</strong>.</p>
+  <p class="note">Reason question: <em>why do stomata close when the plant is short of water?</em> Because large amounts of water are lost through them by transpiration. Closing them when CO<sub>2</sub> is not needed &mdash; or when water is scarce &mdash; prevents further loss. Use the switch in the figure's stoma stage to see this.</p>
+
+  <h2>6. The experiments</h2>
+  <p>Each experiment follows the same shape: destarch the plant first, set up one condition as the variable, then test for starch with iodine. Learn the <em>conclusion sentence</em> for each.</p>
+
+  <h3>The starch test (used in all of them)</h3>
+  <ol>
+    <li><strong>Destarch</strong> the plant: keep it in complete darkness for 2&ndash;3 days (at least 48 hours) so stored starch is used up. Without this, a positive result proves nothing.</li>
+    <li>Set up the experiment and leave the plant in sunlight for several hours.</li>
+    <li>Pluck the leaf and <strong>boil it in water</strong> &mdash; this kills the cells and makes them permeable.</li>
+    <li><strong>Boil it in alcohol</strong> in a water bath &mdash; this removes the chlorophyll, so the colour change will be visible. Alcohol is heated in a water bath because it is inflammable and must not be heated directly over a flame.</li>
+    <li>Wash in warm water, then add <strong>iodine solution</strong>.</li>
+    <li><strong>Blue-black</strong> = starch present. <strong>Brown / no change</strong> = no starch.</li>
+  </ol>
+
+  <table>
+    <thead><tr><th>Experiment</th><th>Set-up</th><th>Result</th><th>Conclusion</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Chlorophyll is necessary</strong></td><td>Destarched plant with a <strong>variegated leaf</strong> (part green, part white), kept in sunlight. Test the whole leaf.</td><td>Only the <strong>green</strong> parts turn blue-black; the white parts stay brown.</td><td>Only the parts containing chlorophyll make starch, so <strong>chlorophyll is necessary for photosynthesis</strong>.</td></tr>
+      <tr><td><strong>CO<sub>2</sub> is necessary</strong></td><td>Destarched potted plant; one leaf sealed in a flask containing <strong>potassium hydroxide (KOH)</strong>, another leaf in a flask without it. Sunlight for a few hours.</td><td>The leaf in the KOH flask gives <strong>no</strong> blue-black colour; the control leaf does.</td><td>KOH absorbs the CO<sub>2</sub>, so that leaf had none. Therefore <strong>CO<sub>2</sub> is necessary for photosynthesis</strong>.</td></tr>
+      <tr><td><strong>Light is necessary</strong></td><td>Destarched plant; cover part of a leaf with black paper or a cork on both sides. Sunlight for a few hours.</td><td>The <strong>uncovered</strong> part turns blue-black; the covered part does not.</td><td><strong>Light is necessary for photosynthesis.</strong></td></tr>
+      <tr><td><strong>Oxygen is released</strong></td><td><em>Hydrilla</em> in water under an inverted funnel with a test tube over the stem, in sunlight.</td><td>Gas bubbles collect in the test tube; a <strong>glowing splinter rekindles</strong> in it.</td><td>The gas is <strong>oxygen</strong>, released during photosynthesis.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="card tip">
+    <strong>Marks are usually for the reasoning, not the recipe.</strong>
+    <p class="note" style="margin-bottom:0">Examiners commonly ask <em>why</em> a step is done. The three favourites: <strong>destarching</strong> (so any starch found must have been made during the experiment), <strong>boiling in alcohol</strong> (to remove chlorophyll so the iodine colour shows), and the <strong>control</strong> (the second flask or the uncovered part, which proves the result came from your variable and nothing else).</p>
+  </div>
+
+  <hr>
+
+  <h2>Practice questions with model answers</h2>
+  <p>Try each one on paper first, then open it. The marks shown are typical.</p>
+
+  <details>
+    <summary><span class="marks">1 mark</span>Name the pigment that absorbs light energy in plants, and say where it is found.</summary>
+    <div class="model"><div class="mk">Model answer</div>
+      Chlorophyll, present in the chloroplasts of the green parts of the plant, mainly the leaves.</div>
+  </details>
+
+  <details>
+    <summary><span class="marks">1 mark</span>Why is the leaf boiled in alcohol before adding iodine?</summary>
+    <div class="model"><div class="mk">Model answer</div>
+      To remove the chlorophyll (decolourise the leaf), so that the blue-black colour produced by iodine with starch can be seen clearly.</div>
+  </details>
+
+  <details>
+    <summary><span class="marks">3 marks</span>State the events occurring during the process of photosynthesis. Is it essential that these steps take place one after the other immediately?</summary>
+    <div class="model"><div class="mk">Model answer</div>
+      <p style="margin-top:4px">The following events occur during photosynthesis:</p>
+      <p style="margin:2px 0">(i) Absorption of light energy by chlorophyll.<br>
+      (ii) Conversion of light energy to chemical energy and splitting of water molecules into hydrogen and oxygen.<br>
+      (iii) Reduction of carbon dioxide to carbohydrates.</p>
+      <p style="margin:6px 0 2px">No, it is not essential. These steps need not take place one after the other immediately. For example, desert plants take up carbon dioxide at night and prepare an intermediate, which is acted upon by the energy absorbed by chlorophyll during the day.</p>
+      <p class="note" style="margin:6px 0 0"><strong>Marks:</strong> 1 for the three events (all three needed), 1 for "no", 1 for the desert-plant example. Dropping the example is the usual way students lose the third mark.</p></div>
+  </details>
+
+  <details>
+    <summary><span class="marks">3 marks</span>How do guard cells regulate the opening and closing of stomatal pores? Why is this important?</summary>
+    <div class="model"><div class="mk">Model answer</div>
+      When water flows into the guard cells, they swell and become curved, which opens the stomatal pore. When the guard cells lose water, they shrink and the pore closes.
+      This is important because large amounts of water are lost through the stomata by transpiration. The plant can therefore close them when carbon dioxide is not required for photosynthesis, or when water must be conserved.</div>
+  </details>
+
+  <details>
+    <summary><span class="marks">3 marks</span>Describe an experiment to show that chlorophyll is necessary for photosynthesis.</summary>
+    <div class="model"><div class="mk">Model answer</div>
+      Take a potted plant with variegated leaves, such as money plant or croton, and destarch it by keeping it in a dark room for about three days. Place it in sunlight for a few hours. Pluck a variegated leaf and record which parts are green and which are white. Boil the leaf in water, then in alcohol in a water bath to remove the chlorophyll, wash it, and add iodine solution.
+      <p style="margin:6px 0 0"><strong>Observation:</strong> only the parts that were green turn blue-black; the white parts do not.<br>
+      <strong>Conclusion:</strong> starch is formed only where chlorophyll was present, so chlorophyll is necessary for photosynthesis.</p></div>
+  </details>
+
+  <details>
+    <summary><span class="marks">5 marks</span>(a) Write the balanced equation for photosynthesis. (b) List the raw materials and state the source of each. (c) Why do desert plants open their stomata at night?</summary>
+    <div class="model"><div class="mk">Model answer</div>
+      <p style="margin:4px 0"><strong>(a)</strong> 6CO<sub>2</sub> + 6H<sub>2</sub>O &rarr; C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> + 6O<sub>2</sub>, with sunlight and chlorophyll written above and below the arrow as the conditions.</p>
+      <p style="margin:4px 0"><strong>(b)</strong> Carbon dioxide, from the air, entering through the stomata; water, from the soil, absorbed by the roots and carried up through the xylem. Sunlight and chlorophyll are also required, but as conditions rather than raw materials, since they are not used up.</p>
+      <p style="margin:4px 0"><strong>(c)</strong> To reduce water loss. Desert plants live where water is scarce, and keeping stomata closed during the hot day reduces transpiration. They take in carbon dioxide at night and store it as an intermediate compound, which is used for photosynthesis during the day when sunlight is available.</p>
+      <p class="note" style="margin:6px 0 0"><strong>Marks:</strong> 1 for a balanced equation, 1 for conditions on the arrow, 2 for raw materials with sources, 1 for the desert-plant reasoning.</p></div>
+  </details>
+
+  <details>
+    <summary><span class="marks">Case-based</span>A student finds that a destarched leaf, half covered with black paper and left in sunlight, turns blue-black with iodine only on the uncovered half. (i) What does this prove? (ii) Why was the plant destarched first? (iii) What is the covered half called?</summary>
+    <div class="model"><div class="mk">Model answer</div>
+      (i) It proves that light is necessary for photosynthesis, because starch was made only where light reached the leaf.<br>
+      (ii) So that all the starch already stored in the leaf was used up. Any starch detected afterwards must therefore have been made during the experiment.<br>
+      (iii) The control &mdash; it is identical to the rest of the leaf in every way except that it received no light, so it isolates light as the variable being tested.</div>
+  </details>
+
+  <h2>Mistakes that cost marks</h2>
+  <table>
+    <thead><tr><th>Mistake</th><th>What to write instead</th></tr></thead>
+    <tbody>
+      <tr><td>Writing sunlight and chlorophyll as reactants in the equation</td><td>Put them on the arrow &mdash; they are conditions, not consumed</td></tr>
+      <tr><td>Saying the product is "starch"</td><td>The product is glucose, C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>; it is later stored as starch</td></tr>
+      <tr><td>"Plants take in CO<sub>2</sub> and give out O<sub>2</sub>" as the whole story</td><td>Plants also respire all the time; in daylight photosynthesis simply exceeds respiration</td></tr>
+      <tr><td>Saying stomata are only for photosynthesis</td><td>Two functions: gas exchange <em>and</em> transpiration</td></tr>
+      <tr><td>Describing an experiment without the control</td><td>Always name the control and say what it rules out</td></tr>
+      <tr><td>Forgetting to destarch in an experiment answer</td><td>It is usually worth a mark on its own</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Sources</h2>
+  <p class="note"><span class="grade">A</span> NCERT text, CBSE papers and sample papers. <span class="grade b">B</span> established exam-preparation resources consistent with NCERT.</p>
+  <ul class="src">
+    <li><span class="grade">A</span> CBSE Class 10 Science board paper 2023 (Delhi, Set 2), <a href="https://examsnet.com/study-exams/cbse-class-10-science-2023-delhi-set-2/3">question on the events of photosynthesis</a> &mdash; the three events in the exact marking-scheme wording used on this page.</li>
+    <li><span class="grade">A</span> CBSE Sample Question Paper 2020&ndash;21, reproduced in the <a href="https://www.satheejee.iitk.ac.in/board-pyq/science/life-processes/life-processes-question-8">IIT Kanpur SATHEE board PYQ bank</a> &mdash; "State the events occurring during the process of photosynthesis. Is it essential that these steps take place one after the other immediately?" with the equation and model answer.</li>
+    <li><span class="grade">A</span> CBSE Class 10 Science board paper 2025&ndash;26 (31/3/2), via <a href="https://www.shaalaa.com/mar/question-bank-solutions/not-all-plants-carry-out-photosynthesis-by-the-same-mechanism-in-most-plants-it-depends-directly-on-gaseous-carbon-dioxide-that-diffuses-into-the-leaf-however-some-plants-can-store-carbon-dioxide_459329">Shaalaa</a> &mdash; the case-based passage on plants that store CO<sub>2</sub> and do not open stomata in the daytime, confirming the desert-plant point is live in current papers.</li>
+    <li><span class="grade b">B</span> Lakhmir Singh, <em>Biology (Science) Class 10</em>, Life Processes, via <a href="https://shaalaa.com/mar/question-bank-solutions/how-do-guard-cells-regulate-opening-closing-stomatel-pores_23758">Shaalaa solutions</a> &mdash; guard cells swelling and becoming curved to open the pore, shrinking to close it; and boiling the leaf in alcohol to remove chlorophyll.</li>
+    <li><span class="grade b">B</span> <a href="https://www.pw.live/formula/class-10-science-formula-of-life-process">Physics Wallah, Life Processes key points</a> &mdash; the events listed with photolysis written as H<sub>2</sub>O &rarr; 2H<sup>+</sup> + 2e<sup>&minus;</sup> + &frac12;O<sub>2</sub>, and the four conditions necessary for photosynthesis.</li>
+    <li><span class="grade b">B</span> NCERT activity summaries for the variegated-leaf and potassium-hydroxide experiments, and standard practical guidance on destarching for at least 48 hours, via <a href="https://mtg.in/free-ebooks/100per_science_cl10_pq_ch6_2021.pdf">MTG Class 10 practical questions</a> and NCERT solution compilations.</li>
+  </ul>
+  <p class="note">Activity numbering differs between NCERT editions (the chapter was renumbered when the syllabus was rationalised), so the experiments here are named by what they show rather than by activity number. Check your own textbook's numbering if a question refers to one.</p>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var NS='http://www.w3.org/2000/svg';
+  function el(t,a){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);return e;}
+  function S(id){return document.getElementById(id);}
+  var svg=S('zoom'), info=S('info'), xtra=S('xtra');
+  var stage=0, stomaOpen=true;
+
+  function show(name,fn,must){
+    info.innerHTML='<div class="nm">'+name+'</div><div class="fn">'+fn+'</div>'+
+      '<span class="ex '+(must?'must':'extra')+'">'+(must?'Needed for the exam':'Extra — not required in Class 10')+'</span>';
+  }
+  function hot(node,name,fn,must){
+    node.setAttribute('class','hot');
+    node.addEventListener('click',function(){show(name,fn,must);});
+    return node;
+  }
+  function lbl(x,y,text,anchor,colour){
+    var t=el('text',{x:x,y:y,'text-anchor':anchor||'start','font-size':12.5,'font-weight':'700',
+      fill:colour||'#2b3a31',stroke:'#fff','stroke-width':3.2,'paint-order':'stroke'});
+    t.textContent=text; return t;
+  }
+  function lead(x1,y1,x2,y2){
+    return el('line',{x1:x1,y1:y1,x2:x2,y2:y2,stroke:'#8fa094','stroke-width':1.4});
+  }
+
+  function clear(){ while(svg.firstChild) svg.removeChild(svg.firstChild);
+    svg.appendChild(el('rect',{x:0,y:0,width:760,height:420,fill:'#f8fbf8'})); }
+
+  /* ---------------- stage 0: whole leaf ---------------- */
+  function leafStage(){
+    clear(); xtra.innerHTML='';
+    var blade=el('path',{d:'M300 60 C150 110 120 250 240 330 C330 390 430 360 470 290 C520 200 450 90 300 60 Z',
+      fill:'#58a860',stroke:'#2f7a3d','stroke-width':3});
+    svg.appendChild(hot(blade,'Lamina (leaf blade)',
+      'The broad flat part. Its large surface area catches the maximum sunlight, and it is thin so gases diffuse in and out quickly.',true));
+    var mid=el('path',{d:'M300 60 C300 160 270 270 240 330',fill:'none',stroke:'#2f7a3d','stroke-width':6,'stroke-linecap':'round'});
+    svg.appendChild(hot(mid,'Midrib',
+      'The thick central vein. It supports the leaf and carries the xylem and phloem into it.',true));
+    [[290,110,420,120],[286,150,450,185],[276,200,440,250],[262,250,400,300],[292,110,170,135],[282,160,150,200],[268,215,160,265]]
+      .forEach(function(v){
+        var p=el('path',{d:'M'+v[0]+' '+v[1]+' Q'+((v[0]+v[2])/2)+' '+((v[1]+v[3])/2-14)+' '+v[2]+' '+v[3],
+          fill:'none',stroke:'#2f7a3d','stroke-width':2.4,'stroke-linecap':'round',opacity:0.85});
+        svg.appendChild(hot(p,'Veins',
+          'Branches of the midrib. The <b>xylem</b> inside them brings water up from the roots; the <b>phloem</b> carries the food made in the leaf away to the rest of the plant.',true));
+      });
+    var pet=el('path',{d:'M240 330 C230 358 222 378 214 396',fill:'none',stroke:'#3d8a48','stroke-width':9,'stroke-linecap':'round'});
+    svg.appendChild(hot(pet,'Petiole (leaf stalk)',
+      'Joins the leaf to the stem and holds the blade out in the light.',true));
+
+    svg.appendChild(lead(470,290,560,300)); svg.appendChild(lbl(566,296,'lamina'));
+    svg.appendChild(lead(262,250,560,250)); svg.appendChild(lbl(566,254,'veins'));
+    svg.appendChild(lead(276,150,560,196)); svg.appendChild(lbl(566,200,'midrib'));
+    svg.appendChild(lead(222,378,560,350)); svg.appendChild(lbl(566,354,'petiole'));
+
+    var h=lbl(40,46,'The leaf — the main organ of photosynthesis','start','#14563a');
+    h.setAttribute('font-size',15); svg.appendChild(h);
+    var n=lbl(40,392,'Next: cut across the blade and look inside →','start','#56635a');
+    n.setAttribute('font-size',12); n.setAttribute('font-weight','600'); svg.appendChild(n);
+  }
+
+  /* ---------------- stage 1: cross-section ---------------- */
+  function crossStage(){
+    clear(); xtra.innerHTML='';
+    var X=70,W=470,T=90;
+    // cuticle + upper epidermis
+    var cut=el('rect',{x:X,y:T,width:W,height:9,fill:'#dfe9c9',stroke:'#b9c79b','stroke-width':1.5});
+    svg.appendChild(hot(cut,'Cuticle','A waxy waterproof layer on top. It reduces water loss from the leaf surface.',false));
+    var ue=el('rect',{x:X,y:T+9,width:W,height:30,fill:'#e7f0dd',stroke:'#a9bf97','stroke-width':1.5});
+    svg.appendChild(hot(ue,'Upper epidermis','A single protective layer of cells. It is transparent, so light passes straight through to the layers below.',true));
+    // palisade
+    var pal=el('g',{});
+    for(var i=0;i<13;i++){
+      var px=X+8+i*35.5;
+      pal.appendChild(el('rect',{x:px,y:T+41,width:28,height:66,rx:9,fill:'#6cb26f',stroke:'#3a8347','stroke-width':1.6}));
+      for(var c=0;c<4;c++)
+        pal.appendChild(el('ellipse',{cx:px+8+(c%2)*12,cy:T+54+Math.floor(c/2)*26,rx:5.5,ry:4,fill:'#2f7a3d'}));
+    }
+    svg.appendChild(hot(pal,'Palisade mesophyll',
+      'Tall cells packed tightly just under the upper surface, holding <b>most of the chloroplasts</b>. This is where most photosynthesis happens — it sits where the light is strongest.',true));
+    // spongy
+    var sp=el('g',{});
+    sp.appendChild(el('rect',{x:X,y:T+109,width:W,height:78,fill:'#cbe3c2',stroke:'none'}));
+    [[110,130],[180,152],[250,126],[320,154],[390,128],[460,152],[145,174],[285,176],[425,176],[215,200],[355,200]]
+      .forEach(function(q){
+        var yy=T+118+(q[1]-126)*0.68;
+        sp.appendChild(el('circle',{cx:q[0],cy:yy,r:13,fill:'#88c48d',stroke:'#4f9a5c','stroke-width':1.5}));
+      });
+    svg.appendChild(hot(sp,'Spongy mesophyll and air spaces',
+      'Loosely packed cells with large <b>air spaces</b> between them. Carbon dioxide that enters through the stomata diffuses through these spaces to reach every cell.',true));
+    // lower epidermis
+    var le=el('rect',{x:X,y:T+187,width:W,height:28,fill:'#e7f0dd',stroke:'#a9bf97','stroke-width':1.5});
+    svg.appendChild(hot(le,'Lower epidermis','The bottom protective layer. Most of the stomata are here, on the shaded underside, which reduces water loss.',true));
+    // stoma gap
+    svg.appendChild(el('rect',{x:X+196,y:T+187,width:34,height:28,fill:'#f8fbf8'}));
+    var g1=el('ellipse',{cx:X+194,cy:T+201,rx:12,ry:13,fill:'#4f9a5c',stroke:'#2f7a3d','stroke-width':2});
+    var g2=el('ellipse',{cx:X+232,cy:T+201,rx:12,ry:13,fill:'#4f9a5c',stroke:'#2f7a3d','stroke-width':2});
+    var gg=el('g',{}); gg.appendChild(g1); gg.appendChild(g2);
+    svg.appendChild(hot(gg,'Stoma with guard cells',
+      'The pore through which carbon dioxide enters and oxygen and water vapour leave. Look at it closely in the next stage.',true));
+    // vein
+    var vn=el('g',{});
+    vn.appendChild(el('circle',{cx:X+360,cy:T+140,r:26,fill:'#f2e3c6',stroke:'#c9a85f','stroke-width':2}));
+    vn.appendChild(el('circle',{cx:X+352,cy:T+134,r:9,fill:'#8fc3e8',stroke:'#3d7fae','stroke-width':1.6}));
+    vn.appendChild(el('circle',{cx:X+370,cy:T+148,r:8,fill:'#e8c58f','stroke':'#b58a3d','stroke-width':1.6}));
+    svg.appendChild(hot(vn,'Vein — xylem and phloem',
+      '<b>Xylem</b> (blue) brings water up from the roots. <b>Phloem</b> (orange) carries the glucose made here to the rest of the plant.',true));
+
+    // labels
+    svg.appendChild(lead(X+W,T+5,X+W+22,T+2)); svg.appendChild(lbl(X+W+26,T+6,'cuticle'));
+    svg.appendChild(lead(X+W,T+24,X+W+22,T+28)); svg.appendChild(lbl(X+W+26,T+32,'upper epidermis'));
+    svg.appendChild(lead(X+W,T+74,X+W+22,T+74)); svg.appendChild(lbl(X+W+26,T+78,'palisade mesophyll'));
+    svg.appendChild(lead(X+W,T+148,X+W+22,T+130)); svg.appendChild(lbl(X+W+26,T+134,'spongy mesophyll'));
+    svg.appendChild(lead(X+W,T+200,X+W+22,T+182)); svg.appendChild(lbl(X+W+26,T+186,'lower epidermis'));
+    svg.appendChild(lead(X+214,T+218,X+150,T+248)); svg.appendChild(lbl(X+146,T+252,'stoma','end'));
+    svg.appendChild(lead(X+372,T+162,X+300,T+250)); svg.appendChild(lbl(X+296,T+254,'vein (xylem + phloem)','end'));
+
+    // light arrows
+    [150,250,350].forEach(function(x){
+      svg.appendChild(el('path',{d:'M'+x+' 50 L'+x+' '+(T-6),stroke:'#e8a33d','stroke-width':3,'marker-end':'url(#ar)'}));
+    });
+    var defs=el('defs',{});
+    var mk=el('marker',{id:'ar',viewBox:'0 0 10 10',refX:8,refY:5,markerWidth:5,markerHeight:5,orient:'auto-start-reverse'});
+    mk.appendChild(el('path',{d:'M0 0 L10 5 L0 10 z',fill:'#e8a33d'})); defs.appendChild(mk);
+    svg.insertBefore(defs,svg.firstChild);
+    svg.appendChild(lbl(378,44,'sunlight','start','#a8740c'));
+
+    var h=lbl(40,30,'A slice through the leaf','start','#14563a');
+    h.setAttribute('font-size',15); svg.appendChild(h);
+  }
+
+  /* ---------------- stage 2: stoma ---------------- */
+  function stomaStage(){
+    clear();
+    xtra.innerHTML='';
+    var b=document.createElement('button');
+    b.type='button'; b.textContent = stomaOpen ? 'Show it closing' : 'Show it opening';
+    b.addEventListener('click',function(){ stomaOpen=!stomaOpen; stomaStage(); });
+    xtra.appendChild(b);
+
+    var cx=330, cy=215;
+    // epidermal cells around
+    [[150,120],[150,300],[510,120],[510,300],[330,70],[330,360]].forEach(function(q){
+      svg.appendChild(el('ellipse',{cx:q[0],cy:q[1],rx:78,ry:44,fill:'#e7f0dd',stroke:'#a9bf97','stroke-width':2}));
+    });
+    var ep=el('ellipse',{cx:150,cy:120,rx:78,ry:44,fill:'none',stroke:'none','pointer-events':'all'});
+    svg.appendChild(hot(ep,'Epidermal cells','Ordinary surface cells. They have <b>no chloroplasts</b>, which is one way to tell them from guard cells in a diagram.',true));
+
+    var gap = stomaOpen ? 30 : 5;
+    // guard cells: two kidney shapes facing each other
+    function guard(sign){
+      var d='M'+(cx+sign*gap)+' '+(cy-62)+
+            ' C'+(cx+sign*(gap+62))+' '+(cy-48)+' '+(cx+sign*(gap+62))+' '+(cy+48)+' '+(cx+sign*gap)+' '+(cy+62)+
+            ' C'+(cx+sign*(gap+20))+' '+(cy+26)+' '+(cx+sign*(gap+20))+' '+(cy-26)+' '+(cx+sign*gap)+' '+(cy-62)+' Z';
+      return el('path',{d:d,fill:'#5aa862',stroke:'#2f7a3d','stroke-width':3});
+    }
+    var gl=guard(-1), gr=guard(1);
+    var gg=el('g',{}); gg.appendChild(gl); gg.appendChild(gr);
+    // chloroplasts inside guard cells
+    [-1,1].forEach(function(s){
+      [-34,-10,14,38].forEach(function(dy){
+        gg.appendChild(el('ellipse',{cx:cx+s*(gap+34),cy:cy+dy,rx:9,ry:6.5,fill:'#2f7a3d'}));
+      });
+    });
+    svg.appendChild(hot(gg,'Guard cells',
+      'Two bean-shaped cells around the pore. Unlike other epidermal cells they <b>contain chloroplasts</b>. When water enters they swell and curve, opening the pore; when they lose water they shrink and the pore closes.',true));
+
+    // the pore
+    if(stomaOpen){
+      var pore=el('ellipse',{cx:cx,cy:cy,rx:24,ry:56,fill:'#1a2e22',opacity:0.82});
+      svg.appendChild(hot(pore,'Stomatal pore',
+        'The opening itself. <b>Carbon dioxide diffuses in</b> for photosynthesis, while <b>oxygen and water vapour pass out</b>. Water lost here is transpiration.',true));
+      // gas arrows
+      svg.appendChild(el('path',{d:'M'+cx+' 108 L'+cx+' 158',stroke:'#1f5f9e','stroke-width':4,'marker-end':'url(#ag)'}));
+      svg.appendChild(el('path',{d:'M'+cx+' 280 L'+cx+' 330',stroke:'#b03a2e','stroke-width':4,'marker-end':'url(#ag2)'}));
+      var defs=el('defs',{});
+      [['ag','#1f5f9e'],['ag2','#b03a2e']].forEach(function(m){
+        var mk=el('marker',{id:m[0],viewBox:'0 0 10 10',refX:8,refY:5,markerWidth:5,markerHeight:5,orient:'auto-start-reverse'});
+        mk.appendChild(el('path',{d:'M0 0 L10 5 L0 10 z',fill:m[1]})); defs.appendChild(mk);
+      });
+      svg.insertBefore(defs,svg.firstChild);
+      svg.appendChild(lbl(cx-8,100,'CO₂ in','end','#1f5f9e'));
+      svg.appendChild(lbl(cx,352,'O₂ + water vapour out','middle','#b03a2e'));
+    } else {
+      svg.appendChild(el('line',{x1:cx,y1:cy-58,x2:cx,y2:cy+58,stroke:'#1a2e22','stroke-width':4,opacity:0.7}));
+      svg.appendChild(lbl(cx,100,'pore shut — no gas exchange, no water lost','middle','#56635a'));
+    }
+
+    svg.appendChild(lead(cx-gap-60,cy-40,170,200)); svg.appendChild(lbl(166,204,'guard cell','end'));
+    svg.appendChild(lead(cx+gap+60,cy+40,500,250)); svg.appendChild(lbl(504,254,'guard cell'));
+    if(stomaOpen){ svg.appendChild(lead(cx+22,cy-30,560,150)); svg.appendChild(lbl(564,154,'stomatal pore')); }
+
+    var h=lbl(40,34,'One stoma, seen from the leaf surface','start','#14563a');
+    h.setAttribute('font-size',15); svg.appendChild(h);
+    var st=lbl(40,396, stomaOpen ? 'Water has flowed IN → guard cells swell and curve → pore OPEN'
+                                 : 'Water has flowed OUT → guard cells shrink → pore CLOSED','start',
+                stomaOpen?'#1d7a4f':'#b03a2e');
+    st.setAttribute('font-size',13); svg.appendChild(st);
+  }
+
+  /* ---------------- stage 3: chloroplast ---------------- */
+  function chloroStage(){
+    clear(); xtra.innerHTML='';
+    var body=el('ellipse',{cx:350,cy:215,rx:245,ry:130,fill:'#cfe8d2',stroke:'#3a8347','stroke-width':3.5});
+    svg.appendChild(hot(body,'Chloroplast',
+      'The organelle where photosynthesis happens. It contains the green pigment <b>chlorophyll</b>. For Class 10, this is the key fact: chlorophyll sits in chloroplasts, found mainly in the mesophyll cells of the leaf.',true));
+    var inner=el('ellipse',{cx:350,cy:215,rx:232,ry:118,fill:'#dff0e1',stroke:'#4f9a5c','stroke-width':2});
+    svg.appendChild(hot(inner,'Outer and inner membranes',
+      'Two membranes enclosing the chloroplast and controlling what enters and leaves.',false));
+    var stroma=el('ellipse',{cx:350,cy:215,rx:222,ry:108,fill:'#e8f5ea',stroke:'none'});
+    svg.appendChild(hot(stroma,'Stroma',
+      'The fluid filling the chloroplast. This is where <b>carbon dioxide is reduced to carbohydrate</b> — event 3.',false));
+    // grana
+    [[200,180],[300,255],[420,170],[500,250],[250,120],[430,285]].forEach(function(q,i){
+      var g=el('g',{});
+      for(var k=0;k<5;k++){
+        g.appendChild(el('ellipse',{cx:q[0],cy:q[1]-16+k*8,rx:34,ry:5.5,
+          fill:'#3f9a55',stroke:'#2a6b3a','stroke-width':1.2}));
+      }
+      svg.appendChild(hot(g,'Granum (stack of thylakoids)',
+        'Stacks of disc-shaped membranes. The <b>chlorophyll is held in these membranes</b>, so this is where light is absorbed — events 1 and 2.',false));
+    });
+    // connecting lamellae
+    svg.appendChild(el('line',{x1:230,y1:180,x2:272,y2:250,stroke:'#4f9a5c','stroke-width':3}));
+    svg.appendChild(el('line',{x1:332,y1:250,x2:392,y2:178,stroke:'#4f9a5c','stroke-width':3}));
+    svg.appendChild(el('line',{x1:452,y1:176,x2:470,y2:244,stroke:'#4f9a5c','stroke-width':3}));
+
+    svg.appendChild(lead(500,250,620,300)); svg.appendChild(lbl(624,304,'granum'));
+    svg.appendChild(lead(372,296,470,364)); svg.appendChild(lbl(474,368,'stroma'));
+    svg.appendChild(lead(348,88,250,54)); svg.appendChild(lbl(246,58,'double membrane','end'));
+
+    var h=lbl(40,34,'Inside a chloroplast','start','#14563a');
+    h.setAttribute('font-size',15); svg.appendChild(h);
+    var n=lbl(40,400,'For CBSE Class 10 you need: chlorophyll is in chloroplasts. The inner detail is background.','start','#56635a');
+    n.setAttribute('font-size',12); n.setAttribute('font-weight','600'); svg.appendChild(n);
+  }
+
+  var stages=[leafStage,crossStage,stomaStage,chloroStage];
+  Array.prototype.forEach.call(document.querySelectorAll('.st'),function(b){
+    b.addEventListener('click',function(){
+      stage=parseInt(b.getAttribute('data-s'),10);
+      Array.prototype.forEach.call(document.querySelectorAll('.st'),function(o){
+        o.setAttribute('aria-pressed', o===b ? 'true':'false');
+      });
+      info.innerHTML='<div class="nm">Tap a labelled part</div><div class="fn">Each part’s job will appear here.</div>';
+      stages[stage]();
+    });
+  });
+  leafStage();
+})();
+</script>
+</body>
+</html>

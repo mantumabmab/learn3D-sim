@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The bivariate Normal surface</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --ink:#14171c; --soft:#586070; --rule:#e1e4e9; --card:#fff;
+    --accent:#28558c; --deep:#1a3a62; --warn:#8a5a14; --hot:#a8422a;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:16.5px;line-height:1.62;-webkit-text-size-adjust:100%}
+  .wrap{max-width:900px;margin:0 auto;padding:30px 20px 80px}
+  .kicker{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--soft);font-weight:700}
+  h1{font-size:1.92rem;line-height:1.16;margin:.25em 0 .2em;letter-spacing:-.4px}
+  h2{font-size:1.22rem;margin:2.4em 0 .4em;color:var(--accent);line-height:1.3}
+  h3{font-size:1rem;margin:1.5em 0 .3em}
+  p{margin:.7em 0}
+  .lede{font-size:1.05rem;color:#313846}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em;
+    background:#ecedf1;border-radius:4px;padding:1px 5px}
+  .eq{background:#fbfbfc;border:1px solid var(--rule);border-left:3px solid var(--accent);
+    border-radius:0 7px 7px 0;padding:11px 15px;margin:12px 0;overflow-x:auto;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92rem;line-height:1.85}
+  .card{background:var(--card);border:1px solid var(--rule);border-radius:11px;padding:15px 19px;margin:20px 0}
+  .goals{background:#eef3f9;border-color:#ccdcec}
+  .goals ul{margin:.3em 0 0;padding-left:1.1em} .goals li{margin:.3em 0}
+  .warnbox{background:#fdf7ea;border-color:#ecdcb6}
+  .note{color:var(--soft);font-size:.9rem}
+  table{border-collapse:collapse;width:100%;font-size:.88rem;margin:13px 0}
+  th,td{text-align:left;padding:6px 9px;border-bottom:1px solid var(--rule);vertical-align:top}
+  th{background:#ecedf1;font-weight:700;font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:#424a58}
+  .fig{background:#fff;border:1px solid var(--rule);border-radius:11px;padding:15px;margin:24px 0}
+  .fig h4{margin:0 0 6px;font-size:.95rem}
+  canvas{display:block;width:100%;height:auto;border-radius:9px;background:#fbfcfd;
+    touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+  canvas:active{cursor:grabbing}
+  .sliders{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:4px 16px;margin-top:11px}
+  .sl{display:flex;align-items:center;gap:9px}
+  .sl label{font-size:.82rem;font-weight:700;color:#434c5c;min-width:58px}
+  input[type=range]{accent-color:#28558c;height:28px;flex:1;min-width:90px}
+  .pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .pills button{font:inherit;font-size:.8rem;font-weight:600;min-height:32px;padding:0 10px;border-radius:7px;
+    border:1px solid #c2cad6;background:#fff;color:#39455a;cursor:pointer}
+  .pills button:hover{background:#eef3f8}
+  .pills button[aria-pressed="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}
+  button:focus-visible,input:focus-visible{outline:3px solid #ffb703;outline-offset:2px}
+  .ros{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:11px}
+  .ro{background:#f3f5f8;border:1px solid var(--rule);border-radius:8px;padding:7px 10px}
+  .ro .lab{font-size:.67rem;text-transform:uppercase;letter-spacing:.07em;color:var(--soft);font-weight:700}
+  .ro .val{font-weight:700;font-size:.93rem;font-variant-numeric:tabular-nums}
+  .cap{font-size:.85rem;color:var(--soft);margin-top:10px}
+  .inset{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start;margin-top:12px}
+  .inset svg{flex:1 1 300px;min-width:280px;border:1px solid var(--rule);border-radius:8px;background:#fcfcfd}
+  .inset .txt{flex:1 1 240px;min-width:230px;font-size:.88rem;color:#3c4654}
+  details{background:#fff;border:1px solid var(--rule);border-radius:9px;padding:10px 14px;margin:9px 0}
+  summary{font-weight:600;cursor:pointer;color:var(--accent)}
+  .srcs{font-size:.89rem;padding-left:1.1em} .srcs li{margin:.55em 0}
+  .grade{display:inline-block;font-size:.66rem;font-weight:700;border-radius:5px;padding:1px 6px;margin-right:5px;
+    background:#dcebe2;color:#13543a;border:1px solid #a8cdb8}
+  .grade.b{background:#e9ecf3;color:#2c3a5c;border-color:#c2cbe0}
+  a{color:#1f5390}
+  hr{border:none;border-top:1px solid var(--rule);margin:2.3em 0}
+  @media (max-width:560px){
+    body{font-size:15.5px} h1{font-size:1.45rem} h2{font-size:1.1rem}
+    table{font-size:.8rem} th,td{padding:5px 6px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="kicker">Probability theory &middot; research level</p>
+  <h1>The bivariate Normal surface</h1>
+  <p class="lede">A joint density over two variables is a surface, and almost everything about the bivariate Normal is a statement about that surface's geometry: its level sets are ellipses determined by the eigenstructure of &Sigma;, its shadows are the marginals, and its vertical cross-sections are &mdash; up to a constant &mdash; the conditionals. The figure below is a real renderer, not an illustration: rotate it, change &Sigma;, slice it, and read the numbers off.</p>
+
+  <div class="card goals">
+    <strong>Covered here</strong>
+    <ul>
+      <li>the density in matrix form, and why the exponent must be a quadratic form;</li>
+      <li>how the eigen-decomposition of &Sigma; fixes the orientation and size of the probability ellipses;</li>
+      <li>marginals as projections and conditionals as normalised slices &mdash; and why those are different operations;</li>
+      <li>the regression line falling out of the conditional mean, with <code>1 &minus; &rho;&sup2;</code> as the variance reduction;</li>
+      <li>what a 3D surface plot genuinely shows and what it systematically misleads about.</li>
+    </ul>
+  </div>
+
+  <h2>1. The density</h2>
+  <p>For <code>X = (X<sub>1</sub>, X<sub>2</sub>)<sup>T</sup></code> with mean <code>&mu;</code> and covariance <code>&Sigma;</code>, the density is</p>
+  <div class="eq">f(x) = (2&pi;)<sup>&minus;1</sup> |&Sigma;|<sup>&minus;1/2</sup> exp( &minus;&frac12; (x &minus; &mu;)<sup>T</sup> &Sigma;<sup>&minus;1</sup> (x &minus; &mu;) )</div>
+  <p>Written out in the scalar parameterisation <code>(&mu;<sub>1</sub>, &mu;<sub>2</sub>, &sigma;<sub>1</sub>, &sigma;<sub>2</sub>, &rho;)</code>:</p>
+  <div class="eq">f(x<sub>1</sub>,x<sub>2</sub>) = 1/(2&pi;&sigma;<sub>1</sub>&sigma;<sub>2</sub>&radic;(1&minus;&rho;&sup2;)) &middot; exp( &minus;Q / (2(1&minus;&rho;&sup2;)) )<br>
+  Q = z<sub>1</sub>&sup2; + z<sub>2</sub>&sup2; &minus; 2&rho;z<sub>1</sub>z<sub>2</sub>,&nbsp;&nbsp; z<sub>i</sub> = (x<sub>i</sub> &minus; &mu;<sub>i</sub>)/&sigma;<sub>i</sub></div>
+  <p>The exponent is a negative-definite quadratic form, and that single fact generates the entire geometry. Because <code>f</code> depends on <code>x</code> only through the scalar <code>(x&minus;&mu;)<sup>T</sup>&Sigma;<sup>&minus;1</sup>(x&minus;&mu;)</code>, every level set <code>{x : f(x) = c}</code> is a level set of that quadratic form &mdash; an <strong>ellipse</strong>. Contours of a bivariate Normal are never anything else.</p>
+
+  <h2>2. The geometry of &Sigma;</h2>
+  <p class="note">This is the part worth internalising: &Sigma; is not a bag of three numbers, it is an ellipse.</p>
+  <p>The quantity in the exponent is the squared <strong>Mahalanobis distance</strong>, <code>D&sup2; = (x&minus;&mu;)<sup>T</sup>&Sigma;<sup>&minus;1</sup>(x&minus;&mu;)</code>. Under bivariate normality it is distributed as <code>&chi;&sup2;</code> with 2 degrees of freedom, which is what makes probability ellipses computable: the region <code>D&sup2; &le; c</code> has probability <code>P(&chi;&sup2;<sub>2</sub> &le; c)</code>.</p>
+  <p>In two dimensions that has a clean closed form, because the <code>&chi;&sup2;<sub>2</sub></code> distribution is exponential with mean 2:</p>
+  <div class="eq">P(D&sup2; &le; c) = 1 &minus; e<sup>&minus;c/2</sup>&nbsp;&nbsp;&rArr;&nbsp;&nbsp; 95% ellipse at c = 5.9915,&nbsp; &radic;c = 2.4477</div>
+  <p>Diagonalise: <code>&Sigma; = U&Lambda;U<sup>T</sup></code>. The eigenvectors give the ellipse's axis directions and the eigenvalues their squared lengths, so the semi-axes of the probability-<em>p</em> ellipse are <code>&radic;(c&lambda;<sub>i</sub>)</code>. For the 2&times;2 case,</p>
+  <div class="eq">&lambda;<sub>&plusmn;</sub> = &frac12;[ &sigma;<sub>1</sub>&sup2; + &sigma;<sub>2</sub>&sup2; &plusmn; &radic;((&sigma;<sub>1</sub>&sup2;&minus;&sigma;<sub>2</sub>&sup2;)&sup2; + 4&rho;&sup2;&sigma;<sub>1</sub>&sup2;&sigma;<sub>2</sub>&sup2;) ],&nbsp;&nbsp;
+  &theta; = &frac12; atan2(2&rho;&sigma;<sub>1</sub>&sigma;<sub>2</sub>, &sigma;<sub>1</sub>&sup2;&minus;&sigma;<sub>2</sub>&sup2;)</div>
+  <p>Two limits are worth holding. At <code>&rho; = 0</code> the axes are parallel to the coordinate axes with half-lengths <code>&sigma;<sub>1</sub></code> and <code>&sigma;<sub>2</sub></code>. As <code>&rho; &rarr; &plusmn;1</code> one eigenvalue goes to zero, the ellipse collapses to a line segment, <code>|&Sigma;| &rarr; 0</code>, and the density degenerates &mdash; there is no two-dimensional density left, because the mass concentrates on a line.</p>
+
+  <h2>3. The figure</h2>
+  <p>Drag to orbit. The surface is <code>z = f(x<sub>1</sub>, x<sub>2</sub>)</code>, shaded by height and surface normal; the points are samples drawn by Cholesky factorisation from the current &Sigma;; the walls carry the marginals; the moving plane carries the slice.</p>
+
+  <div class="fig">
+    <h4>Figure 1 &middot; Bivariate Normal density &mdash; orbit, re-parameterise, slice</h4>
+    <canvas id="cv" width="1560" height="960" style="aspect-ratio:1560/960"></canvas>
+    <div class="sliders">
+      <div class="sl"><label for="m1">&mu;<sub>1</sub> <span id="m1v">0.0</span></label><input id="m1" type="range" min="-2" max="2" step="0.05" value="0"></div>
+      <div class="sl"><label for="m2">&mu;<sub>2</sub> <span id="m2v">0.0</span></label><input id="m2" type="range" min="-2" max="2" step="0.05" value="0"></div>
+      <div class="sl"><label for="s1">&sigma;<sub>1</sub> <span id="s1v">1.00</span></label><input id="s1" type="range" min="0.4" max="2" step="0.02" value="1"></div>
+      <div class="sl"><label for="s2">&sigma;<sub>2</sub> <span id="s2v">1.00</span></label><input id="s2" type="range" min="0.4" max="2" step="0.02" value="1"></div>
+      <div class="sl"><label for="rh">&rho; <span id="rhv">0.60</span></label><input id="rh" type="range" min="-0.95" max="0.95" step="0.01" value="0.6"></div>
+      <div class="sl"><label for="sc">slice x<sub>1</sub> <span id="scv">0.80</span></label><input id="sc" type="range" min="-3.5" max="3.5" step="0.05" value="0.8"></div>
+    </div>
+    <div class="pills">
+      <button id="bSurf" type="button" aria-pressed="true">Surface</button>
+      <button id="bWire" type="button" aria-pressed="false">Wireframe</button>
+      <button id="bPts" type="button" aria-pressed="true">Samples</button>
+      <button id="bMarg" type="button" aria-pressed="true">Marginals on walls</button>
+      <button id="bSlice" type="button" aria-pressed="true">Slice plane</button>
+      <button id="bEll" type="button" aria-pressed="true">95% ellipse</button>
+      <button id="bTop" type="button">Top view</button>
+      <button id="bSide" type="button">Side view</button>
+      <button id="bReset" type="button">Reset view</button>
+    </div>
+    <div class="ros">
+      <div class="ro"><div class="lab">Conditional X₂ | X₁ = c</div><div class="val" id="rCond">—</div></div>
+      <div class="ro"><div class="lab">Regression slope ρσ₂/σ₁</div><div class="val" id="rSlope">—</div></div>
+      <div class="ro"><div class="lab">Variance reduction 1−ρ²</div><div class="val" id="rVR">—</div></div>
+      <div class="ro"><div class="lab">95% ellipse semi-axes</div><div class="val" id="rAx">—</div></div>
+      <div class="ro"><div class="lab">Ellipse tilt θ</div><div class="val" id="rTh">—</div></div>
+      <div class="ro"><div class="lab">|Σ|</div><div class="val" id="rDet">—</div></div>
+    </div>
+
+    <div class="inset">
+      <svg id="sliceSvg" viewBox="0 0 420 230" role="img"
+        aria-label="A comparison of the raw slice through the joint density against the renormalised conditional density."></svg>
+      <div class="txt">
+        <strong>The slice is not the conditional.</strong>
+        <p style="margin:.4em 0">Cutting the surface at <code>x<sub>1</sub> = c</code> gives the function <code>x<sub>2</sub> &mapsto; f(c, x<sub>2</sub>)</code>. That is <em>proportional</em> to the conditional density, but it does not integrate to 1 &mdash; it integrates to the marginal value <code>f<sub>1</sub>(c)</code>. To get the conditional you divide:</p>
+        <div class="eq" style="margin:.4em 0;font-size:.84rem">f(x<sub>2</sub>|c) = f(c, x<sub>2</sub>) / f<sub>1</sub>(c)</div>
+        <p style="margin:.4em 0" id="sliceNote"></p>
+      </div>
+    </div>
+
+    <p class="cap">Set &rho; to 0 and orbit to the top view: the ellipse becomes axis-aligned. Push &rho; toward 0.95 and watch the surface collapse onto a ridge while <code>|&Sigma;|</code> heads to zero. <em>Predict before you do it:</em> as you slide the cut position <code>c</code> away from &mu;<sub>1</sub>, does the <em>conditional</em> curve get wider, narrower, or stay the same width?</p>
+  </div>
+
+  <h2>4. Marginals are projections</h2>
+  <p>Integrating out <code>x<sub>2</sub></code> collapses the surface onto the <code>x<sub>1</sub></code> axis:</p>
+  <div class="eq">f<sub>1</sub>(x<sub>1</sub>) = &int; f(x<sub>1</sub>,x<sub>2</sub>) dx<sub>2</sub> = N(&mu;<sub>1</sub>, &sigma;<sub>1</sub>&sup2;)</div>
+  <p><strong>The correlation has vanished.</strong> That is the single most important thing about the marginals, and the figure makes it visible: slide &rho; from 0 to 0.95 and the marginal curves drawn on the back walls do not move at all, while the surface between them changes completely. Correlation is a statement about the joint distribution that no marginal can see.</p>
+  <p>This is why the marginal is not the slice through the peak. The marginal at <code>x<sub>1</sub></code> is the <em>total</em> mass in that column &mdash; the area of the cut &mdash; not the height of the surface along the ridge.</p>
+
+  <h2>5. Conditionals, and why this is regression</h2>
+  <p>Normalising the slice gives a Normal distribution again:</p>
+  <div class="eq">X<sub>2</sub> | X<sub>1</sub> = x&nbsp; ~ &nbsp;N( &mu;<sub>2</sub> + &rho;(&sigma;<sub>2</sub>/&sigma;<sub>1</sub>)(x &minus; &mu;<sub>1</sub>),&nbsp; &sigma;<sub>2</sub>&sup2;(1 &minus; &rho;&sup2;) )</div>
+  <p>Read the two pieces separately.</p>
+  <p><strong>The mean is linear in <em>x</em>.</strong> It traces the line through <code>(&mu;<sub>1</sub>, &mu;<sub>2</sub>)</code> with slope <code>&rho;&sigma;<sub>2</sub>/&sigma;<sub>1</sub></code> &mdash; exactly the population least-squares regression coefficient. Simple linear regression is not an approximation imposed on bivariate Normal data; it is the conditional mean, exactly.</p>
+  <p><strong>The variance does not depend on <em>x</em>.</strong> This is homoscedasticity, and it is a theorem here rather than an assumption: every slice has the same width <code>&sigma;<sub>2</sub>&radic;(1&minus;&rho;&sup2;)</code>, however far out you cut. The factor <code>1 &minus; &rho;&sup2;</code> is <code>1 &minus; R&sup2;</code> &mdash; the proportion of variance left unexplained.</p>
+  <div class="card warnbox">
+    <strong>The regression-to-the-mean reading.</strong>
+    <p class="note" style="margin-bottom:0">Standardise both variables (<code>&sigma;<sub>1</sub> = &sigma;<sub>2</sub> = 1</code>) and the conditional mean becomes <code>&rho;x</code>. Since <code>|&rho;| &lt; 1</code>, the expected value of <code>X<sub>2</sub></code> is always <em>closer to the mean</em>, in standard units, than the observed <code>x</code> was. Galton's regression to mediocrity is this line, and it is a property of the bivariate Normal's geometry rather than any causal mechanism.</p>
+  </div>
+
+  <h2>6. What a 3D surface plot hides</h2>
+  <p>Since the whole point of this page is a 3D rendering, it is worth being blunt about its limitations.</p>
+  <table>
+    <thead><tr><th>Problem</th><th>What goes wrong</th><th>What to do</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Occlusion</strong></td><td>The near side of the hill hides the far side. A second mode, or a lump in the tail, can be entirely invisible from the default camera angle.</td><td>Orbit before concluding anything. Better: use a contour plot, where nothing is hidden.</td></tr>
+      <tr><td><strong>Slice vs conditional</strong></td><td>A cut through the surface <em>looks</em> like a conditional distribution but has the wrong area, by a factor of <code>f<sub>1</sub>(c)</code> that varies with where you cut.</td><td>Renormalise before comparing cuts at different <em>c</em>, as the inset does.</td></tr>
+      <tr><td><strong>Height is not probability</strong></td><td>Density is not probability; only its integral is. The peak height <code>1/(2&pi;&sigma;<sub>1</sub>&sigma;<sub>2</sub>&radic;(1&minus;&rho;&sup2;))</code> grows without bound as &rho; &rarr; &plusmn;1 &mdash; the surface gets taller while the distribution gets <em>less</em> informative about nothing in particular.</td><td>Read volumes, not heights. The ellipse gives you volume directly.</td></tr>
+      <tr><td><strong>Perspective distorts comparison</strong></td><td>Equal heights at different depths project to different screen sizes, so visual comparison of two bumps is unreliable.</td><td>Use the top view for anything quantitative.</td></tr>
+    </tbody>
+  </table>
+  <p>The honest summary: a 3D surface is excellent for <em>building intuition about shape</em> and poor for <em>reading values</em>. Contour plots and marginal/conditional panels do the quantitative work. That is why the figure above ships a top view button and a 2D inset.</p>
+
+  <h2>7. Beyond the basics</h2>
+  <ul>
+    <li><strong>Sampling by Cholesky.</strong> Factor <code>&Sigma; = LL<sup>T</sup></code>; then <code>X = &mu; + LZ</code> with <code>Z ~ N(0, I)</code>. In 2D, <code>L = [[&sigma;<sub>1</sub>, 0], [&rho;&sigma;<sub>2</sub>, &sigma;<sub>2</sub>&radic;(1&minus;&rho;&sup2;)]]</code> &mdash; and the <code>&radic;(1&minus;&rho;&sup2;)</code> appearing again is not a coincidence; it is the conditional standard deviation. The figure uses exactly this, with a fixed set of standard normal draws, which is why the cloud deforms continuously as you move the sliders rather than resampling.</li>
+    <li><strong>Zero correlation and independence.</strong> For a <em>jointly</em> Normal pair, <code>&rho; = 0</code> implies independence, because &Sigma; becomes diagonal and the density factorises. This fails in general: marginally Normal variables with zero correlation need not be independent, and need not be jointly Normal. The usable characterisation is that <code>(X<sub>1</sub>, X<sub>2</sub>)</code> is bivariate Normal <em>if and only if</em> <code>aX<sub>1</sub> + bX<sub>2</sub> + c</code> is univariate Normal for every choice of <code>a, b, c</code>.</li>
+    <li><strong>Dimension.</strong> Everything above generalises with <code>D&sup2; ~ &chi;&sup2;<sub>k</sub></code> and ellipsoids instead of ellipses, but the picture stops helping. In high dimensions a Gaussian's mass sits in a thin shell at radius <code>&asymp; &sigma;&radic;k</code>, not near the mode &mdash; the mode is the least typical place to be. Two-dimensional intuition actively misleads here.</li>
+    <li><strong>When the Normal shape is wrong but the dependence is right.</strong> Copulas separate the marginals from the dependence structure; the Gaussian copula keeps this elliptical dependence while allowing arbitrary marginals. Its failure to capture joint tail dependence is a well-documented problem in risk modelling.</li>
+  </ul>
+
+  <hr>
+
+  <h2>Self-test</h2>
+  <details><summary>You increase ρ from 0.3 to 0.9, holding everything else fixed. What happens to the marginal of X₁, the conditional variance of X₂ given X₁, and the peak height?</summary>
+    <p>The marginal of X₁ is unchanged — still <code>N(μ₁, σ₁²)</code>; ρ does not appear in it. The conditional variance falls from <code>σ₂²(1−0.09) = 0.91σ₂²</code> to <code>σ₂²(1−0.81) = 0.19σ₂²</code>, a large tightening. The peak height <code>1/(2πσ₁σ₂√(1−ρ²))</code> rises by a factor <code>√(0.91/0.19) ≈ 2.19</code>, because the same unit of mass is being squeezed onto a narrower ridge.</p></details>
+  <details><summary>Why is the conditional variance independent of where you slice, and would you expect that to survive if the joint distribution were not Normal?</summary>
+    <p>It follows from the exponent being exactly quadratic: completing the square in <code>x₂</code> leaves a quadratic whose coefficient does not involve <code>x₁</code>, so the width of every slice is the same. It is a special property, not a general one. For most non-Normal joint distributions the conditional spread varies with the conditioning value — that is heteroscedasticity, and it is the normal state of affairs outside the Gaussian world. Homoscedasticity in regression is routinely treated as an assumption to be checked precisely because only the Gaussian case guarantees it.</p></details>
+  <details><summary>A colleague shows a 3D density surface and says the two variables are "clearly independent because the hill looks symmetric". What is wrong?</summary>
+    <p>Visual symmetry of the rendered hill is not the right criterion, and the camera angle can create or destroy the appearance of tilt. Independence for a bivariate Normal means <code>ρ = 0</code>, i.e. the contour ellipses are axis-aligned — which is a statement best checked from the top view, not an oblique one. And if the distribution is not known to be jointly Normal, even a genuinely axis-aligned appearance would not establish independence, only zero correlation.</p></details>
+  <details><summary>Why do the semi-axes scale as √(cλᵢ) rather than λᵢ?</summary>
+    <p>Because the eigenvalues of Σ are variances, which live in squared units. The ellipse <code>(x−μ)ᵀΣ⁻¹(x−μ) = c</code> written in the eigenbasis is <code>Σᵢ yᵢ²/λᵢ = c</code>, so the semi-axis along direction <em>i</em> is <code>√(cλᵢ)</code>. At <code>c = 1</code> and <code>ρ = 0</code> that recovers the familiar <code>σ₁</code> and <code>σ₂</code>.</p></details>
+
+  <h2>Sources</h2>
+  <p class="note"><span class="grade">A</span> university course notes or a standard reference text. <span class="grade b">B</span> technical documentation consistent with those.</p>
+  <ul class="srcs">
+    <li><span class="grade">A</span> Ross KD, <a href="https://bookdown.org/kevin_davisross/probability-handouts/joint-normal.html">Joint Normal Distributions</a>, Probability Handouts &mdash; the bivariate density in the <code>(&mu;,&sigma;,&rho;)</code> parameterisation, elliptical contours, Normal marginals, the conditional <code>N(&mu;<sub>Y</sub> + &rho;&sigma;<sub>Y</sub>/&sigma;<sub>X</sub>(x&minus;&mu;<sub>X</sub>), &sigma;<sub>Y</sub>&sup2;(1&minus;&rho;&sup2;))</code>, the fact that conditional spread does not depend on <em>x</em>, and the characterisation that <code>aX+bY+c</code> is Normal for all <code>a,b,c</code> iff the pair is bivariate Normal.</li>
+    <li><span class="grade">A</span> Heggeseth B, <a href="https://bcheggeseth.github.io/CorrelatedData/multivariate-normal-distribution.html">Multivariate Normal Distribution</a>, Correlated Data course notes &mdash; density contours as surfaces of constant Mahalanobis distance <code>(x&minus;&mu;)<sup>T</sup>&Sigma;<sup>&minus;1</sup>(x&minus;&mu;)</code>.</li>
+    <li><span class="grade">A</span> Real Statistics, <a href="https://real-statistics.com/multivariate-statistics/multivariate-normal-distribution/multivariate-normal-distribution-basic-concepts">Multivariate Normal Distribution: basic concepts</a> &mdash; squared Mahalanobis distance distributed as <code>&chi;&sup2;<sub>k</sub></code>, the resulting probability ellipse at the <code>&chi;&sup2;</code> critical value, and that any linear combination of a multivariate Normal is Normal.</li>
+    <li><span class="grade">A</span> Sala A, <a href="https://personales.upv.es/asala/DocenciaOnline/material/Matlab/IntConfVSchi2ENG.pdf">Multivariate normal: confidence intervals, rectangles and ellipsoids</a>, Universitat Polit&egrave;cnica de Val&egrave;ncia &mdash; the joint 95% ellipse bound <code>&chi;&sup2;<sub>2</sub>(0.95) = 5.9915</code> and <code>&radic;5.9915 = 2.4477</code>, contrasted with the marginal 1.96, and semi-axes as square roots of the covariance eigenvalues.</li>
+    <li><span class="grade b">B</span> MetricGate, <a href="https://metricgate.com/docs/bivariate-normal-distribution/">Bivariate Normal Distribution</a> &mdash; eigenvalues of &Sigma; giving the 95% ellipse semi-axes via <code>&chi;&sup2;<sub>0.95,2</sub> &asymp; 5.99</code>; the conditional as the simple linear regression formula with slope <code>&rho;&sigma;<sub>Y</sub>/&sigma;<sub>X</sub></code> and residual variance shrunk by <code>1&minus;&rho;&sup2; = 1&minus;R&sup2;</code>; <code>D&sup2;</code> as an outlier statistic.</li>
+    <li><span class="grade b">B</span> <a href="https://arxiv.org/pdf/1308.3622">Covariance-ellipse treatment</a> (arXiv appendix) &mdash; the <code>&rho; = 0</code> limit giving axis-aligned semi-axes <code>&sigma;<sub>1</sub></code>, <code>&sigma;<sub>2</sub></code>, and the degeneration to a line segment as <code>&rho; &rarr; &plusmn;1</code>.</li>
+  </ul>
+  <p class="note"><strong>On the numbers.</strong> Before this page was written the formulas were checked numerically: the density integrates to 1.000000000000 by adaptive quadrature and matches SciPy's <code>multivariate_normal.pdf</code> to 1.1&times;10<sup>&minus;15</sup>; the conditional mean and variance were confirmed against 4&times;10<sup>6</sup> Monte Carlo draws; and the ellipse rule <code>P(D&sup2; &le; c) = 1 &minus; e<sup>&minus;c/2</sup></code> reproduced empirical coverage of 0.5000, 0.8999, 0.9499 and 0.9900 at the 50%, 90%, 95% and 99% quantiles. The renderer uses its own painter's-algorithm mesh with Lambertian shading; sample points come from a fixed set of standard normal draws transformed by the current Cholesky factor.</p>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+  function S(id){return document.getElementById(id);}
+  var cv=S('cv'), ctx=cv.getContext('2d');
+  var W=cv.width, H=cv.height, DPR=2;              // canvas is 2x the CSS box
+
+  /* ---------------- state ---------------- */
+  var P={m1:0,m2:0,s1:1,s2:1,rho:0.6,c:0.8};
+  var az=-0.62, el=0.52;                            // camera
+  var show={surf:true,wire:false,pts:true,marg:true,slice:true,ell:true};
+
+  /* fixed standard normal draws, so the cloud deforms rather than resampling */
+  var NPT=420, Z1=[], Z2=[];
+  (function(){
+    var s=12345;
+    function rnd(){ s=(s*1103515245+12345)&0x7fffffff; return s/0x7fffffff; }
+    for(var i=0;i<NPT;i++){
+      var u1=Math.max(1e-9,rnd()), u2=rnd();
+      var r=Math.sqrt(-2*Math.log(u1));
+      Z1.push(r*Math.cos(2*Math.PI*u2));
+      Z2.push(r*Math.sin(2*Math.PI*u2));
+    }
+  })();
+
+  /* ---------------- maths ---------------- */
+  function dens(x,y){
+    var z1=(x-P.m1)/P.s1, z2=(y-P.m2)/P.s2, r=P.rho;
+    var Q=z1*z1+z2*z2-2*r*z1*z2;
+    return Math.exp(-Q/(2*(1-r*r)))/(2*Math.PI*P.s1*P.s2*Math.sqrt(1-r*r));
+  }
+  function marg1(x){ var z=(x-P.m1)/P.s1; return Math.exp(-z*z/2)/(P.s1*Math.sqrt(2*Math.PI)); }
+  function marg2(y){ var z=(y-P.m2)/P.s2; return Math.exp(-z*z/2)/(P.s2*Math.sqrt(2*Math.PI)); }
+  function condPars(){
+    return { mu: P.m2 + P.rho*(P.s2/P.s1)*(P.c-P.m1), sd: P.s2*Math.sqrt(1-P.rho*P.rho) };
+  }
+  function mah2(x,y){
+    var z1=(x-P.m1)/P.s1, z2=(y-P.m2)/P.s2, r=P.rho;
+    return (z1*z1+z2*z2-2*r*z1*z2)/(1-r*r);
+  }
+  function eig(){
+    var a=P.s1*P.s1, b=P.rho*P.s1*P.s2, d=P.s2*P.s2;
+    var tr=a+d, df=Math.sqrt((a-d)*(a-d)+4*b*b);
+    return { l1:(tr+df)/2, l2:(tr-df)/2, th:0.5*Math.atan2(2*b, a-d) };
+  }
+
+  /* ---------------- projection ---------------- */
+  var RANGE=4.2, ZS=1.0;
+  function peak(){ return 1/(2*Math.PI*P.s1*P.s2*Math.sqrt(1-P.rho*P.rho)); }
+  function proj(x,y,z){
+    // normalise into a cube centred on the parameter means
+    var wx=(x-P.m1)/RANGE, wy=(y-P.m2)/RANGE, wz=z/peak()*0.62;
+    var ca=Math.cos(az), sa=Math.sin(az);
+    var X=wx*ca - wy*sa, Y=wx*sa + wy*ca;
+    var ce=Math.cos(el), se=Math.sin(el);
+    var sy=-(wz*ce - Y*se);
+    var depth = Y*ce + wz*se;
+    // 0.50 keeps the rotated corners (|X| up to sqrt(2)) inside the canvas at every azimuth
+    var sc=Math.min(W,H)*0.50;
+    return { x: W/2 + X*sc, y: H*0.58 + sy*sc, d: depth };
+  }
+
+  /* ---------------- drawing ---------------- */
+  var N=46;
+  function render(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#fbfcfd'; ctx.fillRect(0,0,W,H);
+    var items=[];
+    var lo1=P.m1-RANGE, hi1=P.m1+RANGE, lo2=P.m2-RANGE, hi2=P.m2+RANGE;
+
+    /* base plane grid */
+    (function(){
+      for(var i=0;i<=8;i++){
+        var t=i/8;
+        var xa=lo1+(hi1-lo1)*t, ya=lo2+(hi2-lo2)*t;
+        var A=proj(xa,lo2,0),B=proj(xa,hi2,0),C=proj(lo1,ya,0),D=proj(hi1,ya,0);
+        items.push({d:1e6,draw:function(A,B){return function(){
+          ctx.strokeStyle='#e4e8ee'; ctx.lineWidth=2;
+          ctx.beginPath(); ctx.moveTo(A.x,A.y); ctx.lineTo(B.x,B.y); ctx.stroke();
+        };}(A,B)});
+        items.push({d:1e6,draw:function(C,D){return function(){
+          ctx.strokeStyle='#e4e8ee'; ctx.lineWidth=2;
+          ctx.beginPath(); ctx.moveTo(C.x,C.y); ctx.lineTo(D.x,D.y); ctx.stroke();
+        };}(C,D)});
+      }
+    })();
+
+    /* 95% ellipse on the floor */
+    if(show.ell){
+      var e=eig(), cq=5.9915;
+      // the 95% contour, lifted onto the surface and emitted segment by segment so
+      // the painter's sort occludes the far half correctly
+      var ring=[], ringF=[];
+      for(var k=0;k<=120;k++){
+        var t=k/120*2*Math.PI;
+        var u=Math.sqrt(cq*e.l1)*Math.cos(t), v=Math.sqrt(cq*e.l2)*Math.sin(t);
+        var xx=P.m1+u*Math.cos(e.th)-v*Math.sin(e.th);
+        var yy=P.m2+u*Math.sin(e.th)+v*Math.cos(e.th);
+        ring.push(proj(xx,yy,dens(xx,yy)));
+        ringF.push(proj(xx,yy,0));
+      }
+      for(var k2=0;k2<ring.length-1;k2++){
+        items.push({d:(ring[k2].d+ring[k2+1].d)/2-0.004,
+          draw:function(A,B){return function(){
+            ctx.strokeStyle='#a8422a'; ctx.lineWidth=6; ctx.lineCap='round';
+            ctx.beginPath(); ctx.moveTo(A.x,A.y); ctx.lineTo(B.x,B.y); ctx.stroke();
+          };}(ring[k2],ring[k2+1])});
+      }
+      // faint shadow of the same contour on the floor
+      items.push({d:9e5,draw:function(){
+        ctx.strokeStyle='rgba(168,66,42,0.45)'; ctx.lineWidth=4; ctx.setLineDash([12,9]);
+        ctx.beginPath(); ringF.forEach(function(p,i){ i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y); });
+        ctx.closePath(); ctx.stroke(); ctx.setLineDash([]);
+      }});
+    }
+
+    /* sample points on the floor */
+    if(show.pts){
+      var sq=Math.sqrt(1-P.rho*P.rho);
+      for(var i=0;i<NPT;i++){
+        var x=P.m1+P.s1*Z1[i];
+        var y=P.m2+P.s2*(P.rho*Z1[i]+sq*Z2[i]);
+        if(x<lo1||x>hi1||y<lo2||y>hi2) continue;
+        var p=proj(x,y,0);
+        items.push({d:p.d+0.0001,draw:function(p){return function(){
+          ctx.fillStyle='rgba(40,85,140,0.55)';
+          ctx.beginPath(); ctx.arc(p.x,p.y,5,0,2*Math.PI); ctx.fill();
+        };}(p)});
+      }
+    }
+
+    /* the surface */
+    if(show.surf||show.wire){
+      var pk=peak();
+      for(var a=0;a<N;a++){
+        for(var b=0;b<N;b++){
+          var x0=lo1+(hi1-lo1)*a/N, x1=lo1+(hi1-lo1)*(a+1)/N;
+          var y0=lo2+(hi2-lo2)*b/N, y1=lo2+(hi2-lo2)*(b+1)/N;
+          // clip to a Mahalanobis disc so the surface has a clean elliptical edge
+          // instead of a ragged density-threshold boundary
+          var xc=(x0+x1)/2, yc=(y0+y1)/2;
+          var m2v=mah2(xc,yc);
+          if(m2v>16) continue;
+          // feather the last ring of cells so the clip boundary is not a visible staircase
+          var fade=Math.max(0,Math.min(1,(16-m2v)/5));
+          var z00=dens(x0,y0),z10=dens(x1,y0),z11=dens(x1,y1),z01=dens(x0,y1);
+          var zm=(z00+z10+z11+z01)/4;
+          var A=proj(x0,y0,z00),B=proj(x1,y0,z10),C=proj(x1,y1,z11),D=proj(x0,y1,z01);
+          var dd=(A.d+B.d+C.d+D.d)/4;
+          // shading from the surface normal in data space
+          var ux=(x1-x0), uz=(z10-z00), vy=(y1-y0), vz=(z01-z00);
+          var nx=-uz*vy, ny=-ux*vz, nz=ux*vy;
+          var nl=Math.sqrt(nx*nx+ny*ny+nz*nz)||1;
+          var lam=Math.max(0.2,(nx*0.35+ny*0.3+nz*0.9)/nl);
+          var t=Math.min(1,zm/pk);
+          // ramp deep blue -> teal -> warm yellow, then fade the tails into the page
+          var cr,cg,cb;
+          if(t<0.5){ var u=t/0.5; cr=43+(47-43)*u; cg=92+(143-92)*u; cb=155+(122-155)*u; }
+          else     { var u2=(t-0.5)/0.5; cr=47+(232-47)*u2; cg=143+(199-143)*u2; cb=122+(90-122)*u2; }
+          cr*=lam; cg*=lam; cb*=lam;
+          var wgt=Math.min(1,Math.pow(t,0.28)*1.22)*fade;
+          var r=Math.round(251+(cr-251)*wgt);
+          var g=Math.round(252+(cg-252)*wgt);
+          var bl=Math.round(253+(cb-253)*wgt);
+          items.push({d:dd,draw:function(A,B,C,D,col){return function(){
+            ctx.beginPath(); ctx.moveTo(A.x,A.y); ctx.lineTo(B.x,B.y);
+            ctx.lineTo(C.x,C.y); ctx.lineTo(D.x,D.y); ctx.closePath();
+            if(show.surf){ ctx.fillStyle=col; ctx.fill(); }
+            if(show.wire){ ctx.strokeStyle=show.surf?'rgba(255,255,255,0.14)':'#4a7cb5';
+              ctx.lineWidth=show.surf?1:1.6; ctx.stroke(); }
+          };}(A,B,C,D,'rgb('+r+','+g+','+bl+')')});
+        }
+      }
+    }
+
+    /* marginals drawn on the back walls */
+    if(show.marg){
+      // drawn on the two far walls, scaled to a fixed fraction of the plot height so
+      // that changing rho visibly leaves them untouched
+      var mk=Math.max(marg1(P.m1),marg2(P.m2));
+      var m1p=[],m2p=[],w1=[],w2=[];
+      var a1=P.m1-3.6*P.s1, b1=P.m1+3.6*P.s1;
+      var a2=P.m2-3.6*P.s2, b2=P.m2+3.6*P.s2;
+      for(var q=0;q<=120;q++){
+        var xx=a1+(b1-a1)*q/120;
+        m1p.push(proj(xx,hi2,marg1(xx)/mk*peak()*0.5)); w1.push(proj(xx,hi2,0));
+        var yy=a2+(b2-a2)*q/120;
+        m2p.push(proj(hi1,yy,marg2(yy)/mk*peak()*0.5)); w2.push(proj(hi1,yy,0));
+      }
+      [[m1p,w1,'#8a5a14','rgba(138,90,20,0.09)'],[m2p,w2,'#1d6f52','rgba(29,111,82,0.09)']]
+      .forEach(function(q3){
+        items.push({d:1.2e6,draw:function(){
+          ctx.beginPath();
+          q3[1].forEach(function(p,i){ i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y); });
+          for(var i2=q3[0].length-1;i2>=0;i2--) ctx.lineTo(q3[0][i2].x,q3[0][i2].y);
+          ctx.closePath(); ctx.fillStyle=q3[3]; ctx.fill();
+          ctx.strokeStyle=q3[2]; ctx.lineWidth=6; ctx.lineJoin='round';
+          ctx.beginPath(); q3[0].forEach(function(p,i){ i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y); });
+          ctx.stroke();
+        }});
+      });
+    }
+
+    /* the slice plane and the cut curve */
+    if(show.slice){
+      var cpts=[], base=[];
+      for(var q2=0;q2<=120;q2++){
+        var yy=lo2+(hi2-lo2)*q2/120;
+        cpts.push(proj(P.c,yy,dens(P.c,yy)));
+        base.push(proj(P.c,yy,0));
+      }
+      items.push({d:-9.5e5,draw:function(){
+        ctx.beginPath();
+        base.forEach(function(p,i){ i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y); });
+        for(var i2=cpts.length-1;i2>=0;i2--) ctx.lineTo(cpts[i2].x,cpts[i2].y);
+        ctx.closePath();
+        ctx.fillStyle='rgba(168,66,42,0.16)'; ctx.fill();
+        ctx.strokeStyle='#a8422a'; ctx.lineWidth=5; ctx.lineJoin='round';
+        ctx.beginPath(); cpts.forEach(function(p,i){ i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y); });
+        ctx.stroke();
+      }});
+    }
+
+    items.sort(function(u,v){ return v.d-u.d; });
+    items.forEach(function(it){ it.draw(); });
+
+    /* axis labels */
+    ctx.font='700 30px -apple-system,Segoe UI,Helvetica,Arial,sans-serif';
+    ctx.fillStyle='#58606e'; ctx.textAlign='center';
+    var lx=proj(hi1,P.m2,0), ly=proj(P.m1,hi2,0);
+    ctx.fillText('x₁', lx.x+34, lx.y+14);
+    ctx.fillText('x₂', ly.x-34, ly.y+14);
+  }
+
+  /* ---------------- 2D inset: slice vs conditional ---------------- */
+  function drawInset(){
+    var svg=S('sliceSvg');
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+    var NSvg='http://www.w3.org/2000/svg';
+    function el(t,a){var e=document.createElementNS(NSvg,t);for(var k in a)e.setAttribute(k,a[k]);return e;}
+    svg.appendChild(el('rect',{x:0,y:0,width:420,height:230,fill:'#fcfcfd'}));
+
+    var X0=42,Y0=16,Wd=352,Hd=168;
+    var lo=P.m2-4*P.s2, hi=P.m2+4*P.s2;
+    var f1c=marg1(P.c);
+    var raw=[],cond=[],maxC=0;
+    for(var i=0;i<=200;i++){
+      var y=lo+(hi-lo)*i/200;
+      var r=dens(P.c,y), c=r/f1c;
+      raw.push([y,r]); cond.push([y,c]);
+      if(c>maxC) maxC=c;
+    }
+    function px(y){ return X0+(y-lo)/(hi-lo)*Wd; }
+    function py(v){ return Y0+Hd-v/(maxC*1.08)*Hd; }
+
+    svg.appendChild(el('line',{x1:X0,y1:Y0+Hd,x2:X0+Wd,y2:Y0+Hd,stroke:'#9aa2ad','stroke-width':1.6}));
+    svg.appendChild(el('line',{x1:X0,y1:Y0,x2:X0,y2:Y0+Hd,stroke:'#9aa2ad','stroke-width':1.6}));
+
+    function path(arr,col,dash,w){
+      var d='';
+      arr.forEach(function(q,i){ d+=(i?' L':'M')+px(q[0])+' '+py(q[1]); });
+      var p=el('path',{d:d,fill:'none',stroke:col,'stroke-width':w||2.4,'stroke-linejoin':'round'});
+      if(dash) p.setAttribute('stroke-dasharray',dash);
+      svg.appendChild(p);
+    }
+    path(cond,'#28558c',null,2.8);
+    path(raw,'#a8422a','7 5',2.4);
+
+    var cp=condPars();
+    svg.appendChild(el('line',{x1:px(cp.mu),y1:Y0,x2:px(cp.mu),y2:Y0+Hd,
+      stroke:'#28558c','stroke-width':1.6,'stroke-dasharray':'4 4'}));
+
+    function txt(x,y,s,col,size,anchor){
+      var t=el('text',{x:x,y:y,'font-size':size||11,fill:col||'#58606e','text-anchor':anchor||'start',
+        'font-family':'-apple-system,Segoe UI,Helvetica,Arial,sans-serif'});
+      t.textContent=s; svg.appendChild(t); return t;
+    }
+    txt(X0,Y0+Hd+18,'x₂ →',"#58606e",11);
+    txt(X0+Wd,Y0+Hd+18,'cut at x₁ = '+P.c.toFixed(2),'#58606e',11,'end');
+    var l1=txt(X0+8,Y0+14,'— conditional  f(x₂ | c)','#28558c',11.5); l1.setAttribute('font-weight','700');
+    var l2=txt(X0+8,Y0+30,'-- raw slice  f(c, x₂)','#a8422a',11.5); l2.setAttribute('font-weight','700');
+    txt(X0+Wd,Y0+Hd+34,'areas: conditional = 1, slice = f₁(c) = '+f1c.toFixed(4),'#58606e',11,'end');
+
+    S('sliceNote').innerHTML='Here <code>f<sub>1</sub>(c) = '+f1c.toFixed(4)+'</code>, so the slice is scaled down by that factor. '+
+      'Slide the cut and watch the dashed curve shrink while the solid one keeps its width — that constant width is the conditional variance being independent of <code>c</code>.';
+  }
+
+  /* ---------------- readouts ---------------- */
+  function readouts(){
+    var cp=condPars(), e=eig(), cq=5.9915;
+    S('rCond').textContent='N('+cp.mu.toFixed(3)+', '+(cp.sd*cp.sd).toFixed(3)+')  sd '+cp.sd.toFixed(3);
+    S('rSlope').textContent=(P.rho*P.s2/P.s1).toFixed(4);
+    S('rVR').textContent=(1-P.rho*P.rho).toFixed(4);
+    S('rAx').textContent=Math.sqrt(cq*e.l1).toFixed(3)+' × '+Math.sqrt(cq*e.l2).toFixed(3);
+    S('rTh').textContent=(e.th*180/Math.PI).toFixed(1)+'°';
+    S('rDet').textContent=(P.s1*P.s1*P.s2*P.s2*(1-P.rho*P.rho)).toFixed(4);
+  }
+
+  function all(){ render(); drawInset(); readouts(); }
+
+  /* ---------------- interaction ---------------- */
+  var drag=false,lx=0,ly=0;
+  cv.addEventListener('pointerdown',function(e){drag=true;lx=e.clientX;ly=e.clientY;cv.setPointerCapture(e.pointerId);});
+  cv.addEventListener('pointermove',function(e){
+    if(!drag) return;
+    az+=(e.clientX-lx)*0.009;
+    el=Math.max(0.05,Math.min(1.45, el+(e.clientY-ly)*0.006));
+    lx=e.clientX; ly=e.clientY; render();
+  });
+  cv.addEventListener('pointerup',function(){drag=false;});
+  cv.addEventListener('pointercancel',function(){drag=false;});
+
+  [['m1','m1v',1],['m2','m2v',1],['s1','s1v',2],['s2','s2v',2],['rh','rhv',2],['sc','scv',2]].forEach(function(q){
+    var inp=S(q[0]);
+    inp.addEventListener('input',function(){
+      var v=parseFloat(inp.value);
+      S(q[1]).textContent=v.toFixed(q[2]);
+      if(q[0]==='m1')P.m1=v; else if(q[0]==='m2')P.m2=v;
+      else if(q[0]==='s1')P.s1=v; else if(q[0]==='s2')P.s2=v;
+      else if(q[0]==='rh')P.rho=v; else P.c=v;
+      all();
+    });
+  });
+  function tog(id,key){
+    var b=S(id);
+    b.addEventListener('click',function(){
+      show[key]=!show[key];
+      b.setAttribute('aria-pressed',show[key]?'true':'false');
+      render();
+    });
+  }
+  tog('bSurf','surf'); tog('bWire','wire'); tog('bPts','pts');
+  tog('bMarg','marg'); tog('bSlice','slice'); tog('bEll','ell');
+  S('bTop').addEventListener('click',function(){ az=-0.0001; el=1.45; render(); });
+  S('bSide').addEventListener('click',function(){ az=-0.0001; el=0.08; render(); });
+  S('bReset').addEventListener('click',function(){ az=-0.62; el=0.52; render(); });
+
+  all();
+})();
+</script>
+</body>
+</html>

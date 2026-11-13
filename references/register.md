@@ -19,6 +19,17 @@ into a child's voice for a graduate, and don't drift up into jargon for a child.
 - No cue: use 3, and say so at the confirm step.
 - Write in the language the person wrote in unless asked otherwise (`language:` in the front matter).
 
+### Readers beside the five levels
+
+Some readers are defined by purpose, not by school level. Pick the nearest level for depth, then adjust the voice:
+
+| Reader | Cues | Depth | Voice and shape |
+|---|---|---|---|
+| **Parent helping a child** | "my son", "help me teach my daughter" | the child's level for the child's part | Two parts: a play page for the child; a short guide for the parent (what the idea is, the usual mistake, 3 things to say or ask, a 10-minute activity with things at home), with sources |
+| **Curious adult, learning for fun** | "just curious", "for fun", "ELI5 but properly", "I'm not a scientist" | level 2-3 | Popular-science register, like a good science magazine: a hook question, a story of how we found out, vivid true comparisons of scale, one figure to play with; no exam questions, a few "Did you know?" checks instead; still sourced |
+| **Engineer or technical professional** | "for mechanical/electrical/civil/chemical engineering", "design", "spec", a named standard | level 3-4 | Applied register: governing equations with units, assumptions and limits, typical values from standards or handbooks, a worked design or sizing example, failure modes and safety factors; figures are machines and mechanisms (Colorfigures) or field/plot views (math3d) |
+| **Teacher preparing a lesson** | "for my class", "lesson plan" | the class's level | Notes for the class plus a teacher box per section: misconceptions, a demo, timing |
+
 ## 2. The register at each level
 
 | | 1 · Child | 2 · School | 3 · Undergraduate | 4 · Postgraduate / professional | 5 · Doctoral / research |

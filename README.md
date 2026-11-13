@@ -8,7 +8,22 @@ nomenclature, equations and graded citations. Before writing, the skill confirms
 scenes, smooth3d/three.js for molecules and anatomy, math3d for maths), a "what if" simulator or game, focus aids
 for ADHD-like attention difficulties, and exports (editable doc, study page, PDF, one-page cheat sheet).
 
-## What it makes
+## Who it's for
+
+| You are... | Ask, for example | You get |
+|---|---|---|
+| 🧒 **A child** (or the parent of one) | "My 8-year-old finds fractions hard, make something he can play with on the iPad" | A play page with big buttons, a 3D pizza to cut, a stars game, plus a short guide for the parent |
+| 🎒 **A school student** | "Explain photosynthesis for my class 10 exam" | Clear notes with key terms, a 3D leaf/chloroplast model, practice questions, a one-page cheat sheet |
+| 🎓 **An undergraduate** | "LC-MS/MS for drug screening, I'm final-year B.Pharm" | Textbook-style notes, a 3D instrument you can run, sourced numbers, a PDF |
+| 🔬 **A postgraduate or PhD researcher** | "Gs pathway notes for M.Pharm, with 3D diagrams" | Review-article register, standard nomenclature, 30+ graded citations, "Beyond the basics" |
+| ⚙️ **An engineer** | "How does a 4-stroke engine work, with the thermodynamics" · "Gears and torque for mechanical design" · "Op-amps for electronics" | Governing equations with units, a 3D machine with see-through parts, a worked design example, a simulator to vary the inputs |
+| 🌌 **A curious adult, just for fun** | "How do black holes bend light?" · "Why is the sky blue?" · "How does a microwave oven heat food?" | Popular-science style: a hook, how we found out, true comparisons of scale, a 3D model to play with |
+| 👩‍🏫 **A teacher** | "Lesson on electric circuits for 12-year-olds" | Class notes plus teacher boxes: common misconceptions, a demo, timing |
+| 🧠 **Anyone who finds it hard to focus** | Add "I get distracted easily" or "I have ADHD" | Focus mode, short chunks, study timer, read-aloud, recall checks (only when asked) |
+
+**Subjects:** biology, pharmacology and medicine · chemistry and lab methods · physics and astronomy · mechanical,
+electrical, civil and chemical engineering · computing · maths, probability and statistics · earth and climate science.
+
 
 | Hand-inked 3D (Colorfigures): β2 receptor and Gs, see-through with labels | Smooth 3D (three.js): agonist in the receptor pocket, TM6 swings out |
 |---|---|
